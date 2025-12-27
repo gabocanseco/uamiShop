@@ -1,0 +1,16 @@
+import { Direccion } from "../value-objects/Direccion";
+import { Telefono } from "../value-objects/Telefono";
+
+export class Perfil {
+  constructor(
+    public readonly nombre: string,
+    public readonly apellidoPat: string,
+    public readonly apellidoMat: string,
+    public readonly fechaNacimiento: Date,
+    public readonly telefono: Telefono,
+    public readonly direccion: Direccion
+  ) {
+    if (!nombre) throw new Error("Nombre requerido");
+    if (!apellidoPat) throw new Error("Apellido paterno requerido");
+  }
+}

@@ -1,0 +1,27 @@
+export class Usuario {
+    public readonly id: string;
+    public readonly email: string;
+    private passwordHash: string;
+
+    constructor(
+        id: string,
+        email: string,
+        passwordHash: string
+    ) {
+        if (!email) throw new Error("Se requiere un email");
+        if (!passwordHash) throw new Error("Se requiere una contraseña");
+
+        this.id = id;
+        this.email = email;
+        this.passwordHash = passwordHash;
+    }
+
+    cambiarContrasena(newHash: string) {
+        if (!newHash) throw new Error("Contraseña inválida");
+        this.passwordHash = newHash;
+    }
+
+    getPasswordHash(): string {
+        return this.passwordHash;
+    }
+}
