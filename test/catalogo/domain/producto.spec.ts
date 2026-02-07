@@ -116,7 +116,7 @@ describe('Producto Agreggate', () => {
     describe('cambiar precio', () => {
         it('debería lanzar domainexception si el nuevo precio es negativo', () => {
             const id = ProductoId.generar();
-            const nombrecorto = new Nombre("prueba");
+            const nombre = new Nombre("prueba");
             const descripcion = new Descripcion("descripcion");
             const precio = Money.crear(10, "MXN");
             const categoriaid = CategoriaId.generar();
@@ -125,7 +125,7 @@ describe('Producto Agreggate', () => {
             const fechacreacion = DateTime.now();
             const producto = Producto.crear(
                 id,
-                nombrecorto,
+                nombre,
                 descripcion,
                 precio,
                 categoriaid,
@@ -143,7 +143,7 @@ describe('Producto Agreggate', () => {
 
         it('debería lanzar domainexception si el nuevo precio incrementa más del 50% en un solo cambio', () => {
             const id = ProductoId.generar();
-            const nombrecorto = new Nombre("prueba");
+            const nombre = new Nombre("prueba");
             const descripcion = new Descripcion("descripcion");
             const precio = Money.crear(50, "mxn");
             const categoriaid = CategoriaId.generar();
@@ -152,7 +152,7 @@ describe('Producto Agreggate', () => {
             const fechacreacion = DateTime.now();
             const producto = Producto.crear(
                 id,
-                nombrecorto,
+                nombre,
                 descripcion,
                 precio,
                 categoriaid,
@@ -173,7 +173,7 @@ describe('Producto Agreggate', () => {
     describe('agregar imagen', () => {
         it('debería lanzar DomainException si intenta agregar más de 5 imagenes', () => {
             const id = ProductoId.generar();
-            const nombrecorto = new Nombre("prueba");
+            const nombre = new Nombre("prueba");
             const descripcion = new Descripcion("descripcion");
             const precio = Money.crear(10, "mxn");
             const categoriaid = CategoriaId.generar();
@@ -188,7 +188,7 @@ describe('Producto Agreggate', () => {
             const fechacreacion = DateTime.now();
             const producto = Producto.crear(
                 id,
-                nombrecorto,
+                nombre,
                 descripcion,
                 precio,
                 categoriaid,
@@ -209,7 +209,7 @@ describe('Producto Agreggate', () => {
 
         it('debería lanzar domainexception si la URL de la imagen no es válida', () => {
             const id = ProductoId.generar();
-            const nombrecorto = new Nombre("prueba");
+            const nombre = new Nombre("prueba");
             const descripcion = new Descripcion("descripcion");
             const precio = Money.crear(50, "mxn");
             const categoriaid = CategoriaId.generar();
@@ -218,7 +218,7 @@ describe('Producto Agreggate', () => {
             const fechacreacion = DateTime.now();
             const producto = Producto.crear(
                 id,
-                nombrecorto,
+                nombre,
                 descripcion,
                 precio,
                 categoriaid,
@@ -241,7 +241,7 @@ describe('Producto Agreggate', () => {
     describe('activar', () => {
         it('debería lanzar DomainException si intenta activar un producto sin al menos una imagen', () => {
             const id = ProductoId.generar();
-            const nombrecorto = new Nombre("prueba");
+            const nombre = new Nombre("prueba");
             const descripcion = new Descripcion("descripcion");
             const precio = Money.crear(10, "MXN");
             const categoriaid = CategoriaId.generar();
@@ -251,7 +251,7 @@ describe('Producto Agreggate', () => {
             const disponible = new Disponible(true);
             const productoInvalido = Producto.crear(
                 id,
-                nombrecorto,
+                nombre,
                 descripcion,
                 precio,
                 categoriaid,
@@ -274,13 +274,14 @@ describe('Producto Agreggate', () => {
             const disponible = new Disponible(true);
             const fechacreacion = DateTime.now();
 
-            const precioNegativo = Money.crear(0, "MXN");
+            const precioInvalido = Money.crear(0, "MXN");
             // Forzamos la creación saltándonos el método estático
             const productoInvalido = new (Producto as any)(
                 id,
                 nombre,
                 descripcion,
-                precioNegativo,
+                precioInvalido,
+                categoriaid,
                 imagenes,
                 disponible,
                 fechacreacion
