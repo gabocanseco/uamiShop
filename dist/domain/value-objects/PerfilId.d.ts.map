@@ -1,1 +1,0 @@
-{"version":3,"file":"PerfilId.d.ts","sourceRoot":"","sources":["../../../src/domain/value-objects/PerfilId.ts"],"names":[],"mappings":"AAEA,qBAAa,QAAQ;aACW,KAAK,EAAE,MAAM;gBAAb,KAAK,EAAE,MAAM;IAOzC,MAAM,CAAC,MAAM,IAAI,QAAQ;IAIzB,MAAM,CAAC,IAAI,CAAC,KAAK,EAAE,MAAM,GAAG,QAAQ;IAIpC,OAAO,CAAC,WAAW;IAMnB,MAAM,CAAC,KAAK,EAAE,QAAQ,GAAG,OAAO;IAIhC,QAAQ,IAAI,MAAM;CAGrB"}

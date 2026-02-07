@@ -1,1 +1,0 @@
-{"version":3,"file":"UsuarioCreado.d.ts","sourceRoot":"","sources":["../../../src/domain/events/UsuarioCreado.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,eAAe,CAAC;AAE5C,qBAAa,aAAc,SAAQ,WAAW;aAEtB,SAAS,EAAE,MAAM;aACjB,KAAK,EAAE,MAAM;gBADb,SAAS,EAAE,MAAM,EACjB,KAAK,EAAE,MAAM;IAKjC,cAAc,IAAI,MAAM;CAG3B"}
