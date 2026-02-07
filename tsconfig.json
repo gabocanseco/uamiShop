@@ -11,17 +11,25 @@
     "declarationMap": true,
     "sourceMap": true,
     "types": [
+      "vitest/globals",
       "node"
     ],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["src/shared/*"],
+      "@catalogo/*": ["src/catalogo/*"]
+    }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "test/**/*"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+//    "test"
   ]
 }
