@@ -291,4 +291,32 @@ describe('Producto Agreggate', () => {
             }).toThrow(DomainException);
         });
     });
+
+    describe('desactivar', () => {
+        it('debería lanzar DomainException si intenta desactivar un producto desactivado previamente', () => {
+            const id = ProductoId.generar();
+            const nombre = new Nombre("prueba");
+            const descripcion = new Descripcion("descripcion");
+            const precio = Money.crear(10, "MXN");
+            const categoriaid = CategoriaId.generar();
+            const fechacreacion = DateTime.now();
+            const imagenes: Imagen[] = [];
+
+            const disponible = new Disponible(false);
+            const productoDesactivado = Producto.crear(
+                id,
+                nombre,
+                descripcion,
+                precio,
+                categoriaid,
+                imagenes,
+                disponible,
+                fechacreacion
+            )
+
+            expect(() => {
+                productoDesactivado.desactivar();
+            }).toThrow(DomainException);
+        });
+    });
 });
