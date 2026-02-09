@@ -8,7 +8,7 @@ export class Money {
         this.cantidad = cantidad;
         this.moneda = moneda
     }
-
+    
     public static crear(cantidad: number, moneda: string = "MXN"): Money {
         // Dinero.js v1 usa montos en centavos (enteros)
         return new Money(Math.round(cantidad * 100), moneda);
@@ -52,5 +52,16 @@ export class Money {
 
     public get codigoMoneda(): string {
         return this.moneda;
+    }
+    public equals(otro: Money): boolean {
+        return this.cantidad === otro.cantidad && this.moneda === otro.moneda;
+    }
+
+    public toString(): string {
+        return `${this.codigoMoneda} ${this.cantidadDecimal.toFixed(2)}`;
+    }
+    
+    public static cero(moneda: string = "MXN"): Money {
+        return new Money(0, moneda);
     }
 }
