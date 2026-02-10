@@ -19,6 +19,7 @@ cd uamiShop
 ```bash
 npm install
 ```
+
 ## Ejecución de pruebas
 
 Utilizamos Vitest como framework de testing
@@ -26,3 +27,17 @@ Utilizamos Vitest como framework de testing
 ```bash
 npm test
 ```
+
+## Probar entorno de desarrollo
+
+```bash
+npm run dev 
+```
+
+## Arranque a producción
+
+```bash
+npm run build
+npm start
+```
+
