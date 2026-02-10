@@ -64,3 +64,6 @@ TEST-results.xml
 *v8.log
 /lib/
 dist/
+
+# Environments
+.env
