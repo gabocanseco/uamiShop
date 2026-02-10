@@ -2,11 +2,12 @@
   "name": "pinguino-",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
     "test": "vitest",
+    "start": "node dist/src/index.js",
     "start:ts": "ts-node src/index.ts"
   },
   "keywords": [],

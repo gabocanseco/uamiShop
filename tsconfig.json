@@ -2,13 +2,13 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
-    "rootDir": "src",
-    "outDir": "dist",
+    "rootDir": ".", /* Mantiene la estructura desde la raíz */
+    "outDir": "dist", /* Todo lo compilado irá a /dist */
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
+    "declaration": true, /* Genera los .d.ts solo en dist */
+    "declarationMap": true, /* Genera los .map solo en dist */
     "sourceMap": true,
     "types": [
       "vitest/globals",
@@ -25,12 +25,11 @@
     }
   },
   "include": [
-    "src/**/*",
-    "test/**/*"
+    "src/**/*", /* Solo compila lo que esté en src */
+    "test/**/*",
   ],
   "exclude": [
     "node_modules",
     "dist",
-//    "test"
   ]
 }
