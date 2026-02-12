@@ -7,6 +7,7 @@ import { Impuesto } from './value-objects/impuesto';
 import { ReferenciaPago } from './value-objects/referencia-pago';
 import { NotasVenta } from './value-objects/notas-venta';
 
+
 /**
  * Entidad que representa una venta en el sistema
  * @param id Identificador único de la venta
@@ -17,8 +18,8 @@ import { NotasVenta } from './value-objects/notas-venta';
  * @param impuesto Impuesto aplicado
  * @param total Total final de la venta
  * @param estado Estado actual de la venta
- * @param referenciaPago Referencia de la transacción de pago (opcional)
- * @param notas Notas adicionales (opcional)
+ * @param referenciaPago Referencia de la transacción de pago 
+ * @param notas Notas adicionales 
  * @param fecha Fecha de creación de la venta
  */
 export class Venta {

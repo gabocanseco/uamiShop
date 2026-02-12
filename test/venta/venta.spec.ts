@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Venta } from '@ventas/domain/venta';
-import { Cantidad } from '@ventas/domain/value-objects/cantidad';
+import { Venta } from 'src/venta/domain/venta';
+import { Cantidad } from 'src/venta/domain/value-objects/cantidad';
 import { Money } from '@shared/domain/money';
-import { Descuento } from '@ventas/domain/value-objects/descuento';
-import { Impuesto } from '@ventas/domain/value-objects/impuesto';
-import { ReferenciaPago } from '@ventas/domain/value-objects/referencia-pago';
+import { Descuento } from 'src/venta/domain/value-objects/descuento';
+import { Impuesto } from 'src/venta/domain/value-objects/impuesto';
+import { ReferenciaPago } from 'src/venta/domain/value-objects/referencia-pago';
 import { NotasVenta } from '../../src/venta/domain/value-objects/notas-venta';
-import { EstadoVenta } from '@ventas/domain/value-objects/estado';
+import { EstadoVenta } from 'src/venta/domain/value-objects/estado';
 
 describe('Venta', () => {
   let cantidad: Cantidad;
