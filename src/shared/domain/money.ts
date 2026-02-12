@@ -1,4 +1,5 @@
 import Dinero from 'dinero.js';
+import {DomainException} from "@shared/exception/domain-exception";
 
 export class Money {
     private readonly cantidad: number;
@@ -15,6 +16,10 @@ export class Money {
     }
 
     public sumar(otro: Money): Money {
+        if (this.moneda != otro.moneda) {
+            throw new DomainException("No se pueden sumar montos de diferentes monedas")
+        }
+
         const resultado = Dinero({
             amount: this.cantidad,
             currency: this.moneda as Dinero.Currency
@@ -34,6 +39,10 @@ export class Money {
             amount: otro.cantidad,
             currency: otro.moneda as Dinero.Currency
         }));
+
+        if (resultado.getAmount() < 0) {
+            throw new DomainException("El resultado de una resta no puede ser negativo")
+        }
 
         return new Money(resultado.getAmount(), resultado.getCurrency());
     }
