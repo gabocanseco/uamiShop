@@ -21,7 +21,8 @@
     "paths": {
       "@shared/*": ["src/shared/*"],
       "@catalogo/*": ["src/catalogo/*"],
-      "@ventas/*": ["src/venta/*"]
+      "@ventas/*": ["src/venta/*"],
+      "@ordenes/*": ["src/ordenes/*"]
     }
   },
   "include": [

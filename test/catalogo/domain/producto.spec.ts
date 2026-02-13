@@ -1,5 +1,5 @@
 import {Producto} from "@catalogo/domain/producto";
-import {ProductoId} from "@catalogo/domain/producto-id";
+import {ProductoId} from "@shared/domain/producto-id";
 import {Money} from "@shared/domain/money";
 import {CategoriaId} from "@catalogo/domain/categoria-id";
 import {Disponible} from "@catalogo/domain/disponible";
