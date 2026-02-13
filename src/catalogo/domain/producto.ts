@@ -1,4 +1,4 @@
-import {ProductoId} from "./producto-id";
+import {ProductoId} from "@shared/domain/producto-id";
 import {Nombre} from "./nombre";
 import {Descripcion} from "./descripcion";
 import {Money} from "@shared/domain/money";
