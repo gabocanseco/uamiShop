@@ -7,13 +7,10 @@ export default defineConfig({
     globals: true, // Para usar 'describe' e 'it' sin importarlos
     environment: 'node',
     include: [
-        'test/**/*.spec.ts', // Fuerza a que solo use archivos .ts
+      'src/**/*.spec.ts',
+      //   'test/**/*.e2e-spec.ts', // Para pruebas e2e en la carpeta test
     ],
-    // Esto evita que vitest intente ejecutar archivos compilados en dist/ o test/
-    exclude: [
-        '**/node_modules/**',
-        '**/dist/**',
-        '**/*.js'
-    ],
+    // Esto evita que vitest intente ejecutar archivos compilados en dist/
+    exclude: ['**/node_modules/**', '**/dist/**', '**/*.js'],
   },
 });
