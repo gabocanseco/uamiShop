@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 
 @Injectable()
-export class ValueObjectIdPipe implements PipeTransform<string, T> {
+export class ValueObjectIdPipe<T> implements PipeTransform<string, T> {
   // Recibe la clase del Value Object en el constructor para instanciarlo después
   constructor(
     private readonly ValueObjectClass: { of: (value: string) => T },

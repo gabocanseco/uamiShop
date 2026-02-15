@@ -5,8 +5,8 @@ import { ProductoInMemoryRepository } from '@catalogo/repository/producto-in-mem
 import { CategoriaInMemoryRepository } from '@catalogo/repository/categoria-in-memory.repository';
 
 @Module({
+  controllers: [ProductoController],
   providers: [
-    ProductoService,
     {
       provide: 'IProductoRepository',
       useClass: ProductoInMemoryRepository,
@@ -15,7 +15,7 @@ import { CategoriaInMemoryRepository } from '@catalogo/repository/categoria-in-m
       provide: 'ICategoriaRepository',
       useClass: CategoriaInMemoryRepository,
     },
+    ProductoService,
   ],
-  controllers: [ProductoController],
 })
 export class CatalogoModule {}
