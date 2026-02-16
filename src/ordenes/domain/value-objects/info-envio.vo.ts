@@ -28,4 +28,12 @@ export class InfoEnvio {
 
     return new InfoEnvio(proveedorLogistico, numeroGuia, fechaEtimadaEntrega);
   }
+
+  public toPrimitives() {
+    return {
+      proveedorLogistico: this.proveedorLogistico,
+      numeroGuia: this.numeroGuia,
+      fechaEtimadaEntrega: this.fechaEtimadaEntrega.getValue(),
+    };
+  }
 }

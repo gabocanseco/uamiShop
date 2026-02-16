@@ -37,4 +37,16 @@ export class ItemOrden {
     this.subtotal = nuevoSubtotal;
     return nuevoSubtotal;
   }
+
+  public toPrimitives() {
+    return {
+      id: this.id.getValue(),
+      productoId: this.productoId.getValue(),
+      nombreProducto: this.nombreProducto,
+      sku: this.sku,
+      cantidad: this.cantidad,
+      precioUnitario: this.precioUnitario.toPrimitives(),
+      subtotal: this.subtotal.toPrimitives(),
+    };
+  }
 }

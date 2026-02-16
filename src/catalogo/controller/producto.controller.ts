@@ -1,13 +1,5 @@
 import { ProductoService } from '@catalogo/service/producto.service';
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ProductoRequestDto } from './dtos/producto-request.dto';
 import { ProductoResponseDto } from './dtos/producto-response.dto';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
@@ -20,7 +12,7 @@ import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo'
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
 
-  @Post('/productos')
+  @Post('productos')
   async crear(
     @Body() request: ProductoRequestDto,
   ): Promise<ProductoResponseDto> {

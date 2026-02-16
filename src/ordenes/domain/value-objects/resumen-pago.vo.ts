@@ -46,4 +46,13 @@ export class ResumenPago {
       DateTime.now(),
     );
   }
+
+  public toPrimitives() {
+    return {
+      metodoPago: this.metodoPago,
+      estado: this.estado.toString(),
+      referenciaExterna: this.referenciaExterna,
+      fechaProcesamiento: this.fechaProcesamiento,
+    };
+  }
 }
