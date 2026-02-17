@@ -11,7 +11,7 @@ import { NombreProducto } from '@catalogo/domain/value-objects/nombre-producto.v
 import type { ICategoriaRepository } from '@catalogo/repository/interfaces/categoria.repository';
 import type { IProductoRepository } from '@catalogo/repository/interfaces/producto.repository';
 import { Inject, Injectable } from '@nestjs/common';
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
 
 @Injectable() // Convierte esta clase en un proveedor de servicios que puede ser inyectado en otros componentes de NestJS

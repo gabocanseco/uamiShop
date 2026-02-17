@@ -1,5 +1,5 @@
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 import { NombreProducto } from '@catalogo/domain/value-objects/nombre-producto.vo';

@@ -2,7 +2,7 @@ import { ProductoService } from '@catalogo/service/producto.service';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ProductoRequestDto } from './dtos/producto-request.dto';
 import { ProductoResponseDto } from './dtos/producto-response.dto';
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { ValueObjectIdPipe } from '@shared/controller/pipes/value-object-id.pipe';
 import { CategoriaRequestDto } from './dtos/categoria-request.dto';
 import { CategoriaResponseDto } from './dtos/categoria-response.dto';
