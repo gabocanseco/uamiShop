@@ -24,7 +24,8 @@
     "paths": {
       "@catalogo/*": ["src/catalogo/*"],
       "@ordenes/*": ["src/ordenes/*"],
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["src/shared/*"],
+      "@ventas/*": ["src/ventas/*"]
     }
   }
 }
