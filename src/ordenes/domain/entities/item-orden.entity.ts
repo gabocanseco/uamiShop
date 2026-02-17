@@ -1,6 +1,6 @@
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { ItemOrdenId } from '@ordenes/domain/value-objects/ids/item-orden-id.vo';
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 
 export class ItemOrden {
   private constructor(

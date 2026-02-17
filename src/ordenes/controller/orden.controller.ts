@@ -6,6 +6,7 @@ import { ValueObjectIdPipe } from '@shared/controller/pipes/value-object-id.pipe
 import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
 import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
 import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
+import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 
 @Controller()
 export class OrdenController {

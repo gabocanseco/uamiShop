@@ -7,6 +7,8 @@ import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
 import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
 import type { IOrdenRepository } from '@ordenes/repository/interfaces/orden.repository';
 import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
+import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
+import { CarritoService as CarritoService } from '@ventas/service/carrito.service';
 
 @Injectable()
 export class OrdenService {
@@ -18,7 +20,7 @@ export class OrdenService {
 
   async crear(request: OrdenRequestDto): Promise<OrdenResponseDto> {
     // Construye DireccionEnvio e ItemOrden desde el request
-    const clienteId = 0;
+    const clienteId = 0; // todo
     const items = 0;
     const direccionEnvio = 0;
     const resumenPagoPendiente = 0;
