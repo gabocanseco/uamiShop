@@ -33,4 +33,14 @@ export class CambioEstado {
       estadoAnterior,
     );
   }
+
+  public toPrimitives() {
+    return {
+      estadoNuevo: this.estadoNuevo.toString(),
+      fecha: this.fecha.getValue(),
+      motivo: this.motivo,
+      usuario: this.usuario,
+      estadoAnterior: this.estadoAnterior?.toString(),
+    };
+  }
 }

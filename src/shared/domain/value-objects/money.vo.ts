@@ -108,6 +108,13 @@ export class Money {
     return `${this.codigoMoneda} ${this.getCantidad().toFixed(2)}`;
   }
 
+  public toPrimitives() {
+    return {
+      cantidad: this.cantidad,
+      moneda: this.moneda,
+    };
+  }
+
   public static cero(moneda: string = 'MXN'): Money {
     return new Money(0, moneda);
   }

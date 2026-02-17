@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { CatalogoModule } from './catalogo/catalogo.module';
+import { CatalogoModule } from '@catalogo/catalogo.module';
+import { OrdenesModule } from './ordenes/ordenes.module';
+import { VentaModule } from '@ventas/venta.module';
 
 @Module({
-  imports: [CatalogoModule],
+  imports: [CatalogoModule, OrdenesModule, VentaModule],
   controllers: [],
   providers: [],
 })

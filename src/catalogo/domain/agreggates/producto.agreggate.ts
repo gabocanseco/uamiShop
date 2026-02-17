@@ -1,4 +1,4 @@
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { NombreProducto } from '@catalogo/domain/value-objects/nombre-producto.vo';
 import { DescripcionProducto } from '@catalogo/domain/value-objects/descripcion-producto.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';

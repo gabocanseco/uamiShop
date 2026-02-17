@@ -16,7 +16,7 @@ export class ProductoRequestDto {
   })
   nombre!: string; // con ! le decimos que el valor será asignado después
 
-  @IsString({ message: 'El nombre debe ser una cadena de texto' })
+  @IsString({ message: 'La descripción debe ser una cadena de texto' })
   @MaxLength(500, {
     message: 'La descripcion del producto debe tener máximo 500 caracteres',
   })

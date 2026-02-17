@@ -1,5 +1,5 @@
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 
 export interface IProductoRepository {
   save(producto: Producto): Promise<void>;

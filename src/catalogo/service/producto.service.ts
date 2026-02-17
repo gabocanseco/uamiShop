@@ -2,17 +2,17 @@ import { CategoriaRequestDto } from '@catalogo/controller/dtos/categoria-request
 import { CategoriaResponseDto } from '@catalogo/controller/dtos/categoria-response.dto';
 import { ProductoRequestDto } from '@catalogo/controller/dtos/producto-request.dto';
 import { ProductoResponseDto } from '@catalogo/controller/dtos/producto-response.dto';
+import { Categoria } from '@catalogo/domain/agreggates/categoria.agreggate';
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
 import { ProductoException } from '@catalogo/domain/exceptions/producto.exception';
 import { DescripcionProducto } from '@catalogo/domain/value-objects/descripcion-producto.vo';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 import { NombreProducto } from '@catalogo/domain/value-objects/nombre-producto.vo';
-import { ICategoriaRepository } from '@catalogo/repository/interfaces/categoria.repository';
-import { IProductoRepository } from '@catalogo/repository/interfaces/producto.repository';
+import type { ICategoriaRepository } from '@catalogo/repository/interfaces/categoria.repository';
+import type { IProductoRepository } from '@catalogo/repository/interfaces/producto.repository';
 import { Inject, Injectable } from '@nestjs/common';
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
-import { UUID } from '@shared/domain/value-objects/uuid.vo';
 
 @Injectable() // Convierte esta clase en un proveedor de servicios que puede ser inyectado en otros componentes de NestJS
 export class ProductoService {
@@ -95,16 +95,58 @@ export class ProductoService {
 
   async crearCategoria(
     request: CategoriaRequestDto,
-  ): Promise<CategoriaResponseDto> {}
+  ): Promise<CategoriaResponseDto> {
+    const nombre = request.nombre;
+    const descripcion = request.descripcion;
+    let categoriaPadreId: CategoriaId | undefined;
+    if (request.categoriaPadreId) {
+      categoriaPadreId = CategoriaId.of(request.categoriaPadreId);
+    }
 
-  async buscarCategoriaPorId(id: UUID): Promise<CategoriaResponseDto> {}
+    const nuevaCategoria = Categoria.crear(
+      nombre,
+      descripcion,
+      categoriaPadreId,
+    );
+    await this.categoriaRepository.save(nuevaCategoria);
 
-  async buscarTodasCategorias(): Promise<CategoriaResponseDto[]> {}
+    return CategoriaResponseDto.fromDomain(nuevaCategoria);
+  }
+
+  async buscarCategoriaPorId(id: CategoriaId): Promise<CategoriaResponseDto> {
+    const categoria = await this.obtenerCategoriaPorId(id);
+
+    return CategoriaResponseDto.fromDomain(categoria);
+  }
+
+  async buscarTodasCategorias(): Promise<CategoriaResponseDto[]> {
+    const categorias = await this.categoriaRepository.findAll();
+
+    return categorias.map((c) => CategoriaResponseDto.fromDomain(c));
+  }
 
   async actualizarCategoria(
-    id: UUID,
+    id: CategoriaId,
     request: CategoriaRequestDto,
-  ): CategoriaResponseDto {}
+  ): Promise<CategoriaResponseDto> {
+    // Cargar el producto
+    const categoria = await this.obtenerCategoriaPorId(id);
+
+    // Actualizar nombre y descripcion de la categoria
+    const nombreCategoria = request.nombre;
+    const descripcionCategoria = request.descripcion;
+    categoria.actualizar(nombreCategoria, descripcionCategoria);
+
+    // Cambiar el id de la categoria padre si viene en el request
+    if (request.categoriaPadreId) {
+      const categoriaPadreId = CategoriaId.of(request.categoriaPadreId);
+      categoria.asignarPadre(categoriaPadreId);
+    }
+
+    await this.categoriaRepository.update(categoria);
+
+    return CategoriaResponseDto.fromDomain(categoria);
+  }
 
   private async obtenerProductoPorId(id: ProductoId): Promise<Producto> {
     const producto = await this.productoRepository.findById(id);
@@ -114,5 +156,15 @@ export class ProductoService {
       );
     }
     return producto;
+  }
+
+  private async obtenerCategoriaPorId(id: CategoriaId): Promise<Categoria> {
+    const categoria = await this.categoriaRepository.findById(id);
+    if (!categoria) {
+      throw new ProductoException(
+        `Categoria con ID ${id.getValue()} no encontrada.`,
+      );
+    }
+    return categoria;
   }
 }

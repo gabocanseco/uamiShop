@@ -4,7 +4,7 @@ import { ClienteId } from '@shared/domain/value-objects/ids/cliente-id.vo';
 import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
 import { ResumenPago } from '@ordenes/domain/value-objects/resumen-pago.vo';
 import { ItemOrden } from '@ordenes/domain/entities/item-orden.entity';
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
 
 describe('Orden Agreggate Root', () => {

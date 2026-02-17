@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IProductoRepository } from '@catalogo/repository/interfaces/producto.repository';
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
-import { ProductoId } from '@shared/domain/value-objects/ids/producto-id';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 
 @Injectable()
 export class ProductoInMemoryRepository implements IProductoRepository {

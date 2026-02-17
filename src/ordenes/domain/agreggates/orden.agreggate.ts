@@ -169,8 +169,10 @@ export class Orden {
 
   public marcarEntregada(): void {
     if (
-      this.estado !== EstadoOrden.ENVIADA &&
-      this.estado !== EstadoOrden.EN_TRANSITO
+      !(
+        this.estado === EstadoOrden.ENVIADA ||
+        this.estado === EstadoOrden.EN_TRANSITO
+      )
     ) {
       throw new OrdenException(
         `Solo se puede marcar ${EstadoOrden.ENTREGADA} si está ${EstadoOrden.ENVIADA} o ${EstadoOrden.EN_TRANSITO}`,
@@ -226,5 +228,29 @@ export class Orden {
 
   public obtenerHistorial(): CambioEstado[] {
     return this.historialEstados;
+  }
+
+  public getId(): OrdenId {
+    return this.id;
+  }
+
+  public toPrimitives() {
+    return {
+      id: this.id.getValue(),
+      numeroOrden: this.numeroOrden,
+      clienteId: this.clienteId.getValue(),
+      items: this.items.map((itemOrden) => itemOrden.toPrimitives()),
+      direccionEnvio: this.direccionEnvio.toPrimitives(),
+      resumenPago: this.resumenPago.toPrimitives(),
+      subtotal: this.subtotal.toPrimitives(),
+      descuento: this.descuento.toPrimitives(),
+      total: this.total.toPrimitives(),
+      estado: this.estado.toString(),
+      fechaCreacion: this.fechaCreacion.getValue(),
+      historialEstados: this.historialEstados.map((estado) =>
+        estado.toPrimitives(),
+      ),
+      infoEnvio: this.infoEnvio?.toPrimitives(),
+    };
   }
 }
