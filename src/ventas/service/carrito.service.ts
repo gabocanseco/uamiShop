@@ -1,13 +1,4 @@
 import { Injectable, Inject } from '@nestjs/common';
-// import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
-// import { Categoria } from '@catalogo/domain/agreggates/categoria.agreggate';
-// import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
-// import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
-// import { NombreProducto } from '@catalogo/domain/value-objects/nombre-producto.vo';
-// import { DescripcionProducto } from '@catalogo/domain/value-objects/descripcion-producto.vo';
-// import { Money } from '@shared/domain/value-objects/money.vo';
-// import { Disponible } from '@catalogo/domain/value-objects/disponible.vo';
-// import { DateTime } from '@shared/domain/value-objects/datetime.vo';
 import type { ICarritoRepository } from '@ventas/repository/interfaces/carrito.repository';
 import { ClienteId } from '@shared/domain/value-objects/ids/cliente-id.vo';
 import { CarritoResponseDto } from '@ventas/controller/dtos/carrito-response.dto';
@@ -15,46 +6,11 @@ import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import { ProductoRef } from '@ventas/domain/value-objects/producto-ref.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
+import { Carrito } from '@ventas/domain/agreggates/carrito';
+import { VentaException } from '@ventas/domain/exceptions/venta.exception';
 
 /**
- * DTOs para las operaciones del servicio
- */
-// export interface ProductoRequest {
-//   nombre: string;
-//   descripcion: string;
-//   precio: number;
-//   moneda?: string;
-//   categoriaId: string;
-// }
-
-// export interface ProductoResponse {
-//   id: string;
-//   nombre: string;
-//   descripcion: string;
-//   precio: {
-//     cantidad: number;
-//     moneda: string;
-//   };
-//   categoriaId: string;
-//   disponible: boolean;
-//   fechaCreacion: string;
-// }
-
-// export interface CategoriaRequest {
-//   nombre: string;
-//   descripcion: string;
-//   categoriaPadreId?: string;
-// }
-
-// export interface CategoriaResponse {
-//   id: string;
-//   nombre: string;
-//   descripcion: string;
-//   categoriaPadreId?: string;
-// }
-
-/**
- * Servicio de aplicación para gestionar productos y categorías
+ * Servicio de aplicación para gestionar carritos de compra
  */
 @Injectable()
 export class CarritoService {
@@ -63,36 +19,139 @@ export class CarritoService {
     private readonly carritoRepository: ICarritoRepository,
   ) {}
 
-  // Crea un carrito vacio asociado a un cliente
-  async crear(clienteId: ClienteId): Promise<CarritoResponseDto> {}
+  /**
+   * Crea un carrito vacío asociado a un cliente
+   */
+  async crear(clienteId: ClienteId): Promise<CarritoResponseDto> {
+    const nuevoCarrito = Carrito.crear(clienteId);
+    await this.carritoRepository.save(nuevoCarrito);
 
-  async obtenerCarrito(carritoId: CarritoId): Promise<CarritoResponseDto> {}
+    return CarritoResponseDto.fromDomain(nuevoCarrito);
+  }
 
-  async agregaProducto(
+  /**
+   * Obtiene un carrito por su ID
+   */
+  async obtenerCarrito(carritoId: CarritoId): Promise<CarritoResponseDto> {
+    const carrito = await this.obtenerCarritoPorId(carritoId);
+    return CarritoResponseDto.fromDomain(carrito);
+  }
+
+  /**
+   * Agrega un producto al carrito
+   */
+  async agregarProducto(
     carritoId: CarritoId,
-    prodictoRef: ProductoRef,
+    productoRef: ProductoRef,
     cantidad: number,
     precioUnitario: Money,
-  ): Promise<CarritoResponseDto> {}
+  ): Promise<CarritoResponseDto> {
+    const carrito = await this.obtenerCarritoPorId(carritoId);
 
+    carrito.agregarProducto(productoRef, cantidad, precioUnitario);
+
+    await this.carritoRepository.update(carrito);
+
+    return CarritoResponseDto.fromDomain(carrito);
+  }
+
+  /**
+   * Modifica la cantidad de un producto en el carrito
+   */
   async modificarCantidad(
     carritoId: CarritoId,
     productoId: ProductoId,
     nuevaCantidad: number,
-  ): Promise<CarritoResponseDto> {}
+  ): Promise<CarritoResponseDto> {
+    const carrito = await this.obtenerCarritoPorId(carritoId);
 
+    carrito.modificarCantidad(productoId, nuevaCantidad);
+
+    await this.carritoRepository.update(carrito);
+
+    return CarritoResponseDto.fromDomain(carrito);
+  }
+
+  /**
+   * Elimina un producto del carrito
+   */
   async eliminarProducto(
     carritoId: CarritoId,
     productoId: ProductoId,
-  ): Promise<CarritoResponseDto> {}
+  ): Promise<CarritoResponseDto> {
+    const carrito = await this.obtenerCarritoPorId(carritoId);
 
-  async vaciar(carritoId: CarritoId): Promise<CarritoResponseDto> {}
+    carrito.eliminarProducto(productoId);
 
-  async iniciarCheckout(carritoId: CarritoId): Promise<CarritoResponseDto> {}
+    await this.carritoRepository.update(carrito);
 
-  async completarCheckout(carritoId: CarritoId): Promise<CarritoResponseDto> {}
+    return CarritoResponseDto.fromDomain(carrito);
+  }
 
-  async abandonar(carritoId: CarritoId): Promise<CarritoResponseDto> {}
+  /**
+   * Vacía el carrito eliminando todos los productos
+   */
+  async vaciar(carritoId: CarritoId): Promise<CarritoResponseDto> {
+    const carrito = await this.obtenerCarritoPorId(carritoId);
+
+    carrito.vaciar();
+
+    await this.carritoRepository.update(carrito);
+
+    return CarritoResponseDto.fromDomain(carrito);
+  }
+
+  /**
+   * Inicia el proceso de checkout del carrito
+   */
+  async iniciarCheckout(carritoId: CarritoId): Promise<CarritoResponseDto> {
+    const carrito = await this.obtenerCarritoPorId(carritoId);
+
+    carrito.iniciarCheckout();
+
+    await this.carritoRepository.update(carrito);
+
+    return CarritoResponseDto.fromDomain(carrito);
+  }
+
+  /**
+   * Completa el checkout del carrito
+   */
+  async completarCheckout(carritoId: CarritoId): Promise<CarritoResponseDto> {
+    const carrito = await this.obtenerCarritoPorId(carritoId);
+
+    carrito.completarCheckout();
+
+    await this.carritoRepository.update(carrito);
+
+    return CarritoResponseDto.fromDomain(carrito);
+  }
+
+  /**
+   * Marca el carrito como abandonado
+   */
+  async abandonar(carritoId: CarritoId): Promise<CarritoResponseDto> {
+    const carrito = await this.obtenerCarritoPorId(carritoId);
+
+    carrito.abandonar();
+
+    await this.carritoRepository.update(carrito);
+
+    return CarritoResponseDto.fromDomain(carrito);
+  }
+
+  /**
+   * Método privado para obtener un carrito y lanzar excepción si no existe
+   */
+  private async obtenerCarritoPorId(id: CarritoId): Promise<Carrito> {
+    const carrito = await this.carritoRepository.findById(id);
+    if (!carrito) {
+      throw new VentaException(
+        `Carrito con ID ${id.getValue()} no encontrado`,
+      );
+    }
+    return carrito;
+  }
 
   // TODO: Inyectar repositorios cuando estén disponibles
   // constructor(
