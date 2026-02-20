@@ -5,8 +5,14 @@ import { DescripcionProducto } from '@catalogo/domain/value-objects/descripcion-
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 import { ProductoResponseDto } from '../dtos/producto-response.dto';
+import { plainToInstance } from 'class-transformer';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 
 export class ProductoMapper {
+  static toDomainId(id: string) {
+    return ProductoId.of(id);
+  }
+
   static toDomain(productoRequestDto: ProductoRequestDto): Producto {
     const nombreProducto = NombreProducto.crear(productoRequestDto.nombre);
     const descripcionProducto = DescripcionProducto.crear(
@@ -24,15 +30,6 @@ export class ProductoMapper {
   }
 
   static toResponseDto(producto: Producto): ProductoResponseDto {
-    const productoPrimitives = producto.toPrimitives();
-    const productoResponseDto = new ProductoResponseDto();
-    productoResponseDto.id = productoPrimitives.id;
-    productoResponseDto.nombre = productoPrimitives.nombre;
-    productoResponseDto.descripcion = productoPrimitives.descripcion;
-    productoResponseDto.precio = productoPrimitives.precio;
-    productoResponseDto.categoriaId = productoPrimitives.categoriaId;
-    productoResponseDto.disponible = productoPrimitives.disponible;
-    productoResponseDto.fechaCreacion = productoPrimitives.fechaCreacion;
-    return productoResponseDto;
+    return plainToInstance(ProductoResponseDto, producto.toPrimitives());
   }
 }
