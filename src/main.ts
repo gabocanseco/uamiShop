@@ -15,7 +15,6 @@ async function bootstrap() {
       transform: true, // Transforma los payloads a los tipos definidos en los DTOs (ej. string a number)
     }),
   );
-
   app.useGlobalFilters(new GlobalExceptionFilter()); // Manejo de errores http
 
   app.enableVersioning({
