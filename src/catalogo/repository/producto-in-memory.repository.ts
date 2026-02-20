@@ -12,9 +12,10 @@ export class ProductoInMemoryRepository implements IProductoRepository {
     this.productos.push(producto);
   }
 
-  async findById(id: ProductoId): Promise<Producto | null> {
+  async findById(id: ProductoId): Promise<Producto | undefined> {
     return (
-      this.productos.find((p) => p.getId().getValue() === id.getValue()) || null
+      this.productos.find((p) => p.getId().getValue() === id.getValue()) ||
+      undefined
     );
   }
 
