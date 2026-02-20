@@ -8,6 +8,7 @@ export class ProductoInMemoryRepository implements IProductoRepository {
   private productos: Producto[] = [];
 
   async save(producto: Producto): Promise<void> {
+    // verificar que el id de la categoriapadre exista si es dado
     this.productos.push(producto);
   }
 
