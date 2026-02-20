@@ -1,4 +1,4 @@
-import { ProductoException } from '@catalogo/domain/exceptions/producto.exception';
+import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 
 export class NombreProducto {
   private readonly valor: string;
@@ -16,7 +16,7 @@ export class NombreProducto {
     const MAX_NUM_CHARS = 100;
     const longitudValor = valor.length;
     if (longitudValor < MIN_NUM_CHARS || longitudValor > MAX_NUM_CHARS) {
-      throw new ProductoException(
+      throw new BusinessRuleException(
         `El nombre es inválido. Debe tener entre 3 y 100 caracteres.`,
       );
     }
