@@ -1,5 +1,5 @@
 import Dinero from 'dinero.js';
-import { DomainException } from '@shared/domain/exceptions/domain.exception';
+import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 
 export class Money {
   private readonly cantidad: number;
@@ -35,7 +35,7 @@ export class Money {
     const dineroB = otro.toDinero();
 
     if (!dineroA.hasSameCurrency(dineroB)) {
-      throw new DomainException(
+      throw new BusinessRuleException(
         'No se pueden sumar montos de diferentes monedas',
       );
     }
@@ -50,7 +50,7 @@ export class Money {
     const dineroB = otro.toDinero();
 
     if (!dineroA.hasSameCurrency(dineroB)) {
-      throw new DomainException(
+      throw new BusinessRuleException(
         'No se pueden restar montos de diferentes monedas',
       );
     }
@@ -58,7 +58,7 @@ export class Money {
     const resultado = dineroA.subtract(dineroB);
 
     if (resultado.isNegative()) {
-      throw new DomainException(
+      throw new BusinessRuleException(
         'El resultado de una resta no puede ser negativo',
       );
     }
