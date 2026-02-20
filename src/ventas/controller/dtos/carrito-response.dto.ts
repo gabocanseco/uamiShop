@@ -40,6 +40,7 @@ export class CarritoResponseDto {
   cantidadItems: number;
   fechaCreacion: Date;
   fechaActualizacion: Date;
+  
 
   static fromDomain(carrito: Carrito): CarritoResponseDto {
     const primitives = carrito.toPrimitives();
