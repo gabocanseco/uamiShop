@@ -4,7 +4,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from '@shared/controller/filters/global-expcetion.filter';
 import { VersioningType } from '@nestjs/common';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -19,7 +18,7 @@ async function bootstrap() {
 
   app.enableVersioning({
     type: VersioningType.URI, // Puede ser URI, HEADER, MEDIA_TYPE o CUSTOM
-    prefix: '/v', // Prefijo para la versión en la URI (ej. http//localhost:3000/v1/endpoint)
+    prefix: 'v', // Prefijo para la versión en la URI (ej. http//localhost:3000/v1/endpoint)
     defaultVersion: '1', // Versión por defecto si no se especifica
   });
   await app.listen(process.env.PORT ?? 3000);
