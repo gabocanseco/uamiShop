@@ -6,8 +6,8 @@ import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo'
 import { ImagenId } from '@catalogo/domain/value-objects/ids/imagen-id.vo';
 import { Imagen } from '@catalogo/domain/value-objects/imagen';
 import { DateTime } from '@shared/domain/value-objects/datetime.vo';
-import { ProductoException } from '@catalogo/domain/exceptions/producto.exception';
 import { Disponible } from '@catalogo/domain/value-objects/disponible.vo';
+import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 
 export class Producto {
   private constructor(
@@ -37,7 +37,7 @@ export class Producto {
     categoriaId: CategoriaId,
   ) {
     if (!precio.isPositive()) {
-      throw new ProductoException(`El precio debe ser mayor a cero.`);
+      throw new BusinessRuleException(`El precio debe ser mayor a cero.`);
     }
 
     return new Producto(
@@ -62,14 +62,14 @@ export class Producto {
 
   public cambiarPrecio(nuevoPrecio: Money): void {
     if (nuevoPrecio.isNegative()) {
-      throw new ProductoException(`El nuevo precio no puede ser negativo`);
+      throw new BusinessRuleException(`El nuevo precio no puede ser negativo`);
     }
 
     const porcentaje = 50; // El precio no puede incrementar más del 50%
     const factor = porcentaje / 100;
     const precioConPorcentaje = this.precio.multiplicar(factor);
     if (nuevoPrecio.greaterThan(this.precio.sumar(precioConPorcentaje))) {
-      throw new ProductoException(
+      throw new BusinessRuleException(
         `El precio no puede incrementar más del ${porcentaje}% en un solo cambio`,
       );
     }
@@ -80,13 +80,13 @@ export class Producto {
   public activar(): void {
     // validar
     if (this.imagenes.length < 1) {
-      throw new ProductoException(
+      throw new BusinessRuleException(
         `Un producto solo puede activarse si tiene al menos una imagen`,
       );
     }
 
     if (!this.precio.isPositive()) {
-      throw new ProductoException(
+      throw new BusinessRuleException(
         `Un producto solo puede activarse si tiene precio mayor a cero`,
       );
     }
@@ -96,7 +96,7 @@ export class Producto {
 
   public desactivar(): void {
     if (!this.disponible.estaDisponible()) {
-      throw new ProductoException(
+      throw new BusinessRuleException(
         `El producto ya está desactivado, no puede desactivarse nuevamente.`,
       );
     }
@@ -107,14 +107,14 @@ export class Producto {
   public agregarImagen(imagen: Imagen): void {
     const limiteImagenes = 5;
     if (this.imagenes.length >= limiteImagenes) {
-      throw new ProductoException(
+      throw new BusinessRuleException(
         `No se pueden agregar más imagenes porque el limte ${limiteImagenes} se ha alcanzado.`,
       );
     }
 
     const regexUrl = /^https?:\/\//;
     if (!regexUrl.test(imagen.getUrl())) {
-      throw new ProductoException(`La URL de la imagen no es válida.`);
+      throw new BusinessRuleException(`La URL de la imagen no es válida.`);
     }
 
     this.imagenes.push(imagen);
@@ -129,6 +129,18 @@ export class Producto {
 
   public getId(): ProductoId {
     return this.id;
+  }
+
+  public getNombre(): NombreProducto {
+    return this.nombre;
+  }
+
+  public getDescripcion(): DescripcionProducto {
+    return this.descripcion;
+  }
+
+  public getPrecio(): Money {
+    return this.precio;
   }
 
   public toPrimitives() {

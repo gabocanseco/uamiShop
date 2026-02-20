@@ -5,6 +5,10 @@ import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo'
 import { plainToInstance } from 'class-transformer';
 
 export class CategoriaMapper {
+  static toDomainId(id: string): CategoriaId {
+    return CategoriaId.of(id);
+  }
+
   static toDomain(categoriaRequestDto: CategoriaRequestDto): Categoria {
     let categoriaPadreId: CategoriaId | undefined = undefined;
     if (categoriaRequestDto.categoriaPadreId) {

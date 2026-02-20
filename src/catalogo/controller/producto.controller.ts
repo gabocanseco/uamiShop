@@ -1,14 +1,13 @@
 import { ProductoService } from '@catalogo/service/producto.service';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { ProductoRequestDto } from './dtos/producto-request.dto';
-import { ProductoResponseDto } from './dtos/producto-response.dto';
-// import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
-// import { ValueObjectIdPipe } from '@shared/controller/pipes/value-object-id.pipe';
-import { CategoriaRequestDto } from './dtos/categoria-request.dto';
-import { CategoriaResponseDto } from './dtos/categoria-response.dto';
-// import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
+import { ProductoRequestDto } from '@catalogo/controller/dtos/producto-request.dto';
+import { ProductoResponseDto } from '@catalogo/controller/dtos/producto-response.dto';
+import { CategoriaRequestDto } from '@catalogo/controller/dtos/categoria-request.dto';
+import { CategoriaResponseDto } from '@catalogo/controller/dtos/categoria-response.dto';
+import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 import { ProductoMapper } from '@catalogo/controller/mappers/producto.mapper';
-import { CategoriaMapper } from './mappers/categoria.mapper';
+import { CategoriaMapper } from '@catalogo/controller/mappers/categoria.mapper';
+import { ProductoParamsDto } from '@catalogo/controller/dtos/producto-params.dto';
 
 @Controller()
 export class ProductoController {
@@ -19,71 +18,102 @@ export class ProductoController {
     @Body() request: ProductoRequestDto,
   ): Promise<ProductoResponseDto> {
     const nuevoProducto = ProductoMapper.toDomain(request);
+
     const producto = await this.productoService.crear(nuevoProducto);
+
     return ProductoMapper.toResponseDto(producto);
   }
 
-  // @Get('productos')
-  // async obtenerTodos(): Promise<ProductoResponseDto[]> {
-  //   return await this.productoService.buscarTodos();
-  // }
+  @Get('productos')
+  async obtenerTodos(): Promise<ProductoResponseDto[]> {
+    const productos = await this.productoService.buscarTodos();
 
-  // @Get('productos/:id')
-  // async obtener(
-  //   @Param('id', new ValueObjectIdPipe(ProductoId)) id: ProductoId,
-  // ): Promise<ProductoResponseDto> {
-  //   return await this.productoService.buscarPorId(id);
-  // }
+    return productos.map((p) => ProductoMapper.toResponseDto(p));
+  }
 
-  // @Put('productos/:id')
-  // async actualizar(
-  //   @Param('id', new ValueObjectIdPipe(ProductoId)) id: ProductoId,
-  //   @Body() request: ProductoRequestDto,
-  // ): Promise<ProductoResponseDto> {
-  //   return await this.productoService.actualizar(id, request);
-  // }
+  @Get('productos/:id')
+  async obtener(
+    @Param() params: ProductoParamsDto,
+  ): Promise<ProductoResponseDto> {
+    const productoId = ProductoMapper.toDomainId(params.id);
 
-  // @Post('productos/:id/activar')
-  // async activar(
-  //   @Param('id', new ValueObjectIdPipe(ProductoId)) id: ProductoId,
-  // ): Promise<void> {
-  //   await this.productoService.activar(id);
-  // }
+    const producto = await this.productoService.buscarPorId(productoId);
 
-  // @Post('productos/:id/desactivar')
-  // async desactivar(
-  //   @Param('id', new ValueObjectIdPipe(ProductoId)) id: ProductoId,
-  // ): Promise<void> {
-  //   await this.productoService.desactivar(id);
-  // }
+    return ProductoMapper.toResponseDto(producto);
+  }
+
+  @Put('productos/:id')
+  async actualizar(
+    @Param() params: ProductoParamsDto,
+    @Body() request: ProductoRequestDto,
+  ): Promise<ProductoResponseDto> {
+    const productoId = ProductoMapper.toDomainId(params.id);
+
+    const nuevoProducto = ProductoMapper.toDomain(request);
+
+    const producto = await this.productoService.actualizar(
+      productoId,
+      nuevoProducto,
+    );
+
+    return ProductoMapper.toResponseDto(producto);
+  }
+
+  @Post('productos/:id/activar')
+  async activar(@Param() params: ProductoParamsDto): Promise<void> {
+    const productoId = ProductoMapper.toDomainId(params.id);
+    await this.productoService.activar(productoId);
+  }
+
+  @Post('productos/:id/desactivar')
+  async desactivar(@Param() params: ProductoParamsDto): Promise<void> {
+    const productoId = ProductoMapper.toDomainId(params.id);
+    await this.productoService.desactivar(productoId);
+  }
 
   @Post('categorias')
   async crearCategoria(
     @Body() request: CategoriaRequestDto,
   ): Promise<CategoriaResponseDto> {
     const nuevaCategoria = CategoriaMapper.toDomain(request);
+
     const categoria = await this.productoService.crearCategoria(nuevaCategoria);
+
     return CategoriaMapper.toResponseDto(categoria);
   }
 
   @Get('categorias')
   async obtenerTodasCategorias(): Promise<CategoriaResponseDto[]> {
     const categorias = await this.productoService.buscarTodasCategorias();
+
     return categorias.map((c) => CategoriaMapper.toResponseDto(c));
   }
 
-  // @Get('categorias/:id')
-  // async obtenerCategoriaPorId(
-  //   @Param('id', new ValueObjectIdPipe(CategoriaId)) id: CategoriaId,
-  // ): Promise<CategoriaResponseDto> {
-  //   return await this.productoService.buscarCategoriaPorId(id);
-  // }
+  @Get('categorias/:id')
+  async obtenerCategoriaPorId(
+    @Param('id') id: string,
+  ): Promise<CategoriaResponseDto> {
+    const categoriaId = CategoriaMapper.toDomainId(id);
 
-  // @Put('categorias/:id')
-  // async actualizarCategoria(
-  //   @Param('id', new ValueObjectIdPipe(CategoriaId)) id: CategoriaId,
-  //   @Body() request: CategoriaRequestDto,
-  // ): Promise<CategoriaResponseDto> {
-  //   return await this.productoService.actualizarCategoria(id, request);
-  // }
+    const categoria =
+      await this.productoService.buscarCategoriaPorId(categoriaId);
+
+    return CategoriaMapper.toResponseDto(categoria);
+  }
+
+  @Put('categorias/:id')
+  async actualizarCategoria(
+    @Param('id') id: string,
+    @Body() request: CategoriaRequestDto,
+  ): Promise<CategoriaResponseDto> {
+    const categoriaId = CategoriaId.of(id);
+    const nuevaCategoria = CategoriaMapper.toDomain(request);
+
+    const categoria = await this.productoService.actualizarCategoria(
+      categoriaId,
+      nuevaCategoria,
+    );
+
+    return CategoriaMapper.toResponseDto(categoria);
+  }
 }

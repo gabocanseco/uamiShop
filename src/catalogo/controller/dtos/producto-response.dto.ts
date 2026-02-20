@@ -6,4 +6,10 @@ export class ProductoResponseDto {
   categoriaId!: string;
   disponible!: boolean;
   fechaCreacion!: Date;
+  imagenes!: {
+    id: string;
+    url: string;
+    alt: string;
+    orden: number;
+  }[];
 }
