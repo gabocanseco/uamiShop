@@ -43,6 +43,14 @@ export class Categoria {
     return this.nombre;
   }
 
+  public getDescripcion(): string {
+    return this.descripcion;
+  }
+
+  public getCategoriaPadreId(): CategoriaId | undefined {
+    return this.categoriaPadreId;
+  }
+
   public toPrimitives() {
     return {
       id: this.id.getValue(),
