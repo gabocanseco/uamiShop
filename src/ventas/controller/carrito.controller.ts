@@ -83,7 +83,7 @@ interface AplicarDescuentoDto {
 /**
  * Controller para gestionar las operaciones del carrito de compras
  */
-@Controller('carritos')
+@Controller({ path: 'carritos', version: '1' })
 export class CarritoController {
   constructor(private readonly carritoService: CarritoService) {}
 
