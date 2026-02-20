@@ -120,22 +120,7 @@ export class Carrito {
     this.items.clear();
   }
 
-  public caclularSubtotal(): Money {
-    const total = this.caclularTotal();
-
-    // aplicar descuentos al subtotal
-    let montoDescuento = Money.cero();
-
-    this.descuentos.forEach((descuento) => {
-      montoDescuento = montoDescuento.restar(
-        descuento.calcularDescuento(total),
-      );
-    });
-
-    return total.restar(montoDescuento);
-  }
-
-  public caclularTotal(): Money {
+  public calcularSubtotal(): Money {
     if (this.items.size <= 0) {
       return Money.cero();
     }
@@ -148,8 +133,35 @@ export class Carrito {
     return subtotal;
   }
 
-  // TODO
-  public apliocarDescuento(descuento: Descuento): void {}
+  public calcularTotal(): Money {
+    const subtotal = this.calcularSubtotal();
+
+    // aplicar descuentos al subtotal
+    let montoDescuento = Money.cero();
+
+    this.descuentos.forEach((descuento) => {
+      montoDescuento = montoDescuento.sumar(
+        descuento.calcularDescuento(subtotal),
+      );
+    });
+
+    return subtotal.restar(montoDescuento);
+  }
+
+  public calcularTotalSinDescuentos(): Money {
+    return this.calcularSubtotal();
+  }
+
+  public aplicarDescuento(descuento: Descuento): void {
+    if (this.estado !== EstadoCarrito.ACTIVO) {
+      throw new VentaException(
+        'Solo se pueden aplicar descuentos a carritos activos',
+      );
+    }
+
+    this.descuentos.push(descuento);
+    this.fechaActualizacion = DateTime.now();
+  }
 
   public iniciarCheckout(): void {
     // El carrito debe tener al menos un producto
@@ -163,13 +175,35 @@ export class Carrito {
         'Solo se puede iniciar el checkout si el carrito está activo',
       );
     }
+
+    this.estado = EstadoCarrito.EN_CHECKOUT;
+    this.fechaActualizacion = DateTime.now();
   }
 
-  // TODO
-  public completarCheckout(): void {}
+  public completarCheckout(): void {
+    if (this.estado !== EstadoCarrito.EN_CHECKOUT) {
+      throw new VentaException(
+        'Solo se puede completar el checkout si el carrito está en checkout',
+      );
+    }
 
-  // TODO
-  public abandonar(): void {}
+    this.estado = EstadoCarrito.COMPLETADO;
+    this.fechaActualizacion = DateTime.now();
+  }
+
+  public abandonar(): void {
+    if (
+      this.estado !== EstadoCarrito.ACTIVO &&
+      this.estado !== EstadoCarrito.EN_CHECKOUT
+    ) {
+      throw new VentaException(
+        'Solo se pueden abandonar carritos activos o en checkout',
+      );
+    }
+
+    this.estado = EstadoCarrito.ABANDONADO;
+    this.fechaActualizacion = DateTime.now();
+  }
 
   public obtenerCantidadItems(): number {
     return this.items.size;
@@ -177,6 +211,18 @@ export class Carrito {
 
   public getId(): CarritoId {
     return this.carritoId;
+  }
+
+  public getClienteId(): ClienteId {
+    return this.clienteId;
+  }
+
+  public getItems(): ItemCarrito[] {
+    return Array.from(this.items.values());
+  }
+
+  public getEstado(): EstadoCarrito {
+    return this.estado;
   }
 
   public toPrimitives() {

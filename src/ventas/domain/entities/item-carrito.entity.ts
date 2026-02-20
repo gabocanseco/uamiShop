@@ -1,6 +1,6 @@
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { ItemCarritoId } from '@ventas/domain/value-objects/ids/item-carrito-id.vo';
-import { ProductoRef } from '@ventas/domain//value-objects/producto-ref.vo';
+import { ProductoRef } from '@ventas/domain/value-objects/producto-ref.vo';
 import { VentaException } from '@ventas/domain/exceptions/venta.exception';
 
 /**
@@ -14,7 +14,7 @@ export class ItemCarrito {
     private productoRef: ProductoRef,
     private cantidad: number,
     private precioUnitario: Money,
-  ) {}
+  ) { }
 
   public static crear(
     productoRef: ProductoRef,
