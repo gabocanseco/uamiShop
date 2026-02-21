@@ -52,7 +52,7 @@ export class ResumenPago {
       metodoPago: this.metodoPago,
       estado: this.estado.toString(),
       referenciaExterna: this.referenciaExterna,
-      fechaProcesamiento: this.fechaProcesamiento,
+      fechaProcesamiento: this.fechaProcesamiento?.getValue(),
     };
   }
 }

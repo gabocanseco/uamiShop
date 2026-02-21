@@ -1,38 +1,27 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { OrdenRequestDto } from '@ordenes/controller/dtos/orden-request.dto';
-import { OrdenResponseDto } from '@ordenes/controller/dtos/orden-response.dto';
+// import { OrdenRequestDto } from '@ordenes/controller/dtos/orden-request.dto';
+// import { OrdenResponseDto } from '@ordenes/controller/dtos/orden-response.dto';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
-import { OrdenException } from '@ordenes/domain/exceptions/orden.exception';
 import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
 import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
 import type { IOrdenRepository } from '@ordenes/repository/interfaces/orden.repository';
-import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
-import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
-import { CarritoService as CarritoService } from '@ventas/service/carrito.service';
+import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
+// import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
+// import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
+// import { CarritoService as CarritoService } from '@ventas/service/carrito.service';
 
 @Injectable()
 export class OrdenService {
   constructor(
     @Inject('IOrdenRepository')
     private readonly ordenRepository: IOrdenRepository,
-    private readonly carritoService: CarritoService,
+    // private readonly carritoService: CarritoService,
   ) {}
 
-  // async crear(request: OrdenRequestDto): Promise<OrdenResponseDto> {
-  //   // Construye DireccionEnvio e ItemOrden desde el request
-  //   const clienteId = 0; // todo
-  //   const items = 0;
-  //   const direccionEnvio = 0;
-  //   const resumenPagoPendiente = 0;
-  //   const nuevaOrden = Orden.crear(
-  //     clienteId,
-  //     items,
-  //     direccionEnvio,
-  //     resumenPagoPendiente,
-  //   );
-  //   await this.ordenRepository.save(nuevaOrden);
-  //   return OrdenResponseDto.fromDomain(nuevaOrden);
-  // }
+  async crear(nuevaOrden: Orden): Promise<Orden> {
+    await this.ordenRepository.save(nuevaOrden);
+    return nuevaOrden;
+  }
 
   // async crearDesdeCarrito(
   //   carritoId: CarritoId,
@@ -40,7 +29,8 @@ export class OrdenService {
   // ): Promise<OrdenResponseDto> {
   //   const carrito = await this.carritoService.obtenerCarrito(carritoId);
   //   if (!carrito) {
-  //     throw new OrdenException(
+  //     throw new EntityNotFoundException(
+  //       'Orden',
   //       `Carrito con ID ${carritoId.getValue()} no encontrado`,
   //     );
   //   }
@@ -73,89 +63,78 @@ export class OrdenService {
   //   return OrdenResponseDto.fromDomain(nuevaOrden);
   // }
 
-  // async buscarPorId(id: OrdenId): Promise<OrdenResponseDto> {
-  //   const orden = await this.obtenerOrdenPorId(id);
+  async buscarPorId(ordenId: OrdenId): Promise<Orden> {
+    const orden = await this.ordenRepository.findById(ordenId);
+    if (!orden) {
+      throw new EntityNotFoundException('Orden', ordenId.getValue());
+    }
 
-  //   return OrdenResponseDto.fromDomain(orden);
-  // }
+    return orden;
+  }
 
-  // async buscarTodas(): Promise<OrdenResponseDto[]> {
-  //   const ordenes = await this.ordenRepository.findAll();
+  async buscarTodas(): Promise<Orden[]> {
+    const ordenes = await this.ordenRepository.findAll();
 
-  //   return ordenes.map((orden) => OrdenResponseDto.fromDomain(orden));
-  // }
+    return ordenes;
+  }
 
-  // async confirmar(id: OrdenId): Promise<OrdenResponseDto> {
-  //   const orden = await this.obtenerOrdenPorId(id);
+  async confirmar(ordenId: OrdenId): Promise<Orden> {
+    const orden = await this.buscarPorId(ordenId);
 
-  //   orden.confirmar();
+    orden.confirmar();
 
-  //   await this.ordenRepository.update(orden);
+    await this.ordenRepository.update(orden);
 
-  //   return OrdenResponseDto.fromDomain(orden);
-  // }
+    return orden;
+  }
 
-  // async procesarPago(
-  //   id: OrdenId,
-  //   referenciaPago: string,
-  // ): Promise<OrdenResponseDto> {
-  //   const orden = await this.obtenerOrdenPorId(id);
+  async procesarPago(ordenId: OrdenId, referenciaPago: string): Promise<Orden> {
+    const orden = await this.buscarPorId(ordenId);
 
-  //   orden.procesarPago(referenciaPago);
+    orden.procesarPago(referenciaPago);
 
-  //   await this.ordenRepository.update(orden);
+    await this.ordenRepository.update(orden);
 
-  //   return OrdenResponseDto.fromDomain(orden);
-  // }
+    return orden;
+  }
 
-  // async marcarEnProceso(id: OrdenId): Promise<OrdenResponseDto> {
-  //   const orden = await this.obtenerOrdenPorId(id);
+  async marcarEnProceso(ordenId: OrdenId): Promise<Orden> {
+    const orden = await this.buscarPorId(ordenId);
 
-  //   orden.marcarEnProceso();
+    orden.marcarEnProceso();
 
-  //   await this.ordenRepository.update(orden);
+    await this.ordenRepository.update(orden);
 
-  //   return OrdenResponseDto.fromDomain(orden);
-  // }
+    return orden;
+  }
 
-  // async marcarEnviada(
-  //   id: OrdenId,
-  //   infoEnvio: InfoEnvio,
-  // ): Promise<OrdenResponseDto> {
-  //   const orden = await this.obtenerOrdenPorId(id);
+  async marcarEnviada(ordenId: OrdenId, infoEnvio: InfoEnvio): Promise<Orden> {
+    const orden = await this.buscarPorId(ordenId);
 
-  //   orden.marcarEnviada(infoEnvio);
+    orden.marcarEnviada(infoEnvio);
 
-  //   await this.ordenRepository.update(orden);
+    await this.ordenRepository.update(orden);
 
-  //   return OrdenResponseDto.fromDomain(orden);
-  // }
+    return orden;
+  }
 
-  // async marcarEntregada(id: OrdenId): Promise<OrdenResponseDto> {
-  //   const orden = await this.obtenerOrdenPorId(id);
+  async marcarEntregada(ordenId: OrdenId): Promise<Orden> {
+    const orden = await this.buscarPorId(ordenId);
 
-  //   orden.marcarEntregada();
+    orden.marcarEntregada();
 
-  //   await this.ordenRepository.update(orden);
+    await this.ordenRepository.update(orden);
 
-  //   return OrdenResponseDto.fromDomain(orden);
-  // }
+    return orden;
+  }
 
-  // async cancelar(id: OrdenId, motivo: string): Promise<OrdenResponseDto> {
-  //   const orden = await this.obtenerOrdenPorId(id);
+  async cancelar(ordenId: OrdenId, motivo: string): Promise<Orden> {
+    const orden = await this.buscarPorId(ordenId);
 
-  //   orden.cancelar(motivo);
+    orden.cancelar(motivo);
 
-  //   await this.ordenRepository.update(orden);
+    await this.ordenRepository.update(orden);
 
-  //   return OrdenResponseDto.fromDomain(orden);
-  // }
-
-  // private async obtenerOrdenPorId(id: OrdenId): Promise<Orden> {
-  //   const orden = await this.ordenRepository.findById(id);
-  //   if (!orden) {
-  //     throw new OrdenException(`Orden con ID ${id.getValue()} no encontrado`);
-  //   }
-  //   return orden;
-  // }
+    return orden;
+  }
 }

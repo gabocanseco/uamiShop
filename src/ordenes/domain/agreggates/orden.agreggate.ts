@@ -7,8 +7,8 @@ import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo'
 import { ResumenPago } from '@ordenes/domain/value-objects/resumen-pago.vo';
 import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
 import { CambioEstado } from '@ordenes/domain/value-objects/cambio-estado.vo';
-import { OrdenException } from '@ordenes/domain/exceptions/orden.exception';
 import { EstadoOrden } from '@ordenes/domain/enums/estado-orden.enum';
+import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 
 /**
  * Gestiona el ciclo de vida completo desde la creación hasta la entrega
@@ -38,7 +38,7 @@ export class Orden {
   ) {
     const MIN_NUM_ITEMS = 1;
     if (items.length < MIN_NUM_ITEMS) {
-      throw new OrdenException(
+      throw new BusinessRuleException(
         `Una orden debe tener al menos ${MIN_NUM_ITEMS} item`,
       );
     }
@@ -50,7 +50,9 @@ export class Orden {
     );
 
     if (total.lessThanOrEqual(Money.cero('MXN'))) {
-      throw new OrdenException('El total de la orden debe ser mayor a cero');
+      throw new BusinessRuleException(
+        'El total de la orden debe ser mayor a cero',
+      );
     }
 
     // Calcular descuento
@@ -89,7 +91,7 @@ export class Orden {
 
   public confirmar(): void {
     if (this.estado != EstadoOrden.PENDIENTE) {
-      throw new OrdenException(
+      throw new BusinessRuleException(
         `Solo se puede confimar una orden en estado ${EstadoOrden.PENDIENTE}`,
       );
     }
@@ -108,7 +110,7 @@ export class Orden {
 
   public procesarPago(refereciaPago: string): void {
     if (this.estado != EstadoOrden.CONFIRMADA) {
-      throw new OrdenException(
+      throw new BusinessRuleException(
         `Solo se puede procesar el pago si la orden está ${EstadoOrden.CONFIRMADA}`,
       );
     }
@@ -129,8 +131,8 @@ export class Orden {
 
   public marcarEnProceso(): void {
     if (!this.resumenPago.aprobado()) {
-      throw new OrdenException(
-        `No se puede marcar ${EstadoOrden.EN_PREPARACION} porque el pago no fue aprobado`,
+      throw new BusinessRuleException(
+        `No se puede marcar ${EstadoOrden.EN_PREPARACION} porque el pago no ha sido aprobado`,
       );
     }
 
@@ -148,7 +150,7 @@ export class Orden {
 
   public marcarEnviada(infoEnvio: InfoEnvio): void {
     if (this.estado != EstadoOrden.EN_PREPARACION) {
-      throw new OrdenException(
+      throw new BusinessRuleException(
         `Solo se puede como ${EstadoOrden.ENVIADA} si la orden está ${EstadoOrden.EN_PREPARACION}`,
       );
     }
@@ -174,7 +176,7 @@ export class Orden {
         this.estado === EstadoOrden.EN_TRANSITO
       )
     ) {
-      throw new OrdenException(
+      throw new BusinessRuleException(
         `Solo se puede marcar ${EstadoOrden.ENTREGADA} si está ${EstadoOrden.ENVIADA} o ${EstadoOrden.EN_TRANSITO}`,
       );
     }
@@ -196,18 +198,22 @@ export class Orden {
       this.estado === EstadoOrden.ENVIADA ||
       this.estado === EstadoOrden.ENTREGADA
     ) {
-      throw new OrdenException(
+      throw new BusinessRuleException(
         `No se puede Cancelar una orden ya ${EstadoOrden.ENVIADA} o ${EstadoOrden.ENTREGADA}`,
       );
     }
 
     if (!motivo || motivo.trim().length === 0) {
-      throw new OrdenException(`Debe proporcionarse un motivo de cancelación`);
+      throw new BusinessRuleException(
+        `Debe proporcionarse un motivo de cancelación`,
+      );
     }
 
     const MIN_NUM_CHARS = 10;
     if (motivo.trim().length < MIN_NUM_CHARS) {
-      throw new OrdenException(`Debe proporcionarse un motivo de cancelación`);
+      throw new BusinessRuleException(
+        `Debe proporcionarse un motivo de cancelación`,
+      );
     }
 
     const nuevoEstado = EstadoOrden.CANCELADA;

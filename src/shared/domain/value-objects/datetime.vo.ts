@@ -5,6 +5,10 @@ export class DateTime {
     this.valor = valor;
   }
 
+  public static crear(date: Date) {
+    return new DateTime(date);
+  }
+
   public getValue(): Date {
     return this.valor;
   }

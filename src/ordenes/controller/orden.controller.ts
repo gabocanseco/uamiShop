@@ -1,84 +1,129 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { OrdenService } from '@ordenes/service/orden.service';
-import { OrdenResponseDto } from './dtos/orden-response.dto';
-import { OrdenRequestDto } from './dtos/orden-request.dto';
-import { ValueObjectIdPipe } from '@shared/controller/pipes/value-object-id.pipe';
-import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
-import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
-import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
-import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
+import { OrdenResponseDto } from '@ordenes/controller/dtos/orden-response.dto';
+import {
+  InfoEnvioDto,
+  MotivoDto,
+  OrdenRequestDto,
+  ReferenciaExternaDto,
+} from '@ordenes/controller/dtos/orden-request.dto';
+// import { ValueObjectIdPipe } from '@shared/controller/pipes/value-object-id.pipe';
+// import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
+// import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
+// import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
+// import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
+import {
+  InfoEnvioMapper,
+  OrdenMapper,
+} from '@ordenes/controller/mappers/orden.mapper';
+import { OrdenParamsDto } from './dtos/orden-params.dto';
 
-@Controller()
+@Controller('ordenes')
 export class OrdenController {
   constructor(private readonly ordenService: OrdenService) {}
 
-  // @Post('ordenes')
-  // async crear(@Body() request: OrdenRequestDto): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.crear(request);
-  // }
+  @Post()
+  async crear(@Body() request: OrdenRequestDto): Promise<OrdenResponseDto> {
+    const nuevaOrden = OrdenMapper.toDomain(request);
 
-  // @Get('ordenes')
-  // async obtenerTodos(): Promise<OrdenResponseDto[]> {
-  //   return await this.ordenService.buscarTodas();
-  // }
+    const orden = await this.ordenService.crear(nuevaOrden);
 
-  // @Post('ordenes/:id')
+    return OrdenMapper.toResponseDto(orden);
+  }
+
+  @Get()
+  async obtenerTodos(): Promise<OrdenResponseDto[]> {
+    const ordenes = await this.ordenService.buscarTodas();
+
+    return ordenes.map((orden) => OrdenMapper.toResponseDto(orden));
+  }
+
+  // @Post(':id')
   // async crearDesdeCarrito(
-  //   @Param('id', new ValueObjectIdPipe(CarritoId)) id: CarritoId,
-  //   @Body('direccionEnvio') direccionEnvio: DireccionEnvio,
+  //   @Param() params: OrdenParamsDto,
+  //   @Body() direccionEnvio: DireccionEnvioDto,
   // ): Promise<OrdenResponseDto> {
   //   return await this.ordenService.crearDesdeCarrito(id, direccionEnvio);
   // }
 
-  // @Get('ordenes/:id')
-  // async obtenerPorId(
-  //   @Param('id', new ValueObjectIdPipe(OrdenId)) id: OrdenId,
-  // ): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.buscarPorId(id);
-  // }
+  @Get(':id')
+  async obtenerPorId(
+    @Param() params: OrdenParamsDto,
+  ): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(params.id);
 
-  // @Post('ordenes/:id/confirmar')
-  // async confirmar(
-  //   @Param('id', new ValueObjectIdPipe(OrdenId)) id: OrdenId,
-  // ): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.confirmar(id);
-  // }
+    const orden = await this.ordenService.buscarPorId(ordenId);
 
-  // @Post('ordenes/:id/procesar')
-  // async procesarPago(
-  //   @Param('id', new ValueObjectIdPipe(OrdenId)) id: OrdenId,
-  //   @Body('referenciaPago') referenciaPago: string,
-  // ): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.procesarPago(id, referenciaPago);
-  // }
+    return OrdenMapper.toResponseDto(orden);
+  }
 
-  // @Post('ordenes/:id/enproceso')
-  // async marcarEnProceso(
-  //   @Param('id', new ValueObjectIdPipe(OrdenId)) id: OrdenId,
-  // ): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.marcarEnProceso(id);
-  // }
+  @Post(':id/confirmar')
+  async confirmar(@Param() params: OrdenParamsDto): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(params.id);
+    const orden = await this.ordenService.confirmar(ordenId);
 
-  // @Post('ordenes/:id/enviada')
-  // async marcarEnviada(
-  //   @Param('id', new ValueObjectIdPipe(OrdenId)) id: OrdenId,
-  //   @Body('infoEnvio') infoEnvio: InfoEnvio,
-  // ): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.marcarEnviada(id, infoEnvio);
-  // }
+    return OrdenMapper.toResponseDto(orden);
+  }
 
-  // @Post('ordenes/:id/entregada')
-  // async marcarEntregada(
-  //   @Param('id', new ValueObjectIdPipe(OrdenId)) id: OrdenId,
-  // ): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.marcarEntregada(id);
-  // }
+  @Post(':id/procesar')
+  async procesarPago(
+    @Param() params: OrdenParamsDto,
+    @Body() referenciaExternaDto: ReferenciaExternaDto,
+  ): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(params.id);
+    const referenciaExterna = referenciaExternaDto.referenciaExterna;
 
-  // @Post('ordenes/:id/cancelar')
-  // async cancelar(
-  //   @Param('id', new ValueObjectIdPipe(OrdenId)) id: OrdenId,
-  //   @Body('motivo') motivo: string,
-  // ): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.cancelar(id, motivo);
-  // }
+    const orden = await this.ordenService.procesarPago(
+      ordenId,
+      referenciaExterna,
+    );
+    return OrdenMapper.toResponseDto(orden);
+  }
+
+  @Post(':id/enproceso')
+  async marcarEnProceso(
+    @Param() params: OrdenParamsDto,
+  ): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(params.id);
+
+    const orden = await this.ordenService.marcarEnProceso(ordenId);
+
+    return OrdenMapper.toResponseDto(orden);
+  }
+
+  @Post(':id/enviada')
+  async marcarEnviada(
+    @Param() params: OrdenParamsDto,
+    @Body() infoEnvioDto: InfoEnvioDto,
+  ): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(params.id);
+    const infoEnvio = InfoEnvioMapper.toDomain(infoEnvioDto);
+
+    const orden = await this.ordenService.marcarEnviada(ordenId, infoEnvio);
+
+    return OrdenMapper.toResponseDto(orden);
+  }
+
+  @Post(':id/entregada')
+  async marcarEntregada(
+    @Param() params: OrdenParamsDto,
+  ): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(params.id);
+
+    const orden = await this.ordenService.marcarEntregada(ordenId);
+
+    return OrdenMapper.toResponseDto(orden);
+  }
+
+  @Post(':id/cancelar')
+  async cancelar(
+    @Param() params: OrdenParamsDto,
+    @Body() motivoDto: MotivoDto,
+  ): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(params.id);
+
+    const orden = await this.ordenService.cancelar(ordenId, motivoDto.motivo);
+
+    return OrdenMapper.toResponseDto(orden);
+  }
 }
