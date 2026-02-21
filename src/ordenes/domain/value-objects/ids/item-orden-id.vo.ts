@@ -5,7 +5,7 @@ export class ItemOrdenId extends UUID {
     return new ItemOrdenId(UUID.random());
   }
 
-  public of(id: string) {
+  public static of(id: string) {
     return new ItemOrdenId(id);
   }
 }

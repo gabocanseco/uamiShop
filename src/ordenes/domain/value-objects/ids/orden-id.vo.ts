@@ -5,7 +5,7 @@ export class OrdenId extends UUID {
     return new OrdenId(UUID.random());
   }
 
-  public of(id: string) {
+  public static of(id: string) {
     return new OrdenId(id);
   }
 }

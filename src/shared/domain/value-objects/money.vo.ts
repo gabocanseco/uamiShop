@@ -110,7 +110,7 @@ export class Money {
 
   public toPrimitives() {
     return {
-      cantidad: this.cantidad,
+      cantidad: this.cantidad / 100,
       moneda: this.moneda,
     };
   }
