@@ -19,6 +19,7 @@ import {
 import { CantidadDto, CarritoRequestDto } from './dtos/carrito-request.dto';
 import { MoneyMapper } from '@shared/controller/mappers/money.mapper';
 import { ProductoMapper } from '@catalogo/controller/mappers/producto.mapper';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 
 /**
  * Controller para gestionar las operaciones del carrito de compras
@@ -32,6 +33,10 @@ export class CarritoController {
    * POST /carritos
    */
   @Post(':id')
+  @ApiOperation({summary: 'Crear un carrito'})
+  @ApiParam({name:'id',description:'ID del cliente'})
+  @ApiResponse({status:201,description:'Carrito creado exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:400,description:'Datos inválidos'})  
   async crear(@Param() param: ClienteParamDto): Promise<CarritoResponseDto> {
     const clienteId = ClienteMapper.toDomainId(param.id);
 
@@ -45,7 +50,12 @@ export class CarritoController {
    * GET /carritos/:id
    */
   @Get(':id')
+  @ApiOperation({summary: 'Obtener un carrito'})
+  @ApiParam({name:'id',description:'ID del carrito'})
+  @ApiResponse({status:200,description:'Carrito obtenido exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:404,description:'Carrito no encontrado'})  
   async obtenerCarrito(
+
     @Param() param: CarritoParamDto,
   ): Promise<CarritoResponseDto> {
     const carritoId = CarritoMapper.toDomainId(param.id);
@@ -60,6 +70,11 @@ export class CarritoController {
    * POST /carritos/:id/productos
    */
   @Post(':id/productos')
+  @ApiOperation({summary: 'Agregar un producto al carrito'})
+  @ApiParam({name:'id',description:'ID del carrito'})
+  @ApiBody({type:CarritoRequestDto})
+  @ApiResponse({status:200,description:'Producto agregado al carrito exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:400,description:'Datos inválidos'})
   async agregarProducto(
     @Param() param: CarritoParamDto,
     @Body() carritoRequestDto: CarritoRequestDto,
@@ -90,6 +105,12 @@ export class CarritoController {
    * PUT /carritos/:id/productos/:productoId
    */
   @Put(':id/productos/:productoId')
+  @ApiOperation({summary: 'Modificar la cantidad de un producto en el carrito'})
+  @ApiParam({name:'id',description:'ID del carrito'})
+  @ApiParam({name:'productoId',description:'ID del producto'})
+  @ApiBody({type:CantidadDto})
+  @ApiResponse({status:200,description:'Cantidad modificada exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:400,description:'Datos inválidos'})
   async modificarCantidad(
     @Param() params: CarritoProductoParamsDto,
     @Body() cantidadDto: CantidadDto,
@@ -112,6 +133,11 @@ export class CarritoController {
    * DELETE /carritos/:id/productos/:productoId
    */
   @Delete(':id/productos/:productoId')
+  @ApiOperation({summary: 'Eliminar un producto del carrito'})
+  @ApiParam({name:'id',description:'ID del carrito'})
+  @ApiParam({name:'productoId',description:'ID del producto'})
+  @ApiResponse({status:200,description:'Producto eliminado exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:400,description:'Datos inválidos'})
   async eliminarProducto(
     @Param() params: CarritoProductoParamsDto,
   ): Promise<CarritoResponseDto> {
@@ -131,6 +157,10 @@ export class CarritoController {
    * DELETE /carritos/:id/productos
    */
   @Delete(':id/productos')
+  @ApiOperation({summary: 'Vaciar el carrito'})
+  @ApiParam({name:'id',description:'ID del carrito'})
+  @ApiResponse({status:200,description:'Carrito vaciado exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:400,description:'Datos inválidos'})
   async vaciar(@Param() param: CarritoParamDto): Promise<CarritoResponseDto> {
     const carritoId = CarritoMapper.toDomainId(param.id);
 
@@ -144,6 +174,10 @@ export class CarritoController {
    * POST /carritos/:id/checkout
    */
   @Post(':id/checkout')
+  @ApiOperation({summary: 'Iniciar el proceso de checkout'})
+  @ApiParam({name:'id',description:'ID del carrito'})
+  @ApiResponse({status:200,description:'Checkout iniciado exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:400,description:'Datos inválidos'})
   async iniciarCheckout(
     @Param() param: CarritoParamDto,
   ): Promise<CarritoResponseDto> {
@@ -159,6 +193,10 @@ export class CarritoController {
    * POST /carritos/:id/checkout/completar
    */
   @Post(':id/completar')
+  @ApiOperation({summary: 'Completar el checkout del carrito'})
+  @ApiParam({name:'id',description:'ID del carrito'})
+  @ApiResponse({status:200,description:'Checkout completado exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:400,description:'Datos inválidos'})
   async completarCheckout(
     @Param() param: CarritoParamDto,
   ): Promise<CarritoResponseDto> {
@@ -174,6 +212,10 @@ export class CarritoController {
    * POST /carritos/:id/abandonar
    */
   @Post(':id/abandonar')
+  @ApiOperation({summary: 'Abandonar el carrito'})
+  @ApiParam({name:'id',description:'ID del carrito'})
+  @ApiResponse({status:200,description:'Carrito abandonado exitosamente',type:CarritoResponseDto})
+  @ApiResponse({status:400,description:'Datos inválidos'})
   async abandonar(
     @Param() param: CarritoParamDto,
   ): Promise<CarritoResponseDto> {
