@@ -57,7 +57,7 @@ export class ItemOrdenMapper {
 export class DireccionEnvioMapper {
   static toDomain(direccionEnvioDto: DireccionEnvioDto) {
     return DireccionEnvio.crear(
-      direccionEnvioDto.nombreDEstinatario,
+      direccionEnvioDto.nombreDestinatario,
       direccionEnvioDto.calle,
       direccionEnvioDto.ciudad,
       direccionEnvioDto.estado,

@@ -8,8 +8,12 @@ import { DateTime } from '@shared/domain/value-objects/datetime.vo';
 import { EstadoCarrito } from '../enums/estado-carrito.enum';
 import { ProductoRef } from '../value-objects/producto-ref.vo';
 import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
+import type {
+  IVistaCarrito,
+  CarritoResumenData,
+} from '@shared/domain/interfaces/vista-carrito';
 
-export class Carrito {
+export class Carrito implements IVistaCarrito {
   private constructor(
     private carritoId: CarritoId,
     private clienteId: ClienteId,
@@ -236,6 +240,22 @@ export class Carrito {
       estado: this.estado,
       fechaCreacion: this.fechaCreacion.getValue(),
       fechaActualizacion: this.fechaActualizacion.getValue(),
+    };
+  }
+
+  public obtenerResumenCarrito(): CarritoResumenData {
+    return {
+      // carritoId: this.carritoId.getValue(),
+      clienteId: this.carritoId.getValue(),
+      items: Array.from(this.items.values()).map((item) => ({
+        productoRef: {
+          productoId: item.toPrimitives().productoRef.productoId,
+          nombreProducto: item.toPrimitives().productoRef.nombreProducto,
+          sku: item.toPrimitives().productoRef.sku,
+        },
+        cantidad: item.toPrimitives().cantidad,
+        precioUnitario: item.toPrimitives().precioUnitario.cantidad,
+      })),
     };
   }
 
