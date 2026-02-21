@@ -2,15 +2,20 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
 import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
 import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
+import { ResumenPago } from '@ordenes/domain/value-objects/resumen-pago.vo';
 import type { IOrdenRepository } from '@ordenes/repository/interfaces/orden.repository';
+import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
+import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
+import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
+import { CarritoService } from '@ventas/service/carrito.service';
 
 @Injectable()
 export class OrdenService {
   constructor(
     @Inject('IOrdenRepository')
     private readonly ordenRepository: IOrdenRepository,
-    // private readonly carritoService: CarritoService,
+    private readonly carritoService: CarritoService,
   ) {}
 
   async crear(nuevaOrden: Orden): Promise<Orden> {
@@ -18,28 +23,34 @@ export class OrdenService {
     return nuevaOrden;
   }
 
-  // async crearDesdeCarrito(
-  //   carritoId: CarritoId,
-  //   direccionEnvio: DireccionEnvio,
-  // ): Promise<Orden> {
-  //   const datosCarrito = await this.carritoService.toPrimitives(carritoId);
+  async crearDesdeCarrito(
+    carritoId: CarritoId,
+    direccionEnvio: DireccionEnvio,
+    resumenPago: ResumenPago,
+  ): Promise<Orden> {
+    const carritoResumenData =
+      await this.carritoService.obtenerResumenCarrito(carritoId);
 
-  //   const nuevaOrden = Orden.crearDesdeCarritoResumen(ca);
+    const nuevaOrden = Orden.crearDesdeCarritoResumen(
+      carritoResumenData,
+      direccionEnvio,
+      resumenPago,
+    );
 
-  //   await this.ordenRepository.save(nuevaOrden);
+    await this.ordenRepository.save(nuevaOrden);
 
-  //   // Completar checkout del carrito
-  //   const carritoCompletado =
-  //     await this.carritoService.completarCheckout(carritoId);
+    // Completar checkout del carrito
+    const carritoCompletado =
+      await this.carritoService.completarCheckout(carritoId);
 
-  //   if (!carritoCompletado) {
-  //     throw new BusinessRuleException(
-  //       `No se pudo completar el Checkout del carrito ${carritoId.getValue()}`,
-  //     );
-  //   }
+    if (!carritoCompletado) {
+      throw new BusinessRuleException(
+        `No se pudo completar el Checkout del carrito ${carritoId.getValue()}`,
+      );
+    }
 
-  //   return nuevaOrden;
-  // }
+    return nuevaOrden;
+  }
 
   async buscarPorId(ordenId: OrdenId): Promise<Orden> {
     const orden = await this.ordenRepository.findById(ordenId);

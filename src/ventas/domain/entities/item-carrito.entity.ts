@@ -14,7 +14,7 @@ export class ItemCarrito {
     private productoRef: ProductoRef,
     private cantidad: number,
     private precioUnitario: Money,
-  ) { }
+  ) {}
 
   public static crear(
     productoRef: ProductoRef,

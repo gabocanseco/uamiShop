@@ -17,5 +17,6 @@ import { CarritoInMemoryRepository } from './repository/carrito-in-memory.reposi
       useClass: CarritoInMemoryRepository,
     },
   ],
+  exports: [CarritoService],
 })
-export class VentaModule { }
+export class VentaModule {}

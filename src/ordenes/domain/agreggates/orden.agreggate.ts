@@ -9,6 +9,8 @@ import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
 import { CambioEstado } from '@ordenes/domain/value-objects/cambio-estado.vo';
 import { EstadoOrden } from '@ordenes/domain/enums/estado-orden.enum';
 import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
+import { CarritoResumenData } from '@shared/domain/interfaces/vista-carrito';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 
 /**
  * Gestiona el ciclo de vida completo desde la creación hasta la entrega
@@ -240,12 +242,24 @@ export class Orden {
     return this.id;
   }
 
-  // public static crearDesdeCarritoResumen(carritoResumen: CarritoResumenData) {
-  //   const clienteId = ClienteId.of(carritoResumen.clienteId);
-  //   const resumenPago = ResumenPago.crear(carritoResumen.direccionEnvio.);
+  public static crearDesdeCarritoResumen(
+    carritoResumen: CarritoResumenData,
+    direccionEnvio: DireccionEnvio,
+    resumenPago: ResumenPago,
+  ): Orden {
+    const clienteId = ClienteId.of(carritoResumen.clienteId);
+    const items = carritoResumen.items.map((carritoItemResumen) =>
+      ItemOrden.crear(
+        ProductoId.of(carritoItemResumen.productoRef.productoId),
+        carritoItemResumen.productoRef.nombreProducto,
+        carritoItemResumen.productoRef.sku,
+        carritoItemResumen.cantidad,
+        Money.crear(carritoItemResumen.precioUnitario),
+      ),
+    );
 
-  //   return Orden.crear(clienteId, items, direccionEnvio, resumenPago);
-  // }
+    return Orden.crear(clienteId, items, direccionEnvio, resumenPago);
+  }
 
   public toPrimitives() {
     return {

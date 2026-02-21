@@ -5,14 +5,19 @@ import { OrdenResponseDto } from '@ordenes/controller/dtos/orden-response.dto';
 import {
   InfoEnvioDto,
   MotivoDto,
+  OrdenDesdeCarritoDto,
   OrdenRequestDto,
   ReferenciaExternaDto,
 } from '@ordenes/controller/dtos/orden-request.dto';
 import {
+  DireccionEnvioMapper,
   InfoEnvioMapper,
   OrdenMapper,
+  ResumenPagoMapper,
 } from '@ordenes/controller/mappers/orden.mapper';
 import { OrdenParamDto } from '@ordenes/controller/dtos/orden-params.dto';
+import { CarritoParamDto } from '@ventas/controller/dtos/carrito-params.dto';
+import { CarritoMapper } from '@ventas/controller/mappers/carrito.mapper';
 
 @ApiTags('Órdenes')
 @Controller('ordenes')
@@ -40,27 +45,31 @@ export class OrdenController {
 
     return ordenes.map((orden) => OrdenMapper.toResponseDto(orden));
   }
+  @Post(':id')
+  @ApiOperation({ summary: 'Crear una orden desde un carrito' })
+  @ApiParam({ name: 'id', description: 'ID del carrito' })
+  @ApiBody({ type: OrdenDesdeCarritoDto })
+  @ApiResponse({ status: 201, description: 'Orden creada exitosamente', type: OrdenResponseDto })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  async crearDesdeCarrito(
+    @Param() param: CarritoParamDto,
+    @Body() ordenDesdeCarrito: OrdenDesdeCarritoDto,
+  ): Promise<OrdenResponseDto> {
+    const carritoId = CarritoMapper.toDomainId(param.id);
+    const direccionEnvio = DireccionEnvioMapper.toDomain(
+      ordenDesdeCarrito.direccionEnvio,
+    );
+    const resumenPago = ResumenPagoMapper.toDomain(
+      ordenDesdeCarrito.resumenPago,
+    );
+    const orden = await this.ordenService.crearDesdeCarrito(
+      carritoId,
+      direccionEnvio,
+      resumenPago,
+    );
 
-  // @Post(':id')
-  // @ApiOperation({ summary: 'Crear una orden a partir de un carrito' })
-  // @ApiParam({ name: 'id', description: 'ID del carrito', example: '550e8400-e29b-41d4-a716-446655440000' })
-  // @ApiBody({ type: DireccionEnvioDto })
-  // @ApiResponse({ status: 201, description: 'Orden creada exitosamente', type: OrdenResponseDto })
-  // @ApiResponse({ status: 400, description: 'Datos inválidos' })
-  // async crearDesdeCarrito(
-  //   @Param() param: CarritoParamDto,
-  //   @Body() direccionEnvioDto: DireccionEnvioDto,
-  // ): Promise<OrdenResponseDto> {
-  //   const carritoId = CarritoMapper.toDomainId(param.id);
-  //   const direccionEnvio = DireccionEnvioMapper.toDomain(direccionEnvioDto);
-
-  //   const orden = await this.ordenService.crearDesdeCarrito(
-  //     carritoId,
-  //     direccionEnvio,
-  //   );
-
-  //   return OrdenMapper.toResponseDto(orden);
-  // }
+    return OrdenMapper.toResponseDto(orden);
+  }
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener orden por ID' })
