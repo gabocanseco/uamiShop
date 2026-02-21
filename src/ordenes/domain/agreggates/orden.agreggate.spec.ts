@@ -1,4 +1,3 @@
-import { OrdenException } from '@ordenes/domain/exceptions/orden.exception';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
 import { ClienteId } from '@shared/domain/value-objects/ids/cliente-id.vo';
 import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
@@ -6,6 +5,8 @@ import { ResumenPago } from '@ordenes/domain/value-objects/resumen-pago.vo';
 import { ItemOrden } from '@ordenes/domain/entities/item-orden.entity';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
+import { describe, it, expect } from 'vitest';
+import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 
 describe('Orden Agreggate Root', () => {
   describe('Crear orden', () => {
@@ -27,7 +28,7 @@ describe('Orden Agreggate Root', () => {
 
       expect(() => {
         Orden.crear(clienteId, itemsInvalidos, direccionEnvio, resumenPago);
-      }).toThrow(OrdenException);
+      }).toThrow(BusinessRuleException);
     });
 
     it('El total de la orden debe ser mayor a cero', () => {
@@ -55,7 +56,7 @@ describe('Orden Agreggate Root', () => {
 
       expect(() => {
         Orden.crear(clienteId, itemsInvalidos, direccionEnvio, resumenPago);
-      }).toThrow(OrdenException);
+      }).toThrow(BusinessRuleException);
     });
   });
 });
