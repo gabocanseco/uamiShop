@@ -37,7 +37,7 @@ export class ItemOrdenDto {
 export class DireccionEnvioDto {
   @IsString({ message: 'El nombre de destinatario debe ser una cadena' })
   @IsNotEmpty({ message: 'El nombre de destinatario es obligatorio' })
-  nombreDEstinatario!: string;
+  nombreDestinatario!: string;
 
   @IsString({ message: 'La calle de debe ser una cadena' })
   @IsNotEmpty({ message: 'La calle es obligatoria' })
@@ -114,6 +114,16 @@ export class OrdenRequestDto {
   @ValidateNested()
   @Type(() => DireccionEnvioDto)
   direccion!: DireccionEnvioDto;
+
+  @ValidateNested()
+  @Type(() => ResumenPagoDto)
+  resumenPago!: ResumenPagoDto;
+}
+
+export class OrdenDesdeCarritoDto {
+  @ValidateNested()
+  @Type(() => DireccionEnvioDto)
+  direccionEnvio!: DireccionEnvioDto;
 
   @ValidateNested()
   @Type(() => ResumenPagoDto)

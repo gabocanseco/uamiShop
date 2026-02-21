@@ -4,14 +4,19 @@ import { OrdenResponseDto } from '@ordenes/controller/dtos/orden-response.dto';
 import {
   InfoEnvioDto,
   MotivoDto,
+  OrdenDesdeCarritoDto,
   OrdenRequestDto,
   ReferenciaExternaDto,
 } from '@ordenes/controller/dtos/orden-request.dto';
 import {
+  DireccionEnvioMapper,
   InfoEnvioMapper,
   OrdenMapper,
+  ResumenPagoMapper,
 } from '@ordenes/controller/mappers/orden.mapper';
 import { OrdenParamDto } from '@ordenes/controller/dtos/orden-params.dto';
+import { CarritoParamDto } from '@ventas/controller/dtos/carrito-params.dto';
+import { CarritoMapper } from '@ventas/controller/mappers/carrito.mapper';
 
 @Controller('ordenes')
 export class OrdenController {
@@ -33,21 +38,27 @@ export class OrdenController {
     return ordenes.map((orden) => OrdenMapper.toResponseDto(orden));
   }
 
-  // @Post(':id')
-  // async crearDesdeCarrito(
-  //   @Param() param: CarritoParamDto,
-  //   @Body() direccionEnvioDto: DireccionEnvioDto,
-  // ): Promise<OrdenResponseDto> {
-  //   const carritoId = CarritoMapper.toDomainId(param.id);
-  //   const direccionEnvio = DireccionEnvioMapper.toDomain(direccionEnvioDto);
+  @Post(':id')
+  async crearDesdeCarrito(
+    @Param() param: CarritoParamDto,
+    @Body() ordenDesdeCarrito: OrdenDesdeCarritoDto,
+  ): Promise<OrdenResponseDto> {
+    const carritoId = CarritoMapper.toDomainId(param.id);
+    const direccionEnvio = DireccionEnvioMapper.toDomain(
+      ordenDesdeCarrito.direccionEnvio,
+    );
+    const resumenPago = ResumenPagoMapper.toDomain(
+      ordenDesdeCarrito.resumenPago,
+    );
 
-  //   const orden = await this.ordenService.crearDesdeCarrito(
-  //     carritoId,
-  //     direccionEnvio,
-  //   );
+    const orden = await this.ordenService.crearDesdeCarrito(
+      carritoId,
+      direccionEnvio,
+      resumenPago,
+    );
 
-  //   return OrdenMapper.toResponseDto(orden);
-  // }
+    return OrdenMapper.toResponseDto(orden);
+  }
 
   @Get(':id')
   async obtenerPorId(@Param() param: OrdenParamDto): Promise<OrdenResponseDto> {

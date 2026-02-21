@@ -2,17 +2,21 @@ import { Injectable, Inject } from '@nestjs/common';
 import type { ICarritoRepository } from '@ventas/repository/interfaces/carrito.repository';
 import { ClienteId } from '@shared/domain/value-objects/ids/cliente-id.vo';
 import { Carrito } from '@ventas/domain/agreggates/carrito.agreggate';
-import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import { ProductoRef } from '@ventas/domain/value-objects/producto-ref.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
+import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
+import {
+  CarritoResumenData,
+  IVistaCarritoService,
+} from '@shared/domain/interfaces/vista-carrito';
 
 /**
  * Servicio de aplicación para gestionar carritos de compra
  */
 @Injectable()
-export class CarritoService {
+export class CarritoService implements IVistaCarritoService {
   constructor(
     @Inject('ICarritoRepository')
     private readonly carritoRepository: ICarritoRepository,
@@ -35,9 +39,7 @@ export class CarritoService {
   async obtenerCarrito(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.carritoRepository.findById(carritoId);
     if (!carrito) {
-      throw new BusinessRuleException(
-        `Carrito con ID ${carritoId.getValue()} no encontrado`,
-      );
+      throw new EntityNotFoundException('Carrito', carritoId.getValue());
     }
     return carrito;
   }
@@ -152,4 +154,12 @@ export class CarritoService {
 
   //   return carrito.toPrimitives();
   // }
+
+  async obtenerResumenCarrito(
+    carritoId: CarritoId,
+  ): Promise<CarritoResumenData> {
+    const carrito = await this.obtenerCarrito(carritoId);
+
+    return carrito.obtenerResumenCarrito();
+  }
 }
