@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from '@shared/controller/filters/global-expcetion.filter';
 import { VersioningType } from '@nestjs/common';
 
@@ -12,6 +12,13 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, // Elimina propiedades no definidas en los DTOs
       transform: true, // Transforma los payloads a los tipos definidos en los DTOs (ej. string a number)
+      exceptionFactory: (errors) => {
+        console.log(
+          'ERRORES DE VALIDACIÓN DETALLADOS:',
+          JSON.stringify(errors, null, 2),
+        );
+        return new BadRequestException(errors);
+      },
     }),
   );
   app.useGlobalFilters(new GlobalExceptionFilter()); // Manejo de errores http
