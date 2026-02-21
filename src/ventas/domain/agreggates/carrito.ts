@@ -7,7 +7,7 @@ import { Descuento } from '../value-objects/descuento';
 import { DateTime } from '@shared/domain/value-objects/datetime.vo';
 import { EstadoCarrito } from '../enums/estado-carrito.enum';
 import { ProductoRef } from '../value-objects/producto-ref.vo';
-import { VentaException } from '../exceptions/venta.exception';
+import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 
 export class Carrito {
   private constructor(
@@ -39,7 +39,7 @@ export class Carrito {
   ): void {
     const MAX_ITEMS = 20;
     if (this.items.size >= MAX_ITEMS) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         `No se puede tener más de ${MAX_ITEMS} productos diferentes`,
       );
     }
@@ -71,11 +71,11 @@ export class Carrito {
     const key = productoId.getValue();
     const item = this.items.get(key);
     if (!item) {
-      throw new VentaException('Producto no encontrado en el carrito');
+      throw new BusinessRuleException('Producto no encontrado en el carrito');
     }
 
     if (this.estado === EstadoCarrito.EN_CHECKOUT) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         'No se puede modificar la cantidad si el carrito está en checkout',
       );
     }
@@ -94,7 +94,7 @@ export class Carrito {
    */
   public eliminarProducto(productoId: ProductoId): void {
     if (this.estado === EstadoCarrito.EN_CHECKOUT) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         'No se puede eliminar un producto si el carrito está en checkout',
       );
     }
@@ -102,7 +102,7 @@ export class Carrito {
     const key = productoId.getValue();
     const item = this.items.get(key);
     if (!item) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         'Debe existir el producto en el carrito para poder eliminarlo',
       );
     }
@@ -112,7 +112,7 @@ export class Carrito {
 
   public vaciar(): void {
     if (this.estado === EstadoCarrito.EN_CHECKOUT) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         'No se puede vaciar un carrito que está en checkout',
       );
     }
@@ -154,7 +154,7 @@ export class Carrito {
 
   public aplicarDescuento(descuento: Descuento): void {
     if (this.estado !== EstadoCarrito.ACTIVO) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         'Solo se pueden aplicar descuentos a carritos activos',
       );
     }
@@ -167,11 +167,13 @@ export class Carrito {
     // El carrito debe tener al menos un producto
     const MIN_ITEMS = 1;
     if (this.items.size < MIN_ITEMS) {
-      throw new VentaException('El carrito debe tener al menos un producto');
+      throw new BusinessRuleException(
+        'El carrito debe tener al menos un producto',
+      );
     }
 
     if (this.estado !== EstadoCarrito.ACTIVO) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         'Solo se puede iniciar el checkout si el carrito está activo',
       );
     }
@@ -182,7 +184,7 @@ export class Carrito {
 
   public completarCheckout(): void {
     if (this.estado !== EstadoCarrito.EN_CHECKOUT) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         'Solo se puede completar el checkout si el carrito está en checkout',
       );
     }
@@ -196,7 +198,7 @@ export class Carrito {
       this.estado !== EstadoCarrito.ACTIVO &&
       this.estado !== EstadoCarrito.EN_CHECKOUT
     ) {
-      throw new VentaException(
+      throw new BusinessRuleException(
         'Solo se pueden abandonar carritos activos o en checkout',
       );
     }

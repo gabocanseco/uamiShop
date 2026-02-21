@@ -41,7 +41,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     this.logger.error(
-      `Http Status: ${status} | Method: ${request.method} | URL: ${request.url}`,
+      `Http Status: ${status} | Method: ${request.method} | URL: ${request.url} | Body: ${JSON.stringify(request.body)}`,
       exception instanceof Error ? exception.stack : JSON.stringify(exception),
     );
 
