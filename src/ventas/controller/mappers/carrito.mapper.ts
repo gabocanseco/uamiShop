@@ -1,4 +1,4 @@
-import { Carrito } from '@ventas/domain/agreggates/carrito';
+import { Carrito } from '@ventas/domain/agreggates/carrito.agreggate';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import { CarritoResponseDto } from '../dtos/carrito-response.dto';
 import { plainToInstance } from 'class-transformer';

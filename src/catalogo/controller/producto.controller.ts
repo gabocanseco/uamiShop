@@ -7,7 +7,8 @@ import { CategoriaResponseDto } from '@catalogo/controller/dtos/categoria-respon
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 import { ProductoMapper } from '@catalogo/controller/mappers/producto.mapper';
 import { CategoriaMapper } from '@catalogo/controller/mappers/categoria.mapper';
-import { ProductoParamsDto } from '@catalogo/controller/dtos/producto-params.dto';
+import { ProductoParamDto } from '@catalogo/controller/dtos/producto-params.dto';
+import { CategoriaParamDto } from '@catalogo/controller/dtos/categoria-params.dto';
 
 @Controller()
 export class ProductoController {
@@ -33,9 +34,9 @@ export class ProductoController {
 
   @Get('productos/:id')
   async obtener(
-    @Param() params: ProductoParamsDto,
+    @Param() param: ProductoParamDto,
   ): Promise<ProductoResponseDto> {
-    const productoId = ProductoMapper.toDomainId(params.id);
+    const productoId = ProductoMapper.toDomainId(param.id);
 
     const producto = await this.productoService.buscarPorId(productoId);
 
@@ -44,10 +45,10 @@ export class ProductoController {
 
   @Put('productos/:id')
   async actualizar(
-    @Param() params: ProductoParamsDto,
+    @Param() param: ProductoParamDto,
     @Body() request: ProductoRequestDto,
   ): Promise<ProductoResponseDto> {
-    const productoId = ProductoMapper.toDomainId(params.id);
+    const productoId = ProductoMapper.toDomainId(param.id);
 
     const nuevoProducto = ProductoMapper.toDomain(request);
 
@@ -60,14 +61,14 @@ export class ProductoController {
   }
 
   @Post('productos/:id/activar')
-  async activar(@Param() params: ProductoParamsDto): Promise<void> {
-    const productoId = ProductoMapper.toDomainId(params.id);
+  async activar(@Param() param: ProductoParamDto): Promise<void> {
+    const productoId = ProductoMapper.toDomainId(param.id);
     await this.productoService.activar(productoId);
   }
 
   @Post('productos/:id/desactivar')
-  async desactivar(@Param() params: ProductoParamsDto): Promise<void> {
-    const productoId = ProductoMapper.toDomainId(params.id);
+  async desactivar(@Param() param: ProductoParamDto): Promise<void> {
+    const productoId = ProductoMapper.toDomainId(param.id);
     await this.productoService.desactivar(productoId);
   }
 
@@ -91,9 +92,9 @@ export class ProductoController {
 
   @Get('categorias/:id')
   async obtenerCategoriaPorId(
-    @Param('id') id: string,
+    @Param() param: CategoriaParamDto,
   ): Promise<CategoriaResponseDto> {
-    const categoriaId = CategoriaMapper.toDomainId(id);
+    const categoriaId = CategoriaMapper.toDomainId(param.id);
 
     const categoria =
       await this.productoService.buscarCategoriaPorId(categoriaId);
@@ -103,10 +104,10 @@ export class ProductoController {
 
   @Put('categorias/:id')
   async actualizarCategoria(
-    @Param('id') id: string,
+    @Param() param: CategoriaParamDto,
     @Body() request: CategoriaRequestDto,
   ): Promise<CategoriaResponseDto> {
-    const categoriaId = CategoriaId.of(id);
+    const categoriaId = CategoriaId.of(param.id);
     const nuevaCategoria = CategoriaMapper.toDomain(request);
 
     const categoria = await this.productoService.actualizarCategoria(

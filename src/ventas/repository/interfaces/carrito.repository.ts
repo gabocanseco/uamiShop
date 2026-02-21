@@ -1,5 +1,5 @@
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
-import { Carrito } from '@ventas/domain/agreggates/carrito';
+import { Carrito } from '@ventas/domain/agreggates/carrito.agreggate';
 
 export interface ICarritoRepository {
   save(carrito: Carrito): Promise<void>;

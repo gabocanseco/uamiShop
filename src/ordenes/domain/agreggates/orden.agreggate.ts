@@ -240,6 +240,13 @@ export class Orden {
     return this.id;
   }
 
+  // public static crearDesdeCarritoResumen(carritoResumen: CarritoResumenData) {
+  //   const clienteId = ClienteId.of(carritoResumen.clienteId);
+  //   const resumenPago = ResumenPago.crear(carritoResumen.direccionEnvio.);
+
+  //   return Orden.crear(clienteId, items, direccionEnvio, resumenPago);
+  // }
+
   public toPrimitives() {
     return {
       id: this.id.getValue(),

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ICarritoRepository } from './interfaces/carrito.repository';
-import { Carrito } from '@ventas/domain/agreggates/carrito';
+import { Carrito } from '@ventas/domain/agreggates/carrito.agreggate';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 
 @Injectable()

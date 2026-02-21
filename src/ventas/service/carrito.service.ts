@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import type { ICarritoRepository } from '@ventas/repository/interfaces/carrito.repository';
 import { ClienteId } from '@shared/domain/value-objects/ids/cliente-id.vo';
-import { Carrito } from '@ventas/domain/agreggates/carrito';
+import { Carrito } from '@ventas/domain/agreggates/carrito.agreggate';
 import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import { ProductoRef } from '@ventas/domain/value-objects/producto-ref.vo';
@@ -144,4 +144,12 @@ export class CarritoService {
 
     return carrito;
   }
+
+  // async obtenerResumenParaOrden(
+  //   carritoId: CarritoId,
+  // ): Promise<CarritoResumenData> {
+  //   const carrito = await this.obtenerCarrito(carritoId);
+
+  //   return carrito.toPrimitives();
+  // }
 }

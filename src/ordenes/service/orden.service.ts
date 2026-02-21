@@ -1,14 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-// import { OrdenRequestDto } from '@ordenes/controller/dtos/orden-request.dto';
-// import { OrdenResponseDto } from '@ordenes/controller/dtos/orden-response.dto';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
 import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
 import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
 import type { IOrdenRepository } from '@ordenes/repository/interfaces/orden.repository';
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
-// import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
-// import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
-// import { CarritoService as CarritoService } from '@ventas/service/carrito.service';
 
 @Injectable()
 export class OrdenService {
@@ -26,41 +21,24 @@ export class OrdenService {
   // async crearDesdeCarrito(
   //   carritoId: CarritoId,
   //   direccionEnvio: DireccionEnvio,
-  // ): Promise<OrdenResponseDto> {
-  //   const carrito = await this.carritoService.obtenerCarrito(carritoId);
-  //   if (!carrito) {
-  //     throw new EntityNotFoundException(
-  //       'Orden',
-  //       `Carrito con ID ${carritoId.getValue()} no encontrado`,
-  //     );
-  //   }
+  // ): Promise<Orden> {
+  //   const datosCarrito = await this.carritoService.toPrimitives(carritoId);
 
-  //   // Convertir items a ItemOrden
-  //   const items = 0;
-
-  //   // crear la Orden
-  //   const clienteId = 0;
-  //   const resumenPago = 0;
-
-  //   const nuevaOrden = Orden.crear(
-  //     clienteId,
-  //     items,
-  //     direccionEnvio,
-  //     resumenPago,
-  //   );
+  //   const nuevaOrden = Orden.crearDesdeCarritoResumen(ca);
 
   //   await this.ordenRepository.save(nuevaOrden);
 
   //   // Completar checkout del carrito
-  //   const carritoCompletado = this.carritoService.completarCheckout(carritoId);
+  //   const carritoCompletado =
+  //     await this.carritoService.completarCheckout(carritoId);
 
   //   if (!carritoCompletado) {
-  //     throw new OrdenException(
+  //     throw new BusinessRuleException(
   //       `No se pudo completar el Checkout del carrito ${carritoId.getValue()}`,
   //     );
   //   }
 
-  //   return OrdenResponseDto.fromDomain(nuevaOrden);
+  //   return nuevaOrden;
   // }
 
   async buscarPorId(ordenId: OrdenId): Promise<Orden> {

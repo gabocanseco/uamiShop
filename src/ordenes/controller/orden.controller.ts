@@ -7,16 +7,11 @@ import {
   OrdenRequestDto,
   ReferenciaExternaDto,
 } from '@ordenes/controller/dtos/orden-request.dto';
-// import { ValueObjectIdPipe } from '@shared/controller/pipes/value-object-id.pipe';
-// import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
-// import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
-// import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
-// import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import {
   InfoEnvioMapper,
   OrdenMapper,
 } from '@ordenes/controller/mappers/orden.mapper';
-import { OrdenParamsDto } from './dtos/orden-params.dto';
+import { OrdenParamDto } from '@ordenes/controller/dtos/orden-params.dto';
 
 @Controller('ordenes')
 export class OrdenController {
@@ -40,17 +35,23 @@ export class OrdenController {
 
   // @Post(':id')
   // async crearDesdeCarrito(
-  //   @Param() params: OrdenParamsDto,
-  //   @Body() direccionEnvio: DireccionEnvioDto,
+  //   @Param() param: CarritoParamDto,
+  //   @Body() direccionEnvioDto: DireccionEnvioDto,
   // ): Promise<OrdenResponseDto> {
-  //   return await this.ordenService.crearDesdeCarrito(id, direccionEnvio);
+  //   const carritoId = CarritoMapper.toDomainId(param.id);
+  //   const direccionEnvio = DireccionEnvioMapper.toDomain(direccionEnvioDto);
+
+  //   const orden = await this.ordenService.crearDesdeCarrito(
+  //     carritoId,
+  //     direccionEnvio,
+  //   );
+
+  //   return OrdenMapper.toResponseDto(orden);
   // }
 
   @Get(':id')
-  async obtenerPorId(
-    @Param() params: OrdenParamsDto,
-  ): Promise<OrdenResponseDto> {
-    const ordenId = OrdenMapper.toDomainId(params.id);
+  async obtenerPorId(@Param() param: OrdenParamDto): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(param.id);
 
     const orden = await this.ordenService.buscarPorId(ordenId);
 
@@ -58,8 +59,8 @@ export class OrdenController {
   }
 
   @Post(':id/confirmar')
-  async confirmar(@Param() params: OrdenParamsDto): Promise<OrdenResponseDto> {
-    const ordenId = OrdenMapper.toDomainId(params.id);
+  async confirmar(@Param() param: OrdenParamDto): Promise<OrdenResponseDto> {
+    const ordenId = OrdenMapper.toDomainId(param.id);
     const orden = await this.ordenService.confirmar(ordenId);
 
     return OrdenMapper.toResponseDto(orden);
@@ -67,10 +68,10 @@ export class OrdenController {
 
   @Post(':id/procesar')
   async procesarPago(
-    @Param() params: OrdenParamsDto,
+    @Param() param: OrdenParamDto,
     @Body() referenciaExternaDto: ReferenciaExternaDto,
   ): Promise<OrdenResponseDto> {
-    const ordenId = OrdenMapper.toDomainId(params.id);
+    const ordenId = OrdenMapper.toDomainId(param.id);
     const referenciaExterna = referenciaExternaDto.referenciaExterna;
 
     const orden = await this.ordenService.procesarPago(
@@ -82,9 +83,9 @@ export class OrdenController {
 
   @Post(':id/enproceso')
   async marcarEnProceso(
-    @Param() params: OrdenParamsDto,
+    @Param() param: OrdenParamDto,
   ): Promise<OrdenResponseDto> {
-    const ordenId = OrdenMapper.toDomainId(params.id);
+    const ordenId = OrdenMapper.toDomainId(param.id);
 
     const orden = await this.ordenService.marcarEnProceso(ordenId);
 
@@ -93,10 +94,10 @@ export class OrdenController {
 
   @Post(':id/enviada')
   async marcarEnviada(
-    @Param() params: OrdenParamsDto,
+    @Param() param: OrdenParamDto,
     @Body() infoEnvioDto: InfoEnvioDto,
   ): Promise<OrdenResponseDto> {
-    const ordenId = OrdenMapper.toDomainId(params.id);
+    const ordenId = OrdenMapper.toDomainId(param.id);
     const infoEnvio = InfoEnvioMapper.toDomain(infoEnvioDto);
 
     const orden = await this.ordenService.marcarEnviada(ordenId, infoEnvio);
@@ -106,9 +107,9 @@ export class OrdenController {
 
   @Post(':id/entregada')
   async marcarEntregada(
-    @Param() params: OrdenParamsDto,
+    @Param() param: OrdenParamDto,
   ): Promise<OrdenResponseDto> {
-    const ordenId = OrdenMapper.toDomainId(params.id);
+    const ordenId = OrdenMapper.toDomainId(param.id);
 
     const orden = await this.ordenService.marcarEntregada(ordenId);
 
@@ -117,10 +118,10 @@ export class OrdenController {
 
   @Post(':id/cancelar')
   async cancelar(
-    @Param() params: OrdenParamsDto,
+    @Param() param: OrdenParamDto,
     @Body() motivoDto: MotivoDto,
   ): Promise<OrdenResponseDto> {
-    const ordenId = OrdenMapper.toDomainId(params.id);
+    const ordenId = OrdenMapper.toDomainId(param.id);
 
     const orden = await this.ordenService.cancelar(ordenId, motivoDto.motivo);
 
