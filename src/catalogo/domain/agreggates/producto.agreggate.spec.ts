@@ -5,9 +5,9 @@ import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo'
 import { NombreProducto } from '@catalogo/domain/value-objects/nombre-producto.vo';
 import { DescripcionProducto } from '@catalogo/domain/value-objects/descripcion-producto.vo';
 import { Imagen } from '@catalogo/domain/value-objects/imagen';
-import { ProductoException } from '@catalogo/domain/exceptions/producto.exception';
 import { ImagenId } from '@catalogo/domain/value-objects/ids/imagen-id.vo';
 import { describe, it, expect } from 'vitest';
+import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
 
 describe('Producto Agreggate', () => {
   describe('Creación', () => {
@@ -20,7 +20,7 @@ describe('Producto Agreggate', () => {
 
       expect(() => {
         Producto.crear(nombre, descripcion, precioInvalido, categoriaId);
-      }).toThrow(ProductoException);
+      }).toThrow(BusinessRuleException);
     });
   });
 
@@ -36,7 +36,7 @@ describe('Producto Agreggate', () => {
 
       expect(() => {
         producto.cambiarPrecio(precioInvalido);
-      }).toThrow(ProductoException);
+      }).toThrow(BusinessRuleException);
     });
 
     it('debería lanzar domainexception si el nuevo precio incrementa más del 50% en un solo cambio', () => {
@@ -52,7 +52,7 @@ describe('Producto Agreggate', () => {
 
       expect(() => {
         producto.cambiarPrecio(precioInvalido);
-      }).toThrow(ProductoException);
+      }).toThrow(BusinessRuleException);
     });
   });
 
@@ -79,7 +79,7 @@ describe('Producto Agreggate', () => {
             Imagen.crear(ImagenId.generar(), urls[i], `alt${i + 1}`, i + 1),
           );
         }
-      }).toThrow(ProductoException);
+      }).toThrow(BusinessRuleException);
     });
 
     it('debería lanzar domainexception si la URL de la imagen no es válida', () => {
@@ -99,7 +99,7 @@ describe('Producto Agreggate', () => {
 
       expect(() => {
         producto.agregarImagen(imagenInvalida);
-      }).toThrow(ProductoException);
+      }).toThrow(BusinessRuleException);
     });
   });
 
@@ -118,7 +118,7 @@ describe('Producto Agreggate', () => {
 
       expect(() => {
         productoInvalido.activar();
-      }).toThrow(ProductoException);
+      }).toThrow(BusinessRuleException);
     });
   });
 
@@ -137,7 +137,7 @@ describe('Producto Agreggate', () => {
 
       expect(() => {
         productoDesactivado.desactivar();
-      }).toThrow(ProductoException);
+      }).toThrow(BusinessRuleException);
     });
   });
 });
