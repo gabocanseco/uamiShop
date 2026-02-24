@@ -12,8 +12,14 @@ export class CarritoMapper {
     return CarritoId.of(id);
   }
 
-  static toResponseDto(carrito: Carrito): CarritoResponseDto {
-    return plainToInstance(CarritoResponseDto, carrito.toPrimitives());
+  /**
+   * Convierte la entidad `Carrito` a un DTO de repuesta
+   */
+  static toResponseDto(carrito: Carrito | any): CarritoResponseDto {
+    const primitive = carrito && typeof carrito.toPrimitives === 'function'
+      ? carrito.toPrimitives()
+      : carrito;
+    return plainToInstance(CarritoResponseDto, primitive);
   }
 }
 
