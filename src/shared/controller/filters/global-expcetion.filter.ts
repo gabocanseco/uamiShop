@@ -40,10 +40,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       code = exception.code || 'BAD_REQUEST';
     }
 
-    this.logger.error(
-      `Http Status: ${status} | Method: ${request.method} | URL: ${request.url} | Body: ${JSON.stringify(request.body)}`,
-      exception instanceof Error ? exception.stack : JSON.stringify(exception),
-    );
+    // this.logger.error(
+    //   `Http Status: ${status} | Method: ${request.method} | URL: ${request.url} | Body: ${JSON.stringify(request.body)}`,
+    //   exception instanceof Error ? exception.stack : JSON.stringify(exception),
+    // );
 
     response.status(status).json({
       statusCode: status,
