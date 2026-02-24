@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -9,6 +10,10 @@ import {
 } from 'class-validator';
 
 export class CantidadDto {
+  @ApiProperty({
+    description: 'Cantidad del producto a agregar al carrito',
+    example: 2,
+  })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty({ message: 'La cantidad es obligatoria' })
@@ -16,29 +21,54 @@ export class CantidadDto {
 }
 
 export class ProductoRefDto {
+   @ApiProperty({
+    description: 'ID único del producto',
+    example: '550e8400-e29b-41d4-a716-446655440020',
+    format: 'uuid',
+  })
   @IsNotEmpty({ message: 'El id del producto es obligatorio' })
   @IsUUID('4', { message: 'El ID debe ser un UUID válido versión 4' })
   productoId!: string;
-
+  @ApiProperty({
+    description: 'Nombre del producto',
+    example: 'Camiseta de algodón',
+  })
   @IsString({ message: 'El nombre de producto debe ser una cadena' })
   @IsNotEmpty({ message: 'El nombre de producto es obligatorio' })
   nombreProducto!: string;
-
+  @ApiProperty({
+    description: 'SKU del producto (Stock Keeping Unit)',
+    example: 'CAM-ALG-001',
+  })
   @IsString({ message: 'El sku debe ser una cadena' })
   @IsNotEmpty({ message: 'El sku es obligatorio' })
   sku!: string;
 }
 
 export class CarritoRequestDto {
+  @ApiProperty({  
+    description: 'ID único del cliente',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+    format: 'uuid',
+  })
+  @IsNotEmpty({ message: 'El id del cliente es obligatorio' })
+  @IsUUID('4', { message: 'El ID del cliente debe ser un UUID válido versión 4' })
+  clienteId!: string;
   @ValidateNested()
   @Type(() => ProductoRefDto)
   productoRef!: ProductoRefDto;
-
+  @ApiProperty({
+    description: 'Cantidad del producto a agregar al carrito',
+    example: 2,
+  })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty({ message: 'La cantidad es obligatoria' })
   cantidad!: number;
-
+  @ApiProperty({
+    description: 'Precio unitario del producto',
+    example: 19.99,
+  })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty({ message: 'El precio es obligatorioi' })
