@@ -7,16 +7,15 @@ import { ProductoRef } from '@ventas/domain/value-objects/producto-ref.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
-import {
-  CarritoResumenData,
-  IVistaCarritoService,
-} from '@shared/domain/interfaces/vista-carrito';
+import type { VentasApi } from '@ventas/api/interfaces/ventas.api';
+import { VentasApiMapper } from '@ventas/api/mappers/ventas-api.mapper';
+import { CarritoResumenDto } from '@ventas/api/dtos/carrito-resumen.dto';
 
 /**
  * Servicio de aplicación para gestionar carritos de compra
  */
 @Injectable()
-export class CarritoService implements IVistaCarritoService {
+export class CarritoService implements VentasApi {
   constructor(
     @Inject('ICarritoRepository')
     private readonly carritoRepository: ICarritoRepository,
@@ -147,19 +146,11 @@ export class CarritoService implements IVistaCarritoService {
     return carrito;
   }
 
-  // async obtenerResumenParaOrden(
-  //   carritoId: CarritoId,
-  // ): Promise<CarritoResumenData> {
-  //   const carrito = await this.obtenerCarrito(carritoId);
-
-  //   return carrito.toPrimitives();
-  // }
-
   async obtenerResumenCarrito(
     carritoId: CarritoId,
-  ): Promise<CarritoResumenData> {
+  ): Promise<CarritoResumenDto> {
     const carrito = await this.obtenerCarrito(carritoId);
 
-    return carrito.obtenerResumenCarrito();
+    return VentasApiMapper.carritoToCarritoResumenDto(carrito);
   }
 }

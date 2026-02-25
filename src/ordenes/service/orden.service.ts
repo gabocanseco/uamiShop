@@ -28,11 +28,11 @@ export class OrdenService {
     direccionEnvio: DireccionEnvio,
     resumenPago: ResumenPago,
   ): Promise<Orden> {
-    const carritoResumenData =
+    const carritoResumenDto =
       await this.carritoService.obtenerResumenCarrito(carritoId);
 
     const nuevaOrden = Orden.crearDesdeCarritoResumen(
-      carritoResumenData,
+      carritoResumenDto,
       direccionEnvio,
       resumenPago,
     );
