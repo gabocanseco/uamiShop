@@ -20,6 +20,14 @@ export class ProductoRef {
     return this.productoId;
   }
 
+  public getNombreProducto(): NombreProducto {
+    return this.nombreProducto;
+  }
+
+  public getSku(): string {
+    return this.sku;
+  }
+
   public toPrimitives() {
     return {
       productoId: this.productoId.getValue(),
