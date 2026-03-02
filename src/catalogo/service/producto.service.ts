@@ -1,3 +1,4 @@
+import { CatalogoApi } from '@catalogo/api/interfaces/catalogo.api';
 import { Categoria } from '@catalogo/domain/agreggates/categoria.agreggate';
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
@@ -8,7 +9,7 @@ import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-fo
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 
 @Injectable() // Convierte esta clase en un proveedor de servicios que puede ser inyectado en otros componentes de NestJS
-export class ProductoService {
+export class ProductoService implements CatalogoApi {
   constructor(
     @Inject('IProductoRepository')
     private readonly productoRepository: IProductoRepository,
