@@ -9,8 +9,8 @@ import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
 import { CambioEstado } from '@ordenes/domain/value-objects/cambio-estado.vo';
 import { EstadoOrden } from '@ordenes/domain/enums/estado-orden.enum';
 import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
-import { CarritoResumenData } from '@shared/domain/interfaces/vista-carrito';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
+import { CarritoResumenDto } from '@ventas/api/dtos/carrito-resumen.dto';
 
 /**
  * Gestiona el ciclo de vida completo desde la creación hasta la entrega
@@ -243,7 +243,7 @@ export class Orden {
   }
 
   public static crearDesdeCarritoResumen(
-    carritoResumen: CarritoResumenData,
+    carritoResumen: CarritoResumenDto,
     direccionEnvio: DireccionEnvio,
     resumenPago: ResumenPago,
   ): Orden {
@@ -254,7 +254,10 @@ export class Orden {
         carritoItemResumen.productoRef.nombreProducto,
         carritoItemResumen.productoRef.sku,
         carritoItemResumen.cantidad,
-        Money.crear(carritoItemResumen.precioUnitario),
+        Money.crear(
+          carritoItemResumen.precioUnitario.cantidad,
+          carritoItemResumen.precioUnitario.moneda,
+        ),
       ),
     );
 

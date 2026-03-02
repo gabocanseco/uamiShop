@@ -63,6 +63,22 @@ export class ItemCarrito {
     }
   }
 
+  public getId(): ItemCarritoId {
+    return this.Id;
+  }
+
+  public getProductoRef(): ProductoRef {
+    return this.productoRef;
+  }
+
+  public getCantidad(): number {
+    return this.cantidad;
+  }
+
+  public getPrecioUnitario(): Money {
+    return this.precioUnitario;
+  }
+
   public toPrimitives() {
     return {
       id: this.Id.getValue(),

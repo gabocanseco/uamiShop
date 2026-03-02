@@ -14,7 +14,7 @@ export class Money {
     return this.cantidad / 100;
   }
 
-  public get codigoMoneda(): string {
+  public getMoneda(): string {
     return this.moneda;
   }
 
@@ -105,7 +105,7 @@ export class Money {
   }
 
   public toString(): string {
-    return `${this.codigoMoneda} ${this.getCantidad().toFixed(2)}`;
+    return `${this.getMoneda()} ${this.getCantidad().toFixed(2)}`;
   }
 
   public toPrimitives() {
