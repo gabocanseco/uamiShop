@@ -35,9 +35,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message = exception.message;
       code = 'ENTITY_NOT_FOUND';
     } else if (exception instanceof BusinessRuleException) {
-      status = HttpStatus.BAD_REQUEST; // 400
+      status = HttpStatus.UNPROCESSABLE_ENTITY; // 422
       message = exception.message;
-      code = exception.code || 'BAD_REQUEST';
+      code = exception.code || 'UNPROCESSABLE_ENTITY';
     }
 
     // this.logger.error(
