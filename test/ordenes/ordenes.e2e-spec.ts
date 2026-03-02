@@ -11,7 +11,7 @@ describe('Ordenes (e2e)', () => {
   const BASE_URL = '/ordenes';
   const CLIENTE_ID = 'f79d6f9e-65c7-4f01-851d-af9be6bce3ab';
   const PRODUCTO_ID = '7b80a6e7-5874-4ddb-8492-86b7808445cb';
-  const UNPROCESSABLE_ENTITY_CODE = 400;
+  const UNPROCESSABLE_ENTITY_CODE = 422;
   let ordenIdCreada: string;
 
   beforeEach(async () => {
