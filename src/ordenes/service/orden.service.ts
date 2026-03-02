@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { OrdenesApi } from '@ordenes/api/interfaces/ordenes.api';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
 import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
 import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
@@ -11,7 +12,7 @@ import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import { CarritoService } from '@ventas/service/carrito.service';
 
 @Injectable()
-export class OrdenService {
+export class OrdenService implements OrdenesApi {
   constructor(
     @Inject('IOrdenRepository')
     private readonly ordenRepository: IOrdenRepository,
