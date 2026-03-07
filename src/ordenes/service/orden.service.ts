@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { OrdenResumenDto } from '@ordenes/api/dtos/orden-resumen.dto';
 import { OrdenesApi } from '@ordenes/api/interfaces/ordenes.api';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
 import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
