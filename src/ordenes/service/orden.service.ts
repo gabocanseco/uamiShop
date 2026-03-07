@@ -10,14 +10,14 @@ import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.e
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
 import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
-import { CarritoService } from '@ventas/service/carrito.service';
+import type { VentasApi } from '@ventas/api/interfaces/ventas.api';
 
 @Injectable()
 export class OrdenService implements OrdenesApi {
   constructor(
     @Inject('IOrdenRepository')
     private readonly ordenRepository: IOrdenRepository,
-    private readonly carritoService: CarritoService,
+    private readonly carritoService: VentasApi,
   ) {}
 
   async crear(nuevaOrden: Orden): Promise<Orden> {
@@ -40,16 +40,6 @@ export class OrdenService implements OrdenesApi {
     );
 
     await this.ordenRepository.save(nuevaOrden);
-
-    // Completar checkout del carrito
-    const carritoCompletado =
-      await this.carritoService.completarCheckout(carritoId);
-
-    if (!carritoCompletado) {
-      throw new BusinessRuleException(
-        `No se pudo completar el Checkout del carrito ${carritoId.getValue()}`,
-      );
-    }
 
     return nuevaOrden;
   }
