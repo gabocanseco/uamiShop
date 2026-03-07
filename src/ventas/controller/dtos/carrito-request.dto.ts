@@ -21,7 +21,7 @@ export class CantidadDto {
 }
 
 export class ProductoRefDto {
-   @ApiProperty({
+  @ApiProperty({
     description: 'ID único del producto',
     example: '550e8400-e29b-41d4-a716-446655440020',
     format: 'uuid',
@@ -46,14 +46,6 @@ export class ProductoRefDto {
 }
 
 export class CarritoRequestDto {
-  @ApiProperty({  
-    description: 'ID único del cliente',
-    example: '550e8400-e29b-41d4-a716-446655440000',
-    format: 'uuid',
-  })
-  @IsNotEmpty({ message: 'El id del cliente es obligatorio' })
-  @IsUUID('4', { message: 'El ID del cliente debe ser un UUID válido versión 4' })
-  clienteId!: string;
   @ValidateNested()
   @Type(() => ProductoRefDto)
   productoRef!: ProductoRefDto;
