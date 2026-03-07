@@ -9,10 +9,12 @@ import { ProductoMapper } from '@catalogo/controller/mappers/producto.mapper';
 import { CategoriaMapper } from '@catalogo/controller/mappers/categoria.mapper';
 import { ProductoParamDto } from '@catalogo/controller/dtos/producto-params.dto';
 import { CategoriaParamDto } from '@catalogo/controller/dtos/categoria-params.dto';
+import { Imagen } from '@catalogo/domain/value-objects/imagen';
+import { ImagenId } from '@catalogo/domain/value-objects/ids/imagen-id.vo';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 @Controller()
 export class ProductoController {
-  constructor(private readonly productoService: ProductoService) {}
+  constructor(private readonly productoService: ProductoService) { }
 
   @Post('productos')
   @ApiOperation({ summary: 'Crear un nuevo producto' })
@@ -95,6 +97,38 @@ export class ProductoController {
   async desactivar(@Param() param: ProductoParamDto): Promise<void> {
     const productoId = ProductoMapper.toDomainId(param.id);
     await this.productoService.desactivar(productoId);
+  }
+
+  @Post('productos/:id/imagenes')
+  @ApiOperation({ summary: 'Agregar una imagen a un producto' })
+  @ApiParam({ name: 'id', description: 'ID del producto' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string' },
+        alt: { type: 'string' },
+        orden: { type: 'number' },
+      },
+    },
+  })
+  @Post('agregar-imagen')
+  @ApiResponse({ status: 201, description: 'Imagen agregada exitosamente' })
+  @ApiResponse({ status: 404, description: 'Producto no encontrado' })
+  @ApiOperation({ summary: 'Agregar una imagen a un producto' })
+
+  async agregarImagen(
+    @Param() param: ProductoParamDto,
+    @Body() body: { url: string; alt: string; orden: number },
+  ): Promise<void> {
+    const productoId = ProductoMapper.toDomainId(param.id);
+    const imagen = Imagen.crear(
+      ImagenId.generar(),
+      body.url,
+      body.alt,
+      body.orden,
+    );
+    await this.productoService.agregarImagen(productoId, imagen);
   }
 
   @Post('categorias')

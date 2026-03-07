@@ -21,11 +21,17 @@ describe('Catalogo (e2e)', () => {
 
   beforeEach(async () => {
     // Creamos un producto antes de cada test para que la base de datos no esté vacía
-    const res = await request(app.getHttpServer()).post('/productos').send({
+    const catRes = await request(app.getHttpServer()).post('/categorias').send({
+      nombre: 'Base',
+      descripcion: 'Base',
+    });
+    const baseCategoriaId = catRes.body.id;
+
+    await request(app.getHttpServer()).post('/productos').send({
       nombre: 'Producto Base',
       descripcion: 'Descripcion Producto Base',
       precio: 10,
-      categoriaId: '0213701e-4b44-4d00-9ecc-07014ea4f1e1',
+      categoriaId: baseCategoriaId,
     });
   });
 
@@ -43,11 +49,10 @@ describe('Catalogo (e2e)', () => {
           nombre: 'Producto Base',
           descripcion: 'Descripcion Producto Base',
           precio: 10,
-          categoriaId: '0213701e-4b44-4d00-9ecc-07014ea4f1e1',
         }),
       ]),
     );
-  });  it('POST /categorias - deberia crear una categoria', async () => {
+  }); it('POST /categorias - deberia crear una categoria', async () => {
     const response = await request(app.getHttpServer())
       .post('/categorias')
       .send({
@@ -91,7 +96,7 @@ describe('Catalogo (e2e)', () => {
         nombre: 'Camisa',
         descripcion: 'Camisa blanca',
         precio: 200,
-        categoria: 'Ropa',
+        categoriaId: categoriaRes.body.id,
       })
       .expect(201);
 
@@ -126,7 +131,7 @@ describe('Catalogo (e2e)', () => {
         nombre: 'Libro JS',
         descripcion: 'Aprende JS',
         precio: 150,
-        categoria: 'Libros',
+        categoriaId: categoriaRes.body.id,
       });
 
     const id = productoRes.body.id;
@@ -141,12 +146,13 @@ describe('Catalogo (e2e)', () => {
 
   it('PUT /productos/:id - deberia actualizar un producto', async () => {
     // Crear categoría
-    await request(app.getHttpServer())
+    const catRes = await request(app.getHttpServer())
       .post('/categorias')
       .send({
         nombre: 'Deportes',
         descripcion: 'Categoria deportes',
       });
+    const categoriaIdRes = catRes.body.id;
 
     // Crear producto
     const productoRes = await request(app.getHttpServer())
@@ -155,7 +161,7 @@ describe('Catalogo (e2e)', () => {
         nombre: 'Balon',
         descripcion: 'Balon futbol',
         precio: 300,
-        categoria: 'Deportes',
+        categoriaId: categoriaIdRes,
       });
 
     const id = productoRes.body.id;
@@ -165,23 +171,24 @@ describe('Catalogo (e2e)', () => {
       .send({
         nombre: 'Balon Pro',
         descripcion: 'Balon profesional',
-        precio: 500,
-        categoria: 'Deportes',
+        precio: 400, // 300 * 1.5 = 450, so 400 is valid
+        categoriaId: categoriaIdRes,
       })
       .expect(200);
 
     expect(response.body.nombre).toBe('Balon Pro');
-    expect(response.body.precio).toBe(500);
+    expect(response.body.precio).toBe(400);
   });
 
   it('POST /productos/:id/activar - deberia activar un producto', async () => {
     // Crear categoría
-    await request(app.getHttpServer())
+    const catRes = await request(app.getHttpServer())
       .post('/categorias')
       .send({
         nombre: 'Tecnologia',
         descripcion: 'Categoria tecnologia',
       });
+    const categoriaIdRes = catRes.body.id;
 
     // Crear producto
     const productoRes = await request(app.getHttpServer())
@@ -190,10 +197,20 @@ describe('Catalogo (e2e)', () => {
         nombre: 'Laptop',
         descripcion: 'Laptop gamer',
         precio: 15000,
-        categoria: 'Tecnologia',
+        categoriaId: categoriaIdRes,
       });
 
     const id = productoRes.body.id;
+
+    // Agregar imagen
+    await request(app.getHttpServer())
+      .post(`/productos/${id}/imagenes`)
+      .send({
+        url: 'https://example.com/image.png',
+        alt: 'alt',
+        orden: 1,
+      })
+      .expect(201);
 
     await request(app.getHttpServer())
       .post(`/productos/${id}/activar`)
@@ -202,12 +219,13 @@ describe('Catalogo (e2e)', () => {
 
   it('POST /productos/:id/desactivar - deberia desactivar un producto', async () => {
     // Crear categoría
-    await request(app.getHttpServer())
+    const catRes = await request(app.getHttpServer())
       .post('/categorias')
       .send({
         nombre: 'Accesorios',
         descripcion: 'Categoria accesorios',
       });
+    const categoriaIdRes = catRes.body.id;
 
     // Crear producto
     const productoRes = await request(app.getHttpServer())
@@ -216,11 +234,27 @@ describe('Catalogo (e2e)', () => {
         nombre: 'Reloj',
         descripcion: 'Reloj inteligente',
         precio: 5000,
-        categoria: 'Accesorios',
+        categoriaId: categoriaIdRes,
       });
 
     const id = productoRes.body.id;
 
+    // Agregar imagen
+    await request(app.getHttpServer())
+      .post(`/productos/${id}/imagenes`)
+      .send({
+        url: 'https://example.com/image.png',
+        alt: 'alt',
+        orden: 1,
+      })
+      .expect(201);
+
+    // Activar
+    await request(app.getHttpServer())
+      .post(`/productos/${id}/activar`)
+      .expect(201);
+
+    // Desactivar
     await request(app.getHttpServer())
       .post(`/productos/${id}/desactivar`)
       .expect(201);
