@@ -242,6 +242,10 @@ export class Orden {
     return this.id;
   }
 
+  public getEstado(): EstadoOrden {
+    return this.estado;
+  }
+
   public static crearDesdeCarritoResumen(
     carritoResumen: CarritoResumenDto,
     direccionEnvio: DireccionEnvio,
