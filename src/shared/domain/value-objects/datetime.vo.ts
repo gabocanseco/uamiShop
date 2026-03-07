@@ -16,4 +16,10 @@ export class DateTime {
   public static now(): DateTime {
     return new DateTime(new Date());
   }
+  //Agregar dias a la fecha
+  public addDays(days: number): DateTime {
+    const newDate = new Date(this.valor);
+    newDate.setDate(newDate.getDate() + days);
+    return new DateTime(newDate);
+  }
 }

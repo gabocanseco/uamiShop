@@ -14,6 +14,10 @@ import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { NombreProducto } from '@catalogo/domain/value-objects/nombre-producto.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.exception';
+import { DateTime } from '@shared/domain/value-objects/datetime.vo';
+import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
+import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
+import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
 
 describe('OrdenService - Crear desde Carrito', () => {
   let service: OrdenService;
@@ -100,5 +104,87 @@ describe('OrdenService - Crear desde Carrito', () => {
 
     expect(nuevaOrden).toBeDefined();
     expect(nuevaOrden.toPrimitives().clienteId).toBe(clienteId.getValue());
+  });
+
+  describe('Ciclo de vida de la Orden', () => {
+    let orden: Orden;
+    let ordenId: OrdenId;
+
+    beforeEach(async () => {
+      // Crear una orden base para los tests de estado
+      const clienteId = ClienteId.of('e9145a75-d6cf-499d-87f2-f77a8480f20c');
+      const carritoVacio = await carritoService.crear(clienteId);
+      const productoRef = ProductoRef.crear(
+        ProductoId.of('fec96173-7df5-4a45-a162-5d1cca312467'),
+        NombreProducto.crear('Laptop'),
+        'lptp-12311',
+      );
+      await carritoService.agregarProducto(
+        carritoVacio.getId(),
+        productoRef,
+        1,
+        Money.crear(500),
+      );
+      await carritoService.iniciarCheckout(carritoVacio.getId());
+
+      const direccionEnvio = DireccionEnvio.crear(
+        'Diego', 'Calle 123', 'CDMX', 'CDMX', '05000', 'Mexico', '1212121212', 'Dejar en puerta',
+      );
+      const resumenPago = ResumenPago.crear('Paypal');
+
+      const nuevaOrden = await service.crearDesdeCarrito(
+        carritoVacio.getId(),
+        direccionEnvio,
+        resumenPago,
+      );
+      ordenId = nuevaOrden.getId();
+    });
+
+    it('debe confirmar la orden', async () => {
+      const actualizada = await service.confirmar(ordenId);
+      expect(actualizada.toPrimitives().estado).toBe('CONFIRMADA');
+    });
+
+    it('debe procesar el pago', async () => {
+      await service.confirmar(ordenId);
+      const actualizada = await service.procesarPago(ordenId, 'REF-123456');
+      expect(actualizada.toPrimitives().estado).toBe('PAGO_PROCESADO');
+    });
+
+    it('debe marcar en proceso', async () => {
+      await service.confirmar(ordenId);
+      await service.procesarPago(ordenId, 'REF-123456');
+      const actualizada = await service.marcarEnProceso(ordenId);
+      expect(actualizada.toPrimitives().estado).toBe('EN_PREPARACION');
+    });
+
+    it('debe marcar como enviada', async () => {
+      await service.confirmar(ordenId);
+      await service.procesarPago(ordenId, 'REF-123456');
+      await service.marcarEnProceso(ordenId);
+
+      const infoEnvio = InfoEnvio.crear(
+        'FedEx',
+        'GUIA1234567890',
+        DateTime.now().addDays(3)
+      );
+      const actualizada = await service.marcarEnviada(ordenId, infoEnvio);
+      expect(actualizada.toPrimitives().estado).toBe('ENVIADA');
+    });
+
+    it('debe marcar como entregada', async () => {
+      await service.confirmar(ordenId);
+      await service.procesarPago(ordenId, 'REF-123456');
+      await service.marcarEnProceso(ordenId);
+      await service.marcarEnviada(ordenId, InfoEnvio.crear('UPS', 'GUIA0987654321', DateTime.now()));
+
+      const actualizada = await service.marcarEntregada(ordenId);
+      expect(actualizada.toPrimitives().estado).toBe('ENTREGADA');
+    });
+
+    it('debe cancelar la orden', async () => {
+      const actualizada = await service.cancelar(ordenId, 'Cliente arrepentido');
+      expect(actualizada.toPrimitives().estado).toBe('CANCELADA');
+    });
   });
 });

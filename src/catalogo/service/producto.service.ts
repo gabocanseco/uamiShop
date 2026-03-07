@@ -1,6 +1,7 @@
 import { CatalogoApi } from '@catalogo/api/interfaces/catalogo.api';
 import { Categoria } from '@catalogo/domain/agreggates/categoria.agreggate';
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
+import { Imagen } from '@catalogo/domain/value-objects/imagen';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 import type { ICategoriaRepository } from '@catalogo/repository/interfaces/categoria.repository';
 import type { IProductoRepository } from '@catalogo/repository/interfaces/producto.repository';
@@ -15,7 +16,7 @@ export class ProductoService implements CatalogoApi {
     private readonly productoRepository: IProductoRepository,
     @Inject('ICategoriaRepository')
     private readonly categoriaRepository: ICategoriaRepository,
-  ) {}
+  ) { }
 
   async crear(nuevoProducto: Producto): Promise<Producto> {
     await this.productoRepository.save(nuevoProducto);
@@ -64,6 +65,12 @@ export class ProductoService implements CatalogoApi {
   async desactivar(id: ProductoId): Promise<void> {
     const producto = await this.buscarPorId(id);
     producto.desactivar();
+    await this.productoRepository.update(producto);
+  }
+
+  async agregarImagen(id: ProductoId, imagen: Imagen): Promise<void> {
+    const producto = await this.buscarPorId(id);
+    producto.agregarImagen(imagen);
     await this.productoRepository.update(producto);
   }
 
