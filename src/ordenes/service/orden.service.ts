@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { OrdenResumenDto } from '@ordenes/api/dtos/orden-resumen.dto';
 import { OrdenesApi } from '@ordenes/api/interfaces/ordenes.api';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
@@ -10,14 +11,18 @@ import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.e
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
 import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
+import { ProductoCompradoEvent } from '@shared/event/producto-comprado.event';
 import type { VentasApi } from '@ventas/api/interfaces/ventas.api';
+import { OrdenEventMapper } from './mappers/orden-event.mapper';
 
 @Injectable()
 export class OrdenService implements OrdenesApi {
   constructor(
     @Inject('IOrdenRepository')
     private readonly ordenRepository: IOrdenRepository,
+    @Inject('VentasApi')
     private readonly carritoService: VentasApi,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async crear(nuevaOrden: Orden): Promise<Orden> {
@@ -40,6 +45,12 @@ export class OrdenService implements OrdenesApi {
     );
 
     await this.ordenRepository.save(nuevaOrden);
+
+    // Publicar evento ProductoCompradoEvent con sus items
+    this.eventEmitter.emit(
+      'orden.productoComprado',
+      OrdenEventMapper.toProductoCompradoEvent(nuevaOrden),
+    );
 
     return nuevaOrden;
   }

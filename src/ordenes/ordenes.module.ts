@@ -3,6 +3,7 @@ import { OrdenService } from '@ordenes/service/orden.service';
 import { OrdenController } from '@ordenes/controller/orden.controller';
 import { OrdenInMemoryRepository } from '@ordenes/repository/orden-in-memory.repository';
 import { VentaModule } from '@ventas/venta.module';
+import { CarritoService } from '@ventas/service/carrito.service';
 
 @Module({
   imports: [VentaModule],
@@ -11,6 +12,10 @@ import { VentaModule } from '@ventas/venta.module';
     {
       provide: 'IOrdenRepository',
       useClass: OrdenInMemoryRepository,
+    },
+    {
+      provide: 'VentasApi',
+      useExisting: CarritoService, // Usar la instancia existente de CarritoService como VentasApi
     },
   ],
   controllers: [OrdenController],

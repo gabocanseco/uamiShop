@@ -16,7 +16,7 @@ describe('Ordenes (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule], // AppModule ya contiene toda la confiuracion, incluyendo el EventEmitterModule
     }).compile();
 
     app = moduleFixture.createNestApplication();
