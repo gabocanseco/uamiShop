@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CarritoController } from '@ventas/controller/carrito.controller';
 import { CarritoService } from '@ventas/service/carrito.service';
 import { CarritoInMemoryRepository } from './repository/carrito-in-memory.repository';
-import { OrdenCreadaDesdeCarritoListener } from '@ventas/listeners/orden-creada-desde-carrito.listener';
+import { OrdenCreadaListener } from './listeners/orden-creada.listener';
 
 /**
  * Módulo de Ventas
@@ -16,8 +16,8 @@ import { OrdenCreadaDesdeCarritoListener } from '@ventas/listeners/orden-creada-
       provide: 'ICarritoRepository',
       useClass: CarritoInMemoryRepository,
     },
-    OrdenCreadaDesdeCarritoListener,
+    OrdenCreadaListener,
   ],
   exports: [CarritoService, 'ICarritoRepository'],
 })
-export class VentaModule {}
+export class VentaModule { }

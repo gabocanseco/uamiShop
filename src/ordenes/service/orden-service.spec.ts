@@ -20,10 +20,13 @@ import { ItemOrden } from '@ordenes/domain/entities/item-orden.entity';
 import { EstadoOrden } from '@ordenes/domain/enums/estado-orden.enum';
 import { InfoEnvio } from '@ordenes/domain/value-objects/info-envio.vo';
 import { DateTime } from '@shared/domain/value-objects/datetime.vo';
+import { OrdenCreadaEvent } from '@shared/event/orden-creada.event';
+import { vi } from 'vitest';
 
 describe('Pruebas del OrdenService', () => {
   let service: OrdenService;
   let app: INestApplication;
+  let moduleFixture: TestingModule;
   let ventasApiMock: any;
 
   beforeEach(async () => {
@@ -31,7 +34,7 @@ describe('Pruebas del OrdenService', () => {
       obtenerResumenCarrito: vi.fn(),
     };
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    const moduleFixtureRes = await Test.createTestingModule({
       providers: [
         OrdenService,
         { provide: 'IOrdenRepository', useClass: OrdenInMemoryRepository },
@@ -46,6 +49,7 @@ describe('Pruebas del OrdenService', () => {
       ],
     }).compile();
 
+    moduleFixture = moduleFixtureRes;
     app = moduleFixture.createNestApplication();
     service = moduleFixture.get<OrdenService>(OrdenService);
     await app.init();
@@ -120,6 +124,13 @@ describe('Pruebas del OrdenService', () => {
 
       expect(nuevaOrden).toBeDefined();
       expect(nuevaOrden.toPrimitives().clienteId).toBe(clienteIdStr);
+
+      // Verificar emisión de eventos
+      const eventEmitter = moduleFixture.get<EventEmitter2>(EventEmitter2);
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        'orden.creada',
+        expect.any(OrdenCreadaEvent),
+      );
     });
   });
 

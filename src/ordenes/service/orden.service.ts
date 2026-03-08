@@ -12,7 +12,7 @@ import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-fo
 import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import { ProductoCompradoEvent } from '@shared/event/producto-comprado.event';
-import { OrdenCreadaDesdeCarritoEvent } from '@shared/event/orden-creada-desde-carrito.event';
+import { OrdenCreadaEvent } from '@shared/event/orden-creada.event';
 import type { VentasApi } from '@ventas/api/interfaces/ventas.api';
 import { DateTime } from '@shared/domain/value-objects/datetime.vo';
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
@@ -55,14 +55,15 @@ export class OrdenService implements OrdenesApi {
       OrdenEventMapper.toProductoCompradoEvent(nuevaOrden),
     );
 
-    // Publicar evento para que Ventas marque el carrito como COMPLETADO
+    //evento  OrdenCreadaEvent
     this.eventEmitter.emit(
-      'orden.creada-desde-carrito',
-      new OrdenCreadaDesdeCarritoEvent(
+      'orden.creada',
+      new OrdenCreadaEvent(
         UUID.random(),
         DateTime.now().getValue(),
         nuevaOrden.getId().getValue(),
         carritoId.getValue(),
+        nuevaOrden.toPrimitives().clienteId,
       ),
     );
 

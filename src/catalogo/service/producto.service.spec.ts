@@ -3,6 +3,7 @@ import { ProductoService } from './producto.service';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ProductoInMemoryRepository } from '@catalogo/repository/producto-in-memory.repository';
 import { CategoriaInMemoryRepository } from '@catalogo/repository/categoria-in-memory.repository';
+import { ProductoEstadisticasInMemoryRepository } from '@catalogo/repository/producto-estadisticas-in-memory-repository';
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
 import { Categoria } from '@catalogo/domain/agreggates/categoria.agreggate';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
@@ -28,6 +29,10 @@ describe('ProductoService', () => {
                 {
                     provide: 'ICategoriaRepository',
                     useClass: CategoriaInMemoryRepository,
+                },
+                {
+                    provide: 'IProductoEstadisticasRepository',
+                    useClass: ProductoEstadisticasInMemoryRepository,
                 },
             ],
         }).compile();
@@ -114,7 +119,6 @@ describe('ProductoService', () => {
 
             const nuevaData = Categoria.crear('Ropa de Invierno', 'Moda invernal');
             const actualizada = await service.actualizarCategoria(categoria.getId(), nuevaData);
-
             expect(actualizada.getNombre()).toBe('Ropa de Invierno');
         });
     });
