@@ -1,6 +1,8 @@
 import { ProductoEstadisticas } from '@catalogo/domain/agreggates/producto-estadisticas.agreggate';
+import { IProductoEstadisticasRepository } from './interfaces/producto-estadisticas.repository';
+import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 
-export class ProductoEstadisticasInMemoryRepository {
+export class ProductoEstadisticasInMemoryRepository implements IProductoEstadisticasRepository {
   private productoEstadisticas: Map<string, ProductoEstadisticas>;
 
   constructor() {
@@ -15,6 +17,12 @@ export class ProductoEstadisticasInMemoryRepository {
       productoEstadisticas,
     );
     return productoEstadisticas;
+  }
+
+  async findByProductoId(
+    productoId: ProductoId,
+  ): Promise<ProductoEstadisticas | null> {
+    return this.productoEstadisticas.get(productoId.getValue()) || null;
   }
 
   async findMasVendidos(limit: number): Promise<ProductoEstadisticas[]> {
