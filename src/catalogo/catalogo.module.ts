@@ -3,6 +3,7 @@ import { ProductoService } from '@catalogo/service/producto.service';
 import { ProductoController } from '@catalogo/controller/producto.controller';
 import { ProductoInMemoryRepository } from '@catalogo/repository/producto-in-memory.repository';
 import { CategoriaInMemoryRepository } from '@catalogo/repository/categoria-in-memory.repository';
+import { ProductoEstadisticasInMemoryRepository } from '@catalogo/repository/producto-estadisticas-in-memory-repository';
 
 @Module({
   providers: [
@@ -14,6 +15,10 @@ import { CategoriaInMemoryRepository } from '@catalogo/repository/categoria-in-m
     {
       provide: 'ICategoriaRepository',
       useClass: CategoriaInMemoryRepository,
+    },
+    {
+      provide: 'IProductoEstadisticasRepository',
+      useClass: ProductoEstadisticasInMemoryRepository,
     },
   ],
   controllers: [ProductoController],

@@ -1,10 +1,12 @@
 import { CatalogoApi } from '@catalogo/api/interfaces/catalogo.api';
 import { Categoria } from '@catalogo/domain/agreggates/categoria.agreggate';
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
+import { ProductoEstadisticas } from '@catalogo/domain/agreggates/producto-estadisticas.agreggate';
 import { Imagen } from '@catalogo/domain/value-objects/imagen';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 import type { ICategoriaRepository } from '@catalogo/repository/interfaces/categoria.repository';
 import type { IProductoRepository } from '@catalogo/repository/interfaces/producto.repository';
+import type { IProductoEstadisticasRepository } from '@catalogo/repository/interfaces/producto-estadisticas.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
@@ -16,6 +18,8 @@ export class ProductoService implements CatalogoApi {
     private readonly productoRepository: IProductoRepository,
     @Inject('ICategoriaRepository')
     private readonly categoriaRepository: ICategoriaRepository,
+    @Inject('IProductoEstadisticasRepository')
+    private readonly productoEstadisticasRepository: IProductoEstadisticasRepository,
   ) { }
 
   async crear(nuevoProducto: Producto): Promise<Producto> {
@@ -72,6 +76,18 @@ export class ProductoService implements CatalogoApi {
     const producto = await this.buscarPorId(id);
     producto.agregarImagen(imagen);
     await this.productoRepository.update(producto);
+  }
+
+  async buscarMasVendidos(limit: number): Promise<ProductoEstadisticas[]> {
+    return this.productoEstadisticasRepository.findMasVendidos(limit);
+  }
+
+  async buscarEstadisticas(id: ProductoId): Promise<ProductoEstadisticas> {
+    const estadisticas = await this.productoEstadisticasRepository.findByProductoId(id);
+    if (!estadisticas) {
+      throw new EntityNotFoundException('ProductoEstadisticas', id.getValue());
+    }
+    return estadisticas;
   }
 
   async crearCategoria(nuevaCategoria: Categoria): Promise<Categoria> {

@@ -12,7 +12,10 @@ import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-fo
 import { DireccionEnvio } from '@shared/domain/value-objects/direccion-envio.vo';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import { ProductoCompradoEvent } from '@shared/event/producto-comprado.event';
+import { OrdenCreadaDesdeCarritoEvent } from '@shared/event/orden-creada-desde-carrito.event';
 import type { VentasApi } from '@ventas/api/interfaces/ventas.api';
+import { DateTime } from '@shared/domain/value-objects/datetime.vo';
+import { UUID } from '@shared/domain/value-objects/uuid.vo';
 import { OrdenEventMapper } from './mappers/orden-event.mapper';
 
 @Injectable()
@@ -23,7 +26,7 @@ export class OrdenService implements OrdenesApi {
     @Inject('VentasApi')
     private readonly carritoService: VentasApi,
     private readonly eventEmitter: EventEmitter2,
-  ) {}
+  ) { }
 
   async crear(nuevaOrden: Orden): Promise<Orden> {
     await this.ordenRepository.save(nuevaOrden);
@@ -50,6 +53,17 @@ export class OrdenService implements OrdenesApi {
     this.eventEmitter.emit(
       'orden.producto.comprado',
       OrdenEventMapper.toProductoCompradoEvent(nuevaOrden),
+    );
+
+    // Publicar evento para que Ventas marque el carrito como COMPLETADO
+    this.eventEmitter.emit(
+      'orden.creada-desde-carrito',
+      new OrdenCreadaDesdeCarritoEvent(
+        UUID.random(),
+        DateTime.now().getValue(),
+        nuevaOrden.getId().getValue(),
+        carritoId.getValue(),
+      ),
     );
 
     return nuevaOrden;

@@ -1,5 +1,5 @@
 import { ProductoService } from '@catalogo/service/producto.service';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
 import { ProductoRequestDto } from '@catalogo/controller/dtos/producto-request.dto';
 import { ProductoResponseDto } from '@catalogo/controller/dtos/producto-response.dto';
 import { CategoriaRequestDto } from '@catalogo/controller/dtos/categoria-request.dto';
@@ -7,11 +7,13 @@ import { CategoriaResponseDto } from '@catalogo/controller/dtos/categoria-respon
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 import { ProductoMapper } from '@catalogo/controller/mappers/producto.mapper';
 import { CategoriaMapper } from '@catalogo/controller/mappers/categoria.mapper';
+import { ProductoEstadisticasMapper } from '@catalogo/controller/mappers/producto-estadisticas.mapper';
 import { ProductoParamDto } from '@catalogo/controller/dtos/producto-params.dto';
 import { CategoriaParamDto } from '@catalogo/controller/dtos/categoria-params.dto';
 import { Imagen } from '@catalogo/domain/value-objects/imagen';
 import { ImagenId } from '@catalogo/domain/value-objects/ids/imagen-id.vo';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ProductoEstadisticasResponseDto } from '@catalogo/controller/dtos/producto-estadisticas-response.dto';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
 @Controller()
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) { }
@@ -41,6 +43,17 @@ export class ProductoController {
     return productos.map((p) => ProductoMapper.toResponseDto(p));
   }
 
+  @Get('productos/mas-vendidos')
+  @ApiOperation({ summary: 'Productos más vendidos' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Cantidad de productos a retornar' })
+  @ApiResponse({ status: 200, description: 'Lista de productos más vendidos', type: [ProductoEstadisticasResponseDto] })
+  async masVendidos(
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<ProductoEstadisticasResponseDto[]> {
+    const estadisticas = await this.productoService.buscarMasVendidos(limit);
+    return estadisticas.map((e) => ProductoEstadisticasMapper.toResponseDto(e));
+  }
+
   @Get('productos/:id')
   @ApiOperation({ summary: 'Obtener un producto por ID' })
   @ApiParam({ name: 'id', description: 'ID del producto' })
@@ -54,6 +67,19 @@ export class ProductoController {
     const producto = await this.productoService.buscarPorId(productoId);
 
     return ProductoMapper.toResponseDto(producto);
+  }
+
+  @Get('productos/:id/estadisticas')
+  @ApiOperation({ summary: 'Estadísticas de un producto' })
+  @ApiParam({ name: 'id', description: 'ID del producto' })
+  @ApiResponse({ status: 200, description: 'Estadísticas del producto', type: ProductoEstadisticasResponseDto })
+  @ApiResponse({ status: 404, description: 'Estadísticas no encontradas' })
+  async estadisticas(
+    @Param() param: ProductoParamDto,
+  ): Promise<ProductoEstadisticasResponseDto> {
+    const productoId = ProductoMapper.toDomainId(param.id);
+    const estadisticas = await this.productoService.buscarEstadisticas(productoId);
+    return ProductoEstadisticasMapper.toResponseDto(estadisticas);
   }
 
   @Put('productos/:id')

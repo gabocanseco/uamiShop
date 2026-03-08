@@ -39,11 +39,11 @@ async function bootstrap() {
     .addTag('Órdenes')
     .addTag('Carrito')
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document); // URL: http://localhost:3000/api/docs
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`Swagger disponible en http://localhost:${process.env.PORT ?? 3000}/api/docs`);
+  //console.log(`Swagger disponible en http://localhost:${process.env.PORT ?? 3000}/api/docs`);
 }
 bootstrap();
