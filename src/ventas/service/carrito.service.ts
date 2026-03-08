@@ -63,7 +63,7 @@ export class CarritoService implements VentasApi {
 
     // Publicar evento ProductoAgregadoAlCarritoEvent con sus items
     this.eventEmitter.emit(
-      'orden.productoAgregadoAlCarrito',
+      'carrito.producto.agregado',
       CarritoEventMapper.toProductoAgregadoAlCarritoEvent(
         productoRef,
         carrito,

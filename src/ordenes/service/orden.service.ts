@@ -48,7 +48,7 @@ export class OrdenService implements OrdenesApi {
 
     // Publicar evento ProductoCompradoEvent con sus items
     this.eventEmitter.emit(
-      'orden.productoComprado',
+      'orden.producto.comprado',
       OrdenEventMapper.toProductoCompradoEvent(nuevaOrden),
     );
 
