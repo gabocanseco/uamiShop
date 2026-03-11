@@ -5,9 +5,16 @@ import { ProductoInMemoryRepository } from '@catalogo/repository/producto-in-mem
 import { CategoriaInMemoryRepository } from '@catalogo/repository/categoria-in-memory.repository';
 import { ProductoEstadisticasInMemoryRepository } from '@catalogo/repository/producto-estadisticas-in-memory-repository';
 
+import { ProductoEstadisticasService } from '@catalogo/service/producto-estadisticas.service';
+import { ProductoAgregadoAlCarritoListener } from '@catalogo/listeners/producto-agregado-al-carrito.listener';
+import { ProductoCompradoListener } from '@catalogo/listeners/producto-comprado.listener';
+
 @Module({
   providers: [
     ProductoService,
+    ProductoEstadisticasService,
+    ProductoAgregadoAlCarritoListener,
+    ProductoCompradoListener,
     {
       provide: 'IProductoRepository',
       useClass: ProductoInMemoryRepository,
@@ -23,4 +30,4 @@ import { ProductoEstadisticasInMemoryRepository } from '@catalogo/repository/pro
   ],
   controllers: [ProductoController],
 })
-export class CatalogoModule {}
+export class CatalogoModule { }

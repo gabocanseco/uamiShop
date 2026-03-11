@@ -8,9 +8,9 @@ import { ProductoCompradoEvent } from '@shared/event/producto-comprado.event';
 export class ProductoCompradoListener {
   constructor(
     private readonly productoEstadisticasService: ProductoEstadisticasService,
-  ) {}
+  ) { }
 
-  @OnEvent('orden.producto,comprado', { async: true }) // Escuchar el evento 'orden.productoComprado' de forma asíncrona
+  @OnEvent('orden.producto.comprado', { async: true }) // Escuchar el evento 'orden.producto.comprado' de forma asíncrona
   async onProductoComprado(productoCompradoEvent: ProductoCompradoEvent) {
     productoCompradoEvent.items.forEach((item) => {
       this.productoEstadisticasService.registrarVenta(

@@ -6,17 +6,17 @@ export class ProductoEstadisticas {
     private readonly productoId: ProductoId,
     private ventasTotales: number, // número de transacciones (1 transaccion puede tener varias unidades vendidas)
     private cantidadVendida: number, // unidades vendidas
-    private vecesAgregadAlCarrito: number,
+    private vecesAgregadoAlCarrito: number,
     private ultimaVentaAt: DateTime,
     private ultimaAgregadoAlCarritoAt: DateTime,
-  ) {}
+  ) { }
 
   public static crear(productoId: ProductoId): ProductoEstadisticas {
     return new ProductoEstadisticas(
       productoId,
       0, // ventasTotales
       0, // cantidadVendida
-      0, // vecesAgregadAlCarrito
+      0, // vecesAgregadoAlCarrito
       DateTime.now(), // ultimaVentaAt
       DateTime.now(), // ultimaAgregadoAlCarritoAt
     );
@@ -29,7 +29,7 @@ export class ProductoEstadisticas {
   }
 
   public incrementarAgregadoAlCarrito(): void {
-    this.vecesAgregadAlCarrito++;
+    this.vecesAgregadoAlCarrito++;
     this.ultimaAgregadoAlCarritoAt = DateTime.now();
   }
 
@@ -43,8 +43,8 @@ export class ProductoEstadisticas {
   public getCantidadVendida(): number {
     return this.cantidadVendida;
   }
-  public getVecesAgregadAlCarrito(): number {
-    return this.vecesAgregadAlCarrito;
+  public getVecesAgregadoAlCarrito(): number {
+    return this.vecesAgregadoAlCarrito;
   }
   public getUltimaVentaAt(): DateTime {
     return this.ultimaVentaAt;

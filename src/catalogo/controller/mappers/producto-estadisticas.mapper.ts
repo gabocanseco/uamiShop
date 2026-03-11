@@ -10,7 +10,7 @@ export class ProductoEstadisticasMapper {
       productoId: estadisticas.getProductoId().getValue(),
       ventasTotales: estadisticas.getVentasTotales(),
       cantidadVendida: estadisticas.getCantidadVendida(),
-      vecesAgregadAlCarrito: estadisticas.getVecesAgregadAlCarrito(),
+      vecesAgregadoAlCarrito: estadisticas.getVecesAgregadoAlCarrito(),
       ultimaVentaAt: estadisticas.getUltimaVentaAt().getValue(),
       ultimaAgregadoAlCarritoAt: estadisticas.getUltimaAgregadoAlCarritoAt().getValue(),
     });

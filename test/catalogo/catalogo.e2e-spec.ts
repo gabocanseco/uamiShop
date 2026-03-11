@@ -260,7 +260,80 @@ describe('Catalogo (e2e)', () => {
       .expect(201);
   });
 
+  it('GET /productos/mas-vendidos - deberia obtener los productos mas vendidos', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/productos/mas-vendidos')
+      .query({ limit: 5 })
+      .expect(200);
+
+    expect(Array.isArray(response.body)).toBe(true);
+  });
+
+  it('GET /productos/:id/estadisticas - deberia obtener las estadisticas de un producto', async () => {
+    // Crear categoría
+    const catRes = await request(app.getHttpServer())
+      .post('/categorias')
+      .send({
+        nombre: 'Estadisticas',
+        descripcion: 'Categoria estadisticas',
+      });
+    const categoriaIdRes = catRes.body.id;
+
+    // Crear producto
+    const productoRes = await request(app.getHttpServer())
+      .post('/productos')
+      .send({
+        nombre: 'Producto Estadisticas',
+        descripcion: 'Descripcion Estadisticas',
+        precio: 100,
+        categoriaId: categoriaIdRes,
+      });
+
+    const id = productoRes.body.id;
+
+    // "Warm up" las estadísticas agregando al carrito
+    const clienteId = '550e8400-e29b-41d4-a716-446655440003';
+    await request(app.getHttpServer())
+      .post(`/carritos/${clienteId}`)
+      .expect(201);
+
+    // Suponemos que el id del carrito se puede obtener, 
+    // pero para simplificar, si el listener funciona, con un carrito basta.
+    // Buscamos el carrito creado para ese cliente (o usamos el id devuelto)
+    const carritoId = clienteId;
+
+    const carritoRes = await request(app.getHttpServer())
+      .post(`/carritos/${clienteId}`)
+      .expect(201);
+    const actualCarritoId = carritoRes.body.id;
+
+    await request(app.getHttpServer())
+      .post(`/carritos/${actualCarritoId}/productos`)
+      .send({
+        productoRef: {
+          productoId: id,
+          nombreProducto: 'Producto Estadisticas',
+          sku: 'SKU-STATS'
+        },
+        cantidad: 1,
+        precioUnitario: 100
+      })
+      .expect(201);
+
+    // Esperar un poco a que se procese el evento asíncrono
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // Ahora las estadísticas deberían existir
+    const response = await request(app.getHttpServer())
+      .get(`/productos/${id}/estadisticas`)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('productoId', id);
+    expect(response.body.vecesAgregadoAlCarrito).toBeGreaterThan(0);
+  });
+
   afterAll(async () => {
     await app.close();
   });
+
 });

@@ -1,5 +1,5 @@
 import { ProductoService } from '@catalogo/service/producto.service';
-import { Body, Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Post, Put, Query, UseFilters } from '@nestjs/common';
 import { ProductoRequestDto } from '@catalogo/controller/dtos/producto-request.dto';
 import { ProductoResponseDto } from '@catalogo/controller/dtos/producto-response.dto';
 import { CategoriaRequestDto } from '@catalogo/controller/dtos/categoria-request.dto';
@@ -14,6 +14,9 @@ import { Imagen } from '@catalogo/domain/value-objects/imagen';
 import { ImagenId } from '@catalogo/domain/value-objects/ids/imagen-id.vo';
 import { ProductoEstadisticasResponseDto } from '@catalogo/controller/dtos/producto-estadisticas-response.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
+import { GlobalExceptionFilter } from '@shared/controller/filters/global-expcetion.filter';
+
+@UseFilters(GlobalExceptionFilter)
 @Controller()
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) { }

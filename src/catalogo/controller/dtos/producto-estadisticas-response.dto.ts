@@ -11,7 +11,7 @@ export class ProductoEstadisticasResponseDto {
   cantidadVendida!: number;
 
   @ApiProperty({ description: 'Veces agregado al carrito' })
-  vecesAgregadAlCarrito!: number;
+  vecesAgregadoAlCarrito!: number;
 
   @ApiProperty({ description: 'Fecha de la última venta' })
   ultimaVentaAt!: Date;
