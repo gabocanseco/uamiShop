@@ -6,7 +6,6 @@ import {
   Body,
   Put,
   Delete,
-  UseFilters,
 } from '@nestjs/common';
 import { CarritoResponseDto } from './dtos/carrito-response.dto';
 import { CarritoService } from '@ventas/service/carrito.service';
@@ -27,12 +26,11 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
-import { GlobalExceptionFilter } from '@shared/controller/filters/global-expcetion.filter';
 
 /**
  * Controller para gestionar las operaciones del carrito de compras
  */
-@UseFilters(GlobalExceptionFilter)
+@ApiTags('Carritos')
 @Controller('carritos')
 export class CarritoController {
   constructor(private readonly carritoService: CarritoService) {}

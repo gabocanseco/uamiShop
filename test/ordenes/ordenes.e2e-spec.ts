@@ -4,7 +4,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../../src/app.module';
 import { describe, it, expect, beforeEach, afterAll } from 'vitest';
-import { GlobalExceptionFilter } from '@shared/controller/filters/global-expcetion.filter';
+import { GlobalExceptionFilter } from '../../src/shared/controller/filters/global-exception.filter';
 
 describe('Ordenes (e2e)', () => {
   let app: INestApplication<App>;

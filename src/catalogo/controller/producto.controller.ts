@@ -1,5 +1,15 @@
 import { ProductoService } from '@catalogo/service/producto.service';
-import { Body, Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Post, Put, Query, UseFilters } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ProductoRequestDto } from '@catalogo/controller/dtos/producto-request.dto';
 import { ProductoResponseDto } from '@catalogo/controller/dtos/producto-response.dto';
 import { CategoriaRequestDto } from '@catalogo/controller/dtos/categoria-request.dto';
@@ -13,18 +23,28 @@ import { CategoriaParamDto } from '@catalogo/controller/dtos/categoria-params.dt
 import { Imagen } from '@catalogo/domain/value-objects/imagen';
 import { ImagenId } from '@catalogo/domain/value-objects/ids/imagen-id.vo';
 import { ProductoEstadisticasResponseDto } from '@catalogo/controller/dtos/producto-estadisticas-response.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
-import { GlobalExceptionFilter } from '@shared/controller/filters/global-expcetion.filter';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+  ApiQuery,
+} from '@nestjs/swagger';
 
-@UseFilters(GlobalExceptionFilter)
+@ApiTags('Productos')
 @Controller()
 export class ProductoController {
-  constructor(private readonly productoService: ProductoService) { }
+  constructor(private readonly productoService: ProductoService) {}
 
   @Post('productos')
   @ApiOperation({ summary: 'Crear un nuevo producto' })
   @ApiBody({ type: ProductoRequestDto })
-  @ApiResponse({ status: 201, description: 'Producto creado exitosamente', type: ProductoResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Producto creado exitosamente',
+    type: ProductoResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async crear(
     @Body() request: ProductoRequestDto,
@@ -38,7 +58,11 @@ export class ProductoController {
 
   @Get('productos')
   @ApiOperation({ summary: 'Obtener todos los productos' })
-  @ApiResponse({ status: 200, description: 'Lista de productos', type: [ProductoResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de productos',
+    type: [ProductoResponseDto],
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async obtenerTodos(): Promise<ProductoResponseDto[]> {
     const productos = await this.productoService.buscarTodos();
@@ -48,8 +72,17 @@ export class ProductoController {
 
   @Get('productos/mas-vendidos')
   @ApiOperation({ summary: 'Productos más vendidos' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Cantidad de productos a retornar' })
-  @ApiResponse({ status: 200, description: 'Lista de productos más vendidos', type: [ProductoEstadisticasResponseDto] })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Cantidad de productos a retornar',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de productos más vendidos',
+    type: [ProductoEstadisticasResponseDto],
+  })
   async masVendidos(
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ): Promise<ProductoEstadisticasResponseDto[]> {
@@ -60,7 +93,11 @@ export class ProductoController {
   @Get('productos/:id')
   @ApiOperation({ summary: 'Obtener un producto por ID' })
   @ApiParam({ name: 'id', description: 'ID del producto' })
-  @ApiResponse({ status: 200, description: 'Producto obtenido exitosamente', type: ProductoResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto obtenido exitosamente',
+    type: ProductoResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   async obtener(
     @Param() param: ProductoParamDto,
@@ -75,13 +112,18 @@ export class ProductoController {
   @Get('productos/:id/estadisticas')
   @ApiOperation({ summary: 'Estadísticas de un producto' })
   @ApiParam({ name: 'id', description: 'ID del producto' })
-  @ApiResponse({ status: 200, description: 'Estadísticas del producto', type: ProductoEstadisticasResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Estadísticas del producto',
+    type: ProductoEstadisticasResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Estadísticas no encontradas' })
   async estadisticas(
     @Param() param: ProductoParamDto,
   ): Promise<ProductoEstadisticasResponseDto> {
     const productoId = ProductoMapper.toDomainId(param.id);
-    const estadisticas = await this.productoService.buscarEstadisticas(productoId);
+    const estadisticas =
+      await this.productoService.buscarEstadisticas(productoId);
     return ProductoEstadisticasMapper.toResponseDto(estadisticas);
   }
 
@@ -89,7 +131,11 @@ export class ProductoController {
   @ApiOperation({ summary: 'Actualizar un producto por ID' })
   @ApiParam({ name: 'id', description: 'ID del producto' })
   @ApiBody({ type: ProductoRequestDto })
-  @ApiResponse({ status: 200, description: 'Producto actualizado exitosamente', type: ProductoResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto actualizado exitosamente',
+    type: ProductoResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   async actualizar(
@@ -121,7 +167,10 @@ export class ProductoController {
   @Post('productos/:id/desactivar')
   @ApiOperation({ summary: 'Desactivar un producto por ID' })
   @ApiParam({ name: 'id', description: 'ID del producto' })
-  @ApiResponse({ status: 200, description: 'Producto desactivado exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto desactivado exitosamente',
+  })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   async desactivar(@Param() param: ProductoParamDto): Promise<void> {
     const productoId = ProductoMapper.toDomainId(param.id);
@@ -145,7 +194,6 @@ export class ProductoController {
   @ApiResponse({ status: 201, description: 'Imagen agregada exitosamente' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   @ApiOperation({ summary: 'Agregar una imagen a un producto' })
-
   async agregarImagen(
     @Param() param: ProductoParamDto,
     @Body() body: { url: string; alt: string; orden: number },
@@ -163,7 +211,11 @@ export class ProductoController {
   @Post('categorias')
   @ApiOperation({ summary: 'Crear una nueva categoría' })
   @ApiBody({ type: CategoriaRequestDto })
-  @ApiResponse({ status: 201, description: 'Categoría creada exitosamente', type: CategoriaResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Categoría creada exitosamente',
+    type: CategoriaResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async crearCategoria(
     @Body() request: CategoriaRequestDto,
@@ -177,9 +229,12 @@ export class ProductoController {
 
   @Get('categorias')
   @ApiOperation({ summary: 'Obtener todas las categorías' })
-  @ApiResponse({ status: 200, description: 'Lista de categorías', type: [CategoriaResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de categorías',
+    type: [CategoriaResponseDto],
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
-
   async obtenerTodasCategorias(): Promise<CategoriaResponseDto[]> {
     const categorias = await this.productoService.buscarTodasCategorias();
 
@@ -189,7 +244,11 @@ export class ProductoController {
   @Get('categorias/:id')
   @ApiOperation({ summary: 'Obtener una categoría por ID' })
   @ApiParam({ name: 'id', description: 'ID de la categoría' })
-  @ApiResponse({ status: 200, description: 'Categoría obtenida exitosamente', type: CategoriaResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoría obtenida exitosamente',
+    type: CategoriaResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada' })
   async obtenerCategoriaPorId(
     @Param() param: CategoriaParamDto,
@@ -206,7 +265,11 @@ export class ProductoController {
   @ApiOperation({ summary: 'Actualizar una categoría por ID' })
   @ApiParam({ name: 'id', description: 'ID de la categoría' })
   @ApiBody({ type: CategoriaRequestDto })
-  @ApiResponse({ status: 200, description: 'Categoría actualizada exitosamente', type: CategoriaResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoría actualizada exitosamente',
+    type: CategoriaResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada' })
   async actualizarCategoria(
