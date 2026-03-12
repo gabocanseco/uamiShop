@@ -30,6 +30,23 @@ export class OrdenService implements OrdenesApi {
 
   async crear(nuevaOrden: Orden): Promise<Orden> {
     await this.ordenRepository.save(nuevaOrden);
+
+    // Publicar eventos
+    this.eventEmitter.emit(
+      'orden.producto.comprado',
+      OrdenEventMapper.toProductoCompradoEvent(nuevaOrden),
+    );
+
+    this.eventEmitter.emit(
+      'orden.creada',
+      new OrdenCreadaEvent(
+        UUID.random(),
+        DateTime.now().getValue(),
+        nuevaOrden.getId().getValue(),
+        nuevaOrden.toPrimitives().clienteId,
+      ),
+    );
+
     return nuevaOrden;
   }
 
@@ -62,8 +79,8 @@ export class OrdenService implements OrdenesApi {
         UUID.random(),
         DateTime.now().getValue(),
         nuevaOrden.getId().getValue(),
-        carritoId.getValue(),
         nuevaOrden.toPrimitives().clienteId,
+        carritoId.getValue(),
       ),
     );
 

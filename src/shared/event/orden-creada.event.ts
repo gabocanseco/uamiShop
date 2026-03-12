@@ -6,7 +6,7 @@ export class OrdenCreadaEvent {
         readonly eventId: string,
         readonly occurredAt: Date,
         readonly ordenId: string,
-        readonly carritoId: string,
         readonly clienteId: string,
+        readonly carritoId?: string,
     ) { }
 }

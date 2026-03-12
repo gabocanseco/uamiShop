@@ -14,7 +14,9 @@ export class OrdenCreadaListener {
 
     @OnEvent('orden.creada', { async: true })
     async onOrdenCreada(event: OrdenCreadaEvent) {
-        const carritoId = CarritoId.of(event.carritoId);
-        await this.carritoService.completarCheckout(carritoId);
+        if (event.carritoId) {
+            const carritoId = CarritoId.of(event.carritoId);
+            await this.carritoService.completarCheckout(carritoId);
+        }
     }
 }

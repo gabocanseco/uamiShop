@@ -55,6 +55,48 @@ describe('Pruebas del OrdenService', () => {
     await app.init();
   });
 
+  describe('OrdenService.crear', () => {
+    it('debe crear una orden y emitir eventos', async () => {
+      const clienteId = ClienteId.of(UUID.random());
+      const items = [
+        ItemOrden.crear(
+          ProductoId.of(UUID.random()),
+          'Laptop',
+          'lptp-12311',
+          1,
+          Money.crear(1000, 'MXN'),
+        ),
+      ];
+      const direccion = DireccionEnvio.crear(
+        'Juan Perez',
+        'Vasco de Quiroga',
+        'CDMX',
+        'CDMX',
+        '50000',
+        'México',
+        '5598436517',
+        'Casa blanca',
+      );
+      const pago = ResumenPago.crear('Tarjeta Débito');
+      const nuevaOrden = Orden.crear(clienteId, items, direccion, pago);
+
+      const resultado = await service.crear(nuevaOrden);
+
+      expect(resultado).toBeDefined();
+      expect(resultado.getId()).toBe(nuevaOrden.getId());
+
+      const eventEmitter = moduleFixture.get<EventEmitter2>(EventEmitter2);
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        'orden.creada',
+        expect.any(OrdenCreadaEvent),
+      );
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        'orden.producto.comprado',
+        expect.any(Object),
+      );
+    });
+  });
+
   describe('Ordenservice.buscarPorId', () => {
     it('debe lanzar excepcion si la orden no existe', async () => {
       const ordenIdInexistente = OrdenId.of(UUID.random());
