@@ -1,7 +1,8 @@
-# ---------- STAGE 1: Build ----------
+#Paso 1: Construcción del proyecto
 FROM node:20-alpine AS builder
-
+#alpine es una imagen ligera de Linux, ideal para aplicaciones Node.js en producción.
 WORKDIR /app
+# Establece el directorio de trabajo dentro del contenedor. Todos los comandos siguientes se ejecutarán desde este directorio.
 
 # Copiar package files
 COPY package*.json ./
@@ -16,7 +17,7 @@ COPY . .
 RUN npm run build
 
 
-# ---------- STAGE 2: Production ----------
+#Paso 2: Imagen final para producción
 FROM node:20-alpine
 
 WORKDIR /app
