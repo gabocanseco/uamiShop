@@ -38,6 +38,48 @@ export class ItemOrden {
     return nuevoSubtotal;
   }
 
+  public getId(): ItemOrdenId {
+    return this.id;
+  }
+  public getProductoId(): ProductoId {
+    return this.productoId;
+  }
+  public getNombreProducto(): string {
+    return this.nombreProducto;
+  }
+  public getSku(): string {
+    return this.sku;
+  }
+  public getCantidad(): number {
+    return this.cantidad;
+  }
+  public getPrecioUnitario(): Money {
+    return this.precioUnitario;
+  }
+  public getSubtotal(): Money {
+    return this.subtotal;
+  }
+
+  static reconstruct(props: {
+    id: ItemOrdenId;
+    productoId: ProductoId;
+    nombreProducto: string;
+    sku: string;
+    cantidad: number;
+    precioUnitario: Money;
+    subtotal: Money;
+  }): ItemOrden {
+    return new ItemOrden(
+      props.id,
+      props.productoId,
+      props.nombreProducto,
+      props.sku,
+      props.cantidad,
+      props.precioUnitario,
+      props.subtotal,
+    );
+  }
+
   public toPrimitives() {
     return {
       id: this.id.getValue(),

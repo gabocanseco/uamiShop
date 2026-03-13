@@ -1,4 +1,9 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Para build queremos forzar una compilación completa y emisión de todos los .js,
+    // sin reutilizar artefactos viejos que ya no existen en "dist".
+    "incremental": false
+  },
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "**/test/*"]
 }

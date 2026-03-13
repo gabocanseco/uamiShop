@@ -34,6 +34,38 @@ export class CambioEstado {
     );
   }
 
+  public getEstadoNuevo(): EstadoOrden {
+    return this.estadoNuevo;
+  }
+  public getFecha(): DateTime {
+    return this.fecha;
+  }
+  public getMotivo(): string {
+    return this.motivo;
+  }
+  public getUsuario(): string {
+    return this.usuario;
+  }
+  public getEstadoAnterior(): EstadoOrden | undefined {
+    return this.estadoAnterior;
+  }
+
+  static reconstruct(props: {
+    estadoNuevo: EstadoOrden;
+    fecha: DateTime;
+    motivo: string;
+    usuario: string;
+    estadoAnterior?: EstadoOrden;
+  }): CambioEstado {
+    return new CambioEstado(
+      props.estadoNuevo,
+      props.fecha,
+      props.motivo,
+      props.usuario,
+      props.estadoAnterior,
+    );
+  }
+
   public toPrimitives() {
     return {
       estadoNuevo: this.estadoNuevo.toString(),

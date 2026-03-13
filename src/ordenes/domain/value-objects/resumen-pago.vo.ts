@@ -47,6 +47,34 @@ export class ResumenPago {
     );
   }
 
+  public getMetodoPago(): string {
+    return this.metodoPago;
+  }
+
+  public getEstado(): EstadoPago {
+    return this.estado;
+  }
+  public getReferenciaExterna(): string | undefined {
+    return this.referenciaExterna;
+  }
+  public getFechaProcesamiento(): DateTime | undefined {
+    return this.fechaProcesamiento;
+  }
+
+  static reconstruct(props: {
+    metodoPago: string;
+    estado: EstadoPago;
+    referenciaExterna?: string;
+    fechaProcesamiento?: DateTime;
+  }): ResumenPago {
+    return new ResumenPago(
+      props.metodoPago,
+      props.estado,
+      props.referenciaExterna,
+      props.fechaProcesamiento,
+    );
+  }
+
   public toPrimitives() {
     return {
       metodoPago: this.metodoPago,

@@ -17,16 +17,17 @@ import type { VentasApi } from '@ventas/api/interfaces/ventas.api';
 import { DateTime } from '@shared/domain/value-objects/datetime.vo';
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
 import { OrdenEventMapper } from './mappers/orden-event.mapper';
+import { ORDEN_REPOSITORY } from '@ordenes/domain/constants';
 
 @Injectable()
 export class OrdenService implements OrdenesApi {
   constructor(
-    @Inject('IOrdenRepository')
+    @Inject(ORDEN_REPOSITORY)
     private readonly ordenRepository: IOrdenRepository,
     @Inject('VentasApi')
     private readonly carritoService: VentasApi,
     private readonly eventEmitter: EventEmitter2,
-  ) { }
+  ) {}
 
   async crear(nuevaOrden: Orden): Promise<Orden> {
     await this.ordenRepository.save(nuevaOrden);
