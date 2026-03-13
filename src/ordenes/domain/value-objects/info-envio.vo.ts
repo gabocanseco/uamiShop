@@ -29,6 +29,28 @@ export class InfoEnvio {
     return new InfoEnvio(proveedorLogistico, numeroGuia, fechaEtimadaEntrega);
   }
 
+  public getProveedorLogistico(): string {
+    return this.proveedorLogistico;
+  }
+  public getNumeroGuia(): string {
+    return this.numeroGuia;
+  }
+  public getFechaEtimadaEntrega(): DateTime {
+    return this.fechaEtimadaEntrega;
+  }
+
+  static reconstruct(props: {
+    proveedorLogistico: string;
+    numeroGuia: string;
+    fechaEtimadaEntrega: DateTime;
+  }): InfoEnvio {
+    return new InfoEnvio(
+      props.proveedorLogistico,
+      props.numeroGuia,
+      props.fechaEtimadaEntrega,
+    );
+  }
+
   public toPrimitives() {
     return {
       proveedorLogistico: this.proveedorLogistico,

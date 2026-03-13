@@ -13,7 +13,8 @@ import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
-import { IOrdenRepository } from '@ordenes/repository/interfaces/orden.repository';
+import type { IOrdenRepository } from '@ordenes/repository/interfaces/orden.repository';
+import { ORDEN_REPOSITORY } from '@ordenes/domain/constants';
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
 import { ItemOrden } from '@ordenes/domain/entities/item-orden.entity';
@@ -37,7 +38,7 @@ describe('Pruebas del OrdenService', () => {
     const moduleFixtureRes = await Test.createTestingModule({
       providers: [
         OrdenService,
-        { provide: 'IOrdenRepository', useClass: OrdenInMemoryRepository },
+        { provide: ORDEN_REPOSITORY, useClass: OrdenInMemoryRepository },
         {
           provide: 'VentasApi',
           useValue: ventasApiMock,
@@ -211,7 +212,7 @@ describe('Pruebas del OrdenService', () => {
       orden = Orden.crear(clienteId, items, direccionEnvio, resumenPago);
       ordenId = orden.getId();
 
-      repository = app.get<IOrdenRepository>('IOrdenRepository');
+      repository = app.get<IOrdenRepository>(ORDEN_REPOSITORY);
       await repository.save(orden);
     });
 
@@ -259,7 +260,7 @@ describe('Pruebas del OrdenService', () => {
       orden = Orden.crear(clienteId, items, direccionEnvio, resumenPago);
       ordenId = orden.getId();
 
-      repository = app.get<IOrdenRepository>('IOrdenRepository');
+      repository = app.get<IOrdenRepository>(ORDEN_REPOSITORY);
       await repository.save(orden);
     });
     it('debe lanzar excepcion si el estado de la orden no es confirmada', async () => {
@@ -309,7 +310,7 @@ describe('Pruebas del OrdenService', () => {
       orden = Orden.crear(clienteId, items, direccionEnvio, resumenPago);
       ordenId = orden.getId();
 
-      repository = app.get<IOrdenRepository>('IOrdenRepository');
+      repository = app.get<IOrdenRepository>(ORDEN_REPOSITORY);
       await repository.save(orden);
     });
     it('debe lanzar excepcion si el estado de la orden no esta aprobada', async () => {
@@ -359,7 +360,7 @@ describe('Pruebas del OrdenService', () => {
       orden = Orden.crear(clienteId, items, direccionEnvio, resumenPago);
       ordenId = orden.getId();
 
-      repository = app.get<IOrdenRepository>('IOrdenRepository');
+      repository = app.get<IOrdenRepository>(ORDEN_REPOSITORY);
       await repository.save(orden);
     });
     it('debe lanzar excepcion si el estado de la orden no esta en preparacion', async () => {
@@ -415,7 +416,7 @@ describe('Pruebas del OrdenService', () => {
       orden = Orden.crear(clienteId, items, direccionEnvio, resumenPago);
       ordenId = orden.getId();
 
-      repository = app.get<IOrdenRepository>('IOrdenRepository');
+      repository = app.get<IOrdenRepository>(ORDEN_REPOSITORY);
       await repository.save(orden);
     });
 
@@ -466,7 +467,7 @@ describe('Pruebas del OrdenService', () => {
       orden = Orden.crear(clienteId, items, direccionEnvio, resumenPago);
       ordenId = orden.getId();
 
-      repository = app.get<IOrdenRepository>('IOrdenRepository');
+      repository = app.get<IOrdenRepository>(ORDEN_REPOSITORY);
       await repository.save(orden);
     });
 

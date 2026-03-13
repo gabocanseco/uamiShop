@@ -230,9 +230,9 @@ export class Orden {
     this.estado = nuevoEstado;
   }
 
-  public obtenerEstadoActual(): EstadoOrden {
-    return this.estado;
-  }
+  // public obtenerEstadoActual(): EstadoOrden {
+  //   return this.estado;
+  // }
 
   public obtenerHistorial(): CambioEstado[] {
     return this.historialEstados;
@@ -242,8 +242,40 @@ export class Orden {
     return this.id;
   }
 
+  public getNumeroOrden(): string {
+    return this.numeroOrden;
+  }
+  public getClienteId(): ClienteId {
+    return this.clienteId;
+  }
+  public getItems(): ItemOrden[] {
+    return this.items;
+  }
+  public getDireccionEnvio(): DireccionEnvio {
+    return this.direccionEnvio;
+  }
+  public getResumenPago(): ResumenPago {
+    return this.resumenPago;
+  }
+  public getSubtotal(): Money {
+    return this.subtotal;
+  }
+  public getDescuento(): Money {
+    return this.descuento;
+  }
+  public getTotal(): Money {
+    return this.total;
+  }
+  public getInfoEnvio(): InfoEnvio | undefined {
+    return this.infoEnvio;
+  }
+
   public getEstado(): EstadoOrden {
     return this.estado;
+  }
+
+  public getFechaCreacion(): DateTime {
+    return this.fechaCreacion;
   }
 
   public static crearDesdeCarritoResumen(
@@ -266,6 +298,38 @@ export class Orden {
     );
 
     return Orden.crear(clienteId, items, direccionEnvio, resumenPago);
+  }
+
+  static reconstruct(props: {
+    id: OrdenId;
+    numeroOrden: string;
+    clienteId: ClienteId;
+    items: ItemOrden[];
+    direccionEnvio: DireccionEnvio;
+    resumenPago: ResumenPago;
+    subtotal: Money;
+    descuento: Money;
+    total: Money;
+    estado: EstadoOrden;
+    fechaCreacion: DateTime;
+    historialEstados: CambioEstado[];
+    infoEnvio?: InfoEnvio;
+  }): Orden {
+    return new Orden(
+      props.id,
+      props.numeroOrden,
+      props.clienteId,
+      props.items,
+      props.direccionEnvio,
+      props.resumenPago,
+      props.subtotal,
+      props.descuento,
+      props.total,
+      props.estado,
+      props.fechaCreacion,
+      props.historialEstados,
+      props.infoEnvio,
+    );
   }
 
   public toPrimitives() {
