@@ -32,7 +32,7 @@ COPY --from=builder /app/dist ./dist
 # Copiar archivos necesarios si existen
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-# Puerto típico de NestJS
+# Puerto 
 EXPOSE 3000
 
 # Comando para iniciar
