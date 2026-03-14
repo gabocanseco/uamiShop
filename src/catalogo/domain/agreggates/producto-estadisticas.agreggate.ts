@@ -52,4 +52,21 @@ export class ProductoEstadisticas {
   public getUltimaAgregadoAlCarritoAt(): DateTime {
     return this.ultimaAgregadoAlCarritoAt;
   }
+  public static reconstruct(
+    productoId: ProductoId,
+    ventasTotales: number,
+    cantidadVendida: number,
+    vecesAgregadoAlCarrito: number,
+    ultimaVentaAt: DateTime,
+    ultimaAgregadoAlCarritoAt: DateTime,
+  ): ProductoEstadisticas {
+    return new ProductoEstadisticas(
+      productoId,
+      ventasTotales,
+      cantidadVendida,
+      vecesAgregadoAlCarrito,
+      ultimaVentaAt,
+      ultimaAgregadoAlCarritoAt,
+    );
+  }
 }

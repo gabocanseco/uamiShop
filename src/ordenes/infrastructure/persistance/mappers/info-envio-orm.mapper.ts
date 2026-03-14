@@ -3,7 +3,7 @@ import { InfoEnvioOrmEmbeddable } from '@ordenes/infrastructure/persistance/embe
 import { DateTime } from '@shared/domain/value-objects/datetime.vo';
 
 export class InfoEnvioOrmMapper {
-  // si no hay informcion de envio se devuelve undefined, ya que info de envio es opcional en la orden, y se puede crear una orden sin esta información, por lo que el método toDomain debe ser capaz de manejar un InfoEnvioOrmEmbeddable vacío o con campos nulos.
+
   static toDomain(
     entity: InfoEnvioOrmEmbeddable | undefined,
   ): InfoEnvio | undefined {

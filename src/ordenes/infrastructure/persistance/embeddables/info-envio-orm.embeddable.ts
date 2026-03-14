@@ -1,7 +1,5 @@
 import { Column } from 'typeorm';
 
-// Los campos son opcionales porque no todas las órdenes tendrán esta información, especialmente al momento de la creación.
-// Se pueden actualizar posteriormente cuando se tenga la información de envío.
 export class InfoEnvioOrmEmbeddable {
   @Column('varchar', {
     name: 'proveedor_logistico',

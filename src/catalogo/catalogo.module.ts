@@ -1,15 +1,27 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductoService } from '@catalogo/service/producto.service';
 import { ProductoController } from '@catalogo/controller/producto.controller';
-import { ProductoInMemoryRepository } from '@catalogo/repository/producto-in-memory.repository';
-import { CategoriaInMemoryRepository } from '@catalogo/repository/categoria-in-memory.repository';
-import { ProductoEstadisticasInMemoryRepository } from '@catalogo/repository/producto-estadisticas-in-memory-repository';
-
 import { ProductoEstadisticasService } from '@catalogo/service/producto-estadisticas.service';
 import { ProductoAgregadoAlCarritoListener } from '@catalogo/listeners/producto-agregado-al-carrito.listener';
 import { ProductoCompradoListener } from '@catalogo/listeners/producto-comprado.listener';
 
+import { ProductoOrmEntity } from '@catalogo/infrastructure/persistence/entities/producto-orm.entity';
+import { CategoriaOrmEntity } from '@catalogo/infrastructure/persistence/entities/categoria-orm.entity';
+import { ProductoEstadisticasOrmEntity } from '@catalogo/infrastructure/persistence/entities/producto-estadisticas-orm.entity';
+
+import { ProductoOrmRepository } from '@catalogo/infrastructure/persistence/repositories/producto-orm.repository';
+import { CategoriaOrmRepository } from '@catalogo/infrastructure/persistence/repositories/categoria-orm.repository';
+import { ProductoEstadisticasOrmRepository } from '@catalogo/infrastructure/persistence/repositories/producto-estadisticas-orm.repository';
+
 @Module({
+  imports: [
+    TypeOrmModule.forFeature([
+      ProductoOrmEntity,
+      CategoriaOrmEntity,
+      ProductoEstadisticasOrmEntity,
+    ]),
+  ],
   providers: [
     ProductoService,
     ProductoEstadisticasService,
@@ -17,15 +29,15 @@ import { ProductoCompradoListener } from '@catalogo/listeners/producto-comprado.
     ProductoCompradoListener,
     {
       provide: 'IProductoRepository',
-      useClass: ProductoInMemoryRepository,
+      useClass: ProductoOrmRepository,
     },
     {
       provide: 'ICategoriaRepository',
-      useClass: CategoriaInMemoryRepository,
+      useClass: CategoriaOrmRepository,
     },
     {
       provide: 'IProductoEstadisticasRepository',
-      useClass: ProductoEstadisticasInMemoryRepository,
+      useClass: ProductoEstadisticasOrmRepository,
     },
   ],
   controllers: [ProductoController],
