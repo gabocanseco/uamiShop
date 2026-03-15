@@ -118,3 +118,49 @@ nest generate service catalogo/service/producto --flat --no-spec
 # crea un nuevo controlador vacio y sin archivo de pruebas
 nest generate controller catalogo/controller/producto --flat --no-spec
 ```
+
+## Docker
+
+### Crear imagen
+
+```bash
+docker build -t uamishop:latest .
+
+# Imagen para docker hub
+docker build -t diegouvazquezr/uamishop:latest .
+```
+
+### Crear y ejecutar contenedor
+
+```bash
+docker run -p 8080:3000 uamishop:latest
+```
+
+### Levantar mysql
+
+```bash
+docker run -d  --name mysql  -e MYSQL_ROOT_PASSWORD=root  -e MYSQL_DATABASE=uamishop  -e MYSQL_USER=uamishop  -e MYSQL_PASSWORD=uamishop  -p 3307:3306  mysql:latest
+```
+
+### Crear y ejecutar contenedor con mysql
+
+```bash
+docker run -d  -p 8080:3000  -e NODE_ENV=mysql  -e DB_HOST=host.docker.internal  -e DB_PORT=3307  -e DB_USERNAME=uamishop  -e DB_PASSWORD=uamishop  -e DB_DATABASE=uamishop  --name uamishop uamishop:latest
+```
+
+## Docker Compose
+
+### Ejecutar aplicacion
+
+```bash
+docker-compose up -d
+```
+
+### Destruir aplicación
+
+```bash
+docker-compose down
+
+# Destruir volumen
+docker-compose down -v
+```
