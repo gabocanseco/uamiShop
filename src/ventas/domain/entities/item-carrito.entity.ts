@@ -14,7 +14,7 @@ export class ItemCarrito {
     private productoRef: ProductoRef,
     private cantidad: number,
     private precioUnitario: Money,
-  ) {}
+  ) { }
 
   public static crear(
     productoRef: ProductoRef,
@@ -28,6 +28,20 @@ export class ItemCarrito {
       productoRef,
       cantidad,
       precioUnitario,
+    );
+  }
+
+  public static reconstruct(props: {
+    id: ItemCarritoId;
+    productoRef: ProductoRef;
+    cantidad: number;
+    precioUnitario: Money;
+  }): ItemCarrito {
+    return new ItemCarrito(
+      props.id,
+      props.productoRef,
+      props.cantidad,
+      props.precioUnitario,
     );
   }
 

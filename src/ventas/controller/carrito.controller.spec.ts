@@ -3,13 +3,15 @@ import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-fo
 import { CarritoResponseDto } from './dtos/carrito-response.dto';
 import { ClienteParamDto } from '@shared/controller/dtos/cliente-params.dto';
 import { CarritoParamDto } from './dtos/carrito-params.dto';
-import { CarritoRequestDto, ProductoRefDto } from './dtos/carrito-request.dto';
+import { CarritoRequestDto } from './dtos/carrito-request.dto';
+import { ProductoRef } from '@ventas/domain/value-objects/producto-ref.vo';
 import { ProductoRefMapper } from './mappers/carrito.mapper';
 import { vi } from 'vitest';
+import { ProductoRefResumenDto } from '@ventas/api/dtos/producto-ref-resumen.dto';
 
 // Mocks para pruebas unitarias
 class DummyCarrito {
-  constructor(private payload: any) {}
+  constructor(private payload: any) { }
   toPrimitives() {
     return this.payload;
   }
@@ -67,7 +69,7 @@ describe('CarritoController (unit)', () => {
         productoId: '550e8400-e29b-41d4-a716-446655440000',
         nombreProducto: 'test',
         sku: 'sku',
-      } as ProductoRefDto,
+      } as ProductoRefResumenDto,
       cantidad: 2,
       precioUnitario: 10,
     } as any;

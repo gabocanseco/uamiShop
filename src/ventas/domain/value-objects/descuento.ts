@@ -12,7 +12,7 @@ export class Descuento {
     private readonly tipo: TipoDescuento,
     private readonly valor: number, // porcentaje a descontar
     private readonly montoDescontado: Money, // monto descontado despues de calcular el descuento
-  ) {}
+  ) { }
 
   public static crear(
     codigo: string,
@@ -26,6 +26,15 @@ export class Descuento {
     }
 
     return new Descuento(codigo, tipo, valor, Money.cero());
+  }
+
+  public static reconstruct(
+    codigo: string,
+    tipo: TipoDescuento,
+    valor: number,
+    montoDescontado: Money,
+  ): Descuento {
+    return new Descuento(codigo, tipo, valor, montoDescontado);
   }
 
   public calcularDescuento(subtotal: Money): Money {

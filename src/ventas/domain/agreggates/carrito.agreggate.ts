@@ -18,7 +18,7 @@ export class Carrito {
     private estado: EstadoCarrito,
     private fechaCreacion: DateTime,
     private fechaActualizacion: DateTime,
-  ) {}
+  ) { }
 
   public static crear(clienteId: ClienteId): Carrito {
     return new Carrito(
@@ -29,6 +29,26 @@ export class Carrito {
       EstadoCarrito.ACTIVO,
       DateTime.now(),
       DateTime.now(),
+    );
+  }
+
+  public static reconstruct(props: {
+    id: CarritoId;
+    clienteId: ClienteId;
+    items: Map<string, ItemCarrito>;
+    descuentos: Descuento[];
+    estado: EstadoCarrito;
+    fechaCreacion: DateTime;
+    fechaActualizacion: DateTime;
+  }): Carrito {
+    return new Carrito(
+      props.id,
+      props.clienteId,
+      props.items,
+      props.descuentos,
+      props.estado,
+      props.fechaCreacion,
+      props.fechaActualizacion,
     );
   }
 
