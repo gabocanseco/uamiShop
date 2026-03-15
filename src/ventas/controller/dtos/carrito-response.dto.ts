@@ -1,5 +1,4 @@
-import { a } from "node_modules/vitest/dist/chunks/suite.d.BJWk38HB";
-import { ApiProperty } from '@nestjs/swagger';  
+import { ApiProperty } from '@nestjs/swagger';
 export class CarritoResponseDto {
   @ApiProperty({
     description: 'ID único del carrito',
