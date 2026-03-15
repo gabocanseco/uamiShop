@@ -10,8 +10,10 @@ import type { IProductoEstadisticasRepository } from '@catalogo/repository/inter
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable() // Convierte esta clase en un proveedor de servicios que puede ser inyectado en otros componentes de NestJS
+@Transactional()
 export class ProductoService implements CatalogoApi {
   constructor(
     @Inject('IProductoRepository')
@@ -22,6 +24,7 @@ export class ProductoService implements CatalogoApi {
     private readonly productoEstadisticasRepository: IProductoEstadisticasRepository,
   ) { }
 
+  @Transactional()
   async crear(nuevoProducto: Producto): Promise<Producto> {
     await this.productoRepository.save(nuevoProducto);
     return nuevoProducto;
@@ -41,6 +44,7 @@ export class ProductoService implements CatalogoApi {
     return productos;
   }
 
+  @Transactional()
   async actualizar(id: ProductoId, nuevoProducto: Producto): Promise<Producto> {
     // Cargar el producto
     const producto = await this.buscarPorId(id);
@@ -60,18 +64,21 @@ export class ProductoService implements CatalogoApi {
     return producto;
   }
 
+  @Transactional()
   async activar(id: ProductoId): Promise<void> {
     const producto = await this.buscarPorId(id);
     producto.activar();
     await this.productoRepository.update(producto);
   }
 
+  @Transactional()
   async desactivar(id: ProductoId): Promise<void> {
     const producto = await this.buscarPorId(id);
     producto.desactivar();
     await this.productoRepository.update(producto);
   }
 
+  @Transactional()
   async agregarImagen(id: ProductoId, imagen: Imagen): Promise<void> {
     const producto = await this.buscarPorId(id);
     producto.agregarImagen(imagen);
@@ -90,6 +97,7 @@ export class ProductoService implements CatalogoApi {
     return estadisticas;
   }
 
+  @Transactional()
   async crearCategoria(nuevaCategoria: Categoria): Promise<Categoria> {
     await this.categoriaRepository.save(nuevaCategoria);
 
@@ -109,6 +117,7 @@ export class ProductoService implements CatalogoApi {
     return categorias;
   }
 
+  @Transactional()
   async actualizarCategoria(
     id: CategoriaId,
     nuevaCategoria: Categoria,

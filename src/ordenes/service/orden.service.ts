@@ -18,8 +18,10 @@ import { DateTime } from '@shared/domain/value-objects/datetime.vo';
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
 import { OrdenEventMapper } from './mappers/orden-event.mapper';
 import { ORDEN_REPOSITORY } from '@ordenes/domain/constants';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
+@Transactional()
 export class OrdenService implements OrdenesApi {
   constructor(
     @Inject(ORDEN_REPOSITORY)
@@ -29,6 +31,7 @@ export class OrdenService implements OrdenesApi {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  @Transactional()
   async crear(nuevaOrden: Orden): Promise<Orden> {
     await this.ordenRepository.save(nuevaOrden);
 
@@ -51,6 +54,7 @@ export class OrdenService implements OrdenesApi {
     return nuevaOrden;
   }
 
+  @Transactional()
   async crearDesdeCarrito(
     carritoId: CarritoId,
     direccionEnvio: DireccionEnvio,
@@ -103,6 +107,7 @@ export class OrdenService implements OrdenesApi {
     return ordenes;
   }
 
+  @Transactional()
   async confirmar(ordenId: OrdenId): Promise<Orden> {
     const orden = await this.buscarPorId(ordenId);
 
@@ -113,6 +118,7 @@ export class OrdenService implements OrdenesApi {
     return orden;
   }
 
+  @Transactional()
   async procesarPago(ordenId: OrdenId, referenciaPago: string): Promise<Orden> {
     const orden = await this.buscarPorId(ordenId);
 
@@ -123,6 +129,7 @@ export class OrdenService implements OrdenesApi {
     return orden;
   }
 
+  @Transactional()
   async marcarEnProceso(ordenId: OrdenId): Promise<Orden> {
     const orden = await this.buscarPorId(ordenId);
 
@@ -133,6 +140,7 @@ export class OrdenService implements OrdenesApi {
     return orden;
   }
 
+  @Transactional()
   async marcarEnviada(ordenId: OrdenId, infoEnvio: InfoEnvio): Promise<Orden> {
     const orden = await this.buscarPorId(ordenId);
 
@@ -143,6 +151,7 @@ export class OrdenService implements OrdenesApi {
     return orden;
   }
 
+  @Transactional()
   async marcarEntregada(ordenId: OrdenId): Promise<Orden> {
     const orden = await this.buscarPorId(ordenId);
 
@@ -153,6 +162,7 @@ export class OrdenService implements OrdenesApi {
     return orden;
   }
 
+  @Transactional()
   async cancelar(ordenId: OrdenId, motivo: string): Promise<Orden> {
     const orden = await this.buscarPorId(ordenId);
 

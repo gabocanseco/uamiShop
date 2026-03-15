@@ -12,11 +12,13 @@ import { VentasApiMapper } from '@ventas/api/mappers/ventas-api.mapper';
 import { CarritoResumenDto } from '@ventas/api/dtos/carrito-resumen.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CarritoEventMapper } from './mappers/carrito-event.mapper';
+import { Transactional } from 'typeorm-transactional';
 
 /**
  * Servicio de aplicación para gestionar carritos de compra
  */
 @Injectable()
+@Transactional()
 export class CarritoService implements VentasApi {
   constructor(
     @Inject('ICarritoRepository')
@@ -49,6 +51,7 @@ export class CarritoService implements VentasApi {
   /**
    * Agrega un producto al carrito
    */
+  @Transactional()
   async agregarProducto(
     carritoId: CarritoId,
     productoRef: ProductoRef,
@@ -78,6 +81,7 @@ export class CarritoService implements VentasApi {
   /**
    * Modifica la cantidad de un producto en el carrito
    */
+  @Transactional()
   async modificarCantidad(
     carritoId: CarritoId,
     productoId: ProductoId,
@@ -95,6 +99,7 @@ export class CarritoService implements VentasApi {
   /**
    * Elimina un producto del carrito
    */
+  @Transactional()
   async eliminarProducto(
     carritoId: CarritoId,
     productoId: ProductoId,
@@ -111,6 +116,7 @@ export class CarritoService implements VentasApi {
   /**
    * Vacía el carrito eliminando todos los productos
    */
+  @Transactional()
   async vaciar(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.obtenerCarrito(carritoId);
 
@@ -124,6 +130,7 @@ export class CarritoService implements VentasApi {
   /**
    * Inicia el proceso de checkout del carrito
    */
+  @Transactional()
   async iniciarCheckout(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.obtenerCarrito(carritoId);
 
@@ -137,6 +144,7 @@ export class CarritoService implements VentasApi {
   /**
    * Completa el checkout del carrito
    */
+  @Transactional()
   async completarCheckout(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.obtenerCarrito(carritoId);
 
@@ -150,6 +158,7 @@ export class CarritoService implements VentasApi {
   /**
    * Marca el carrito como abandonado
    */
+  @Transactional()
   async abandonar(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.obtenerCarrito(carritoId);
 
