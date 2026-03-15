@@ -59,4 +59,12 @@ export class Categoria {
       categoriaPadreId: this.categoriaPadreId?.getValue(),
     };
   }
+  public static reconstruct(
+    id: CategoriaId,
+    nombre: string,
+    descripcion: string,
+    categoriaPadreId?: CategoriaId,
+  ): Categoria {
+    return new Categoria(id, nombre, descripcion, categoriaPadreId);
+  }
 }
