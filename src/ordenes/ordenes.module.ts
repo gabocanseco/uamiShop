@@ -30,17 +30,18 @@ import { OrdenOrmRepository } from './infrastructure/persistance/repositories/or
     OrdenService,
     {
       provide: ORDEN_REPOSITORY,
-      inject: [ConfigService, ModuleRef],
-      useFactory: (config: ConfigService, moduleRef: ModuleRef) => {
-        if (config.get('NODE_ENV') === 'mysql') {
-          const ormRepository = moduleRef.get(
-            getRepositoryToken(OrdenOrmEntity),
-            { strict: false },
-          );
-          return new OrdenOrmRepository(ormRepository);
-        }
-        return new OrdenInMemoryRepository();
-      },
+      useClass: OrdenOrmRepository,
+      // inject: [ConfigService, ModuleRef],
+      // useFactory: (config: ConfigService, moduleRef: ModuleRef) => {
+      //   if (config.get('NODE_ENV') === 'mysql') {
+      //     const ormRepository = moduleRef.get(
+      //       getRepositoryToken(OrdenOrmEntity),
+      //       { strict: false },
+      //     );
+      //     return new OrdenOrmRepository(ormRepository);
+      //   }
+      //   return new OrdenInMemoryRepository();
+      // },
     },
     {
       provide: 'VentasApi',

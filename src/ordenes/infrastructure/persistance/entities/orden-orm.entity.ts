@@ -12,7 +12,7 @@ export class OrdenOrmEntity {
   @PrimaryColumn('varchar', { name: 'id', length: 36 })
   id!: string;
 
-  @Column('varchar', { name: 'numero_orden', length: 50, unique: true })
+  @Column('varchar', { name: 'numero_orden', length: 50 })
   numeroOrden!: string;
 
   @Column('varchar', { name: 'cliente_id', length: 36 })

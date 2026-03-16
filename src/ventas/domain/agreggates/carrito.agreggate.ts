@@ -18,7 +18,7 @@ export class Carrito {
     private estado: EstadoCarrito,
     private fechaCreacion: DateTime,
     private fechaActualizacion: DateTime,
-  ) { }
+  ) {}
 
   public static crear(clienteId: ClienteId): Carrito {
     return new Carrito(
@@ -205,7 +205,7 @@ export class Carrito {
   public completarCheckout(): void {
     if (this.estado !== EstadoCarrito.EN_CHECKOUT) {
       throw new BusinessRuleException(
-        'Solo se puede completar el checkout si el carrito está en checkout',
+        'Solo se puede completar el checkout si el carrito no está en checkout',
       );
     }
 

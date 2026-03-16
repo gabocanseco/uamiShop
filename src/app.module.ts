@@ -29,7 +29,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
         if (process.env.NODE_ENV !== 'mysql') {
           return {
             type: 'sqlite',
-            database: ':memory:',
+            database: 'db.sqlite',
             autoLoadEntities: true,
             synchronize: true,
           };
