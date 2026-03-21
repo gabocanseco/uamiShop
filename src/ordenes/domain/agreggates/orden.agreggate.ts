@@ -12,6 +12,15 @@ import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.e
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { CarritoResumenDto } from '@ventas/api/dtos/carrito-resumen.dto';
 
+function generarNumeroOrden(): string {
+  const ahora = new Date();
+  const fecha = ahora.toISOString().split('T')[0].replace(/-/g, '');
+
+  const sufijo = Date.now().toString(36).toUpperCase().slice(-7);
+
+  return `ORD-${fecha}-${sufijo}`;
+}
+
 /**
  * Gestiona el ciclo de vida completo desde la creación hasta la entrega
  */
@@ -60,7 +69,7 @@ export class Orden {
     // Calcular descuento
     const descuento = Money.crear(0, 'MXN');
 
-    const numeroOrden = '12345';
+    const numeroOrden = generarNumeroOrden();
 
     const subtotal = total.restar(descuento);
 

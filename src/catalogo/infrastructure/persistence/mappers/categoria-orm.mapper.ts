@@ -3,33 +3,30 @@ import { Categoria } from '@catalogo/domain/agreggates/categoria.agreggate';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
 
 export class CategoriaOrmMapper {
+  static toDomain(ormEntity: CategoriaOrmEntity): Categoria {
+    const id = CategoriaId.of(ormEntity.id);
 
-    static toDomain(ormEntity: CategoriaOrmEntity): Categoria {
+    const categoriaPadreId = ormEntity.categoriaPadreId
+      ? CategoriaId.of(ormEntity.categoriaPadreId)
+      : undefined;
 
-        const id = CategoriaId.generar();
+    return Categoria.reconstruct(
+      id,
+      ormEntity.nombre,
+      ormEntity.descripcion,
+      categoriaPadreId,
+    );
+  }
 
-        const categoriaPadreId = ormEntity.categoriaPadreId
-            ? CategoriaId.generar()
-            : undefined;
+  static toOrm(domainEntity: Categoria): CategoriaOrmEntity {
+    const ormEntity = new CategoriaOrmEntity();
+    const primitives = domainEntity.toPrimitives();
 
-        return Categoria.reconstruct(
-            id,
-            ormEntity.nombre,
-            ormEntity.descripcion,
-            categoriaPadreId
-        );
-    }
+    ormEntity.id = primitives.id;
+    ormEntity.nombre = primitives.nombre;
+    ormEntity.descripcion = primitives.descripcion;
+    ormEntity.categoriaPadreId = primitives.categoriaPadreId;
 
-    static toOrm(domainEntity: Categoria): CategoriaOrmEntity {
-
-        const ormEntity = new CategoriaOrmEntity();
-        const primitives = domainEntity.toPrimitives();
-
-        ormEntity.id = primitives.id;
-        ormEntity.nombre = primitives.nombre;
-        ormEntity.descripcion = primitives.descripcion;
-        ormEntity.categoriaPadreId = primitives.categoriaPadreId;
-
-        return ormEntity;
-    }
+    return ormEntity;
+  }
 }

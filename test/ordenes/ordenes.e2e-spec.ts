@@ -10,7 +10,7 @@ describe('Ordenes (e2e)', () => {
   let app: INestApplication<App>;
   const BASE_URL = '/ordenes';
   const CLIENTE_ID = 'f79d6f9e-65c7-4f01-851d-af9be6bce3ab';
-  const PRODUCTO_ID = '7b80a6e7-5874-4ddb-8492-86b7808445cb';
+  let PRODUCTO_ID = '7b80a6e7-5874-4ddb-8492-86b7808445cb';
   const UNPROCESSABLE_ENTITY_CODE = 422;
   let ordenIdCreada: string;
 
@@ -27,6 +27,25 @@ describe('Ordenes (e2e)', () => {
   });
 
   beforeEach(async () => {
+    // Crear nueva categoria
+    const res_categorias = await request(app.getHttpServer())
+      .post('/categorias')
+      .send({
+        nombre: 'Electrónica',
+      });
+    const categoriaId = res_categorias.body.id;
+
+    // Crear nuevo producto
+    const res_productos = await request(app.getHttpServer())
+      .post('/productos')
+      .send({
+        nombre: 'Samsung S21',
+        descripcion: 'Smartphone Samsung S21',
+        precio: 20499.99,
+        categoriaId: categoriaId, // Reemplaza con el ID de la categoría real
+      });
+    PRODUCTO_ID = res_productos.body.id;
+
     // Creamos una nueva orden antes de cada test para que la base de datos no esté vacía
     const res = await request(app.getHttpServer())
       .post(BASE_URL)
@@ -42,7 +61,7 @@ describe('Ordenes (e2e)', () => {
           },
         ],
         direccion: {
-          nombreDEstinatario: 'Diego',
+          nombreDestinatario: 'Diego',
           calle: 'Calle ejemplo',
           ciudad: 'cdmx',
           estado: 'cdmx',

@@ -17,7 +17,7 @@ describe('carrito (e2e)', () => {
     await app.init();
   });
   //Creamos un carrito antes de cada test
-  it('/carrito (POST)', async () => {
+  it('/carritos (POST)', async () => {
     const validUuid = '550e8400-e29b-41d4-a716-446655440000';
     const response = await request(app.getHttpServer())
       .post(`/carritos/${validUuid}`)

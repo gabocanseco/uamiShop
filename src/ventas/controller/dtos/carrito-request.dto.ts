@@ -25,6 +25,7 @@ export class ProductoRefDto {
     description: 'ID único del producto',
     example: '550e8400-e29b-41d4-a716-446655440020',
     format: 'uuid',
+    required: true,
   })
   @IsNotEmpty({ message: 'El id del producto es obligatorio' })
   @IsUUID('4', { message: 'El ID debe ser un UUID válido versión 4' })
@@ -32,6 +33,7 @@ export class ProductoRefDto {
   @ApiProperty({
     description: 'Nombre del producto',
     example: 'Camiseta de algodón',
+    required: true,
   })
   @IsString({ message: 'El nombre de producto debe ser una cadena' })
   @IsNotEmpty({ message: 'El nombre de producto es obligatorio' })
@@ -39,6 +41,7 @@ export class ProductoRefDto {
   @ApiProperty({
     description: 'SKU del producto (Stock Keeping Unit)',
     example: 'CAM-ALG-001',
+    required: true,
   })
   @IsString({ message: 'El sku debe ser una cadena' })
   @IsNotEmpty({ message: 'El sku es obligatorio' })
@@ -52,6 +55,7 @@ export class CarritoRequestDto {
   @ApiProperty({
     description: 'Cantidad del producto a agregar al carrito',
     example: 2,
+    required: true,
   })
   @IsNumber()
   @IsPositive()
@@ -60,6 +64,7 @@ export class CarritoRequestDto {
   @ApiProperty({
     description: 'Precio unitario del producto',
     example: 19.99,
+    required: true,
   })
   @IsNumber()
   @IsPositive()
