@@ -41,5 +41,6 @@ import { ProductoEstadisticasOrmRepository } from '@catalogo/infrastructure/pers
     },
   ],
   controllers: [ProductoController],
+  exports: [ProductoService],
 })
-export class CatalogoModule { }
+export class CatalogoModule {}
