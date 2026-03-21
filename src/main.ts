@@ -37,7 +37,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Productos')
     .addTag('Órdenes')
-    .addTag('Carrito')
+    .addTag('Carritos')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
