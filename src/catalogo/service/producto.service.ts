@@ -20,9 +20,12 @@ export class ProductoService implements CatalogoApi {
     private readonly categoriaRepository: ICategoriaRepository,
     @Inject('IProductoEstadisticasRepository')
     private readonly productoEstadisticasRepository: IProductoEstadisticasRepository,
-  ) { }
+  ) {}
 
   async crear(nuevoProducto: Producto): Promise<Producto> {
+    // Verificar que la categoria exista antes de crear el producto
+    const _ = await this.buscarCategoriaPorId(nuevoProducto.getCategoriaId());
+
     await this.productoRepository.save(nuevoProducto);
     return nuevoProducto;
   }
@@ -83,7 +86,8 @@ export class ProductoService implements CatalogoApi {
   }
 
   async buscarEstadisticas(id: ProductoId): Promise<ProductoEstadisticas> {
-    const estadisticas = await this.productoEstadisticasRepository.findByProductoId(id);
+    const estadisticas =
+      await this.productoEstadisticasRepository.findByProductoId(id);
     if (!estadisticas) {
       throw new EntityNotFoundException('ProductoEstadisticas', id.getValue());
     }

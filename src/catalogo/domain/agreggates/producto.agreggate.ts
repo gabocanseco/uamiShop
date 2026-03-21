@@ -143,6 +143,10 @@ export class Producto {
     return this.precio;
   }
 
+  public getCategoriaId(): CategoriaId {
+    return this.categoriaId;
+  }
+
   public toPrimitives() {
     return {
       id: this.id.getValue(),
