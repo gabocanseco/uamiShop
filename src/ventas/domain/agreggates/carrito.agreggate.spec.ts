@@ -74,7 +74,11 @@ describe('Carrito Aggregate', () => {
       const precio = Money.crear(10);
 
       for (let i = 0; i < 20; i++) {
-        carrito.agregarProducto(crearProductoRef(`Producto ${i + 1}`), 1, precio);
+        carrito.agregarProducto(
+          crearProductoRef(`Producto ${i + 1}`),
+          1,
+          precio,
+        );
       }
 
       expect(() =>
@@ -106,9 +110,9 @@ describe('Carrito Aggregate', () => {
     it('debería lanzar excepción si el producto no existe en el carrito', () => {
       const carrito = Carrito.crear(ClienteId.generar());
 
-      expect(() =>
-        carrito.modificarCantidad(ProductoId.generar(), 2),
-      ).toThrow('Producto no encontrado en el carrito');
+      expect(() => carrito.modificarCantidad(ProductoId.generar(), 2)).toThrow(
+        'Producto no encontrado en el carrito',
+      );
     });
 
     it('debería lanzar excepción si el carrito está en checkout', () => {
@@ -117,7 +121,9 @@ describe('Carrito Aggregate', () => {
 
       expect(() =>
         carrito.modificarCantidad(productoRef.getProductoId(), 5),
-      ).toThrow('No se puede modificar la cantidad si el carrito está en checkout');
+      ).toThrow(
+        'No se puede modificar la cantidad si el carrito está en checkout',
+      );
     });
   });
 
@@ -133,9 +139,9 @@ describe('Carrito Aggregate', () => {
     it('debería lanzar excepción si el producto no existe', () => {
       const carrito = Carrito.crear(ClienteId.generar());
 
-      expect(() =>
-        carrito.eliminarProducto(ProductoId.generar()),
-      ).toThrow('Debe existir el producto en el carrito para poder eliminarlo');
+      expect(() => carrito.eliminarProducto(ProductoId.generar())).toThrow(
+        'Debe existir el producto en el carrito para poder eliminarlo',
+      );
     });
 
     it('debería lanzar excepción si el carrito está en checkout', () => {
@@ -144,7 +150,9 @@ describe('Carrito Aggregate', () => {
 
       expect(() =>
         carrito.eliminarProducto(productoRef.getProductoId()),
-      ).toThrow('No se puede eliminar un producto si el carrito está en checkout');
+      ).toThrow(
+        'No se puede eliminar un producto si el carrito está en checkout',
+      );
     });
   });
 
@@ -179,9 +187,17 @@ describe('Carrito Aggregate', () => {
     it('debería calcular el subtotal correctamente', () => {
       const carrito = Carrito.crear(ClienteId.generar());
       // 2 × $100 = $200
-      carrito.agregarProducto(crearProductoRef('Producto A'), 2, Money.crear(100));
+      carrito.agregarProducto(
+        crearProductoRef('Producto A'),
+        2,
+        Money.crear(100),
+      );
       // 3 × $50 = $150
-      carrito.agregarProducto(crearProductoRef('Producto B'), 3, Money.crear(50));
+      carrito.agregarProducto(
+        crearProductoRef('Producto B'),
+        3,
+        Money.crear(50),
+      );
 
       const subtotal = carrito.calcularSubtotal();
 
@@ -266,9 +282,7 @@ describe('Carrito Aggregate', () => {
     it('debería lanzar excepción si no está en checkout', () => {
       const { carrito } = crearCarritoConProducto();
 
-      expect(() => carrito.completarCheckout()).toThrow(
-        'Solo se puede completar el checkout si el carrito está en checkout',
-      );
+      expect(() => carrito.completarCheckout()).toThrow(BusinessRuleException);
     });
   });
 

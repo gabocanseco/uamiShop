@@ -21,21 +21,20 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        // La lógica de decisión ahora vive dentro del Factory
-        const databaseProps = config.get<TypeOrmModuleOptions>('database');
+        const nodeEnv = process.env.NODE_ENV;
 
-        // Si no estamos en modo mysql, devolvemos una config "dummy" o de memoria
-        // para que los repositorios no crasheen al inyectarse
-        if (process.env.NODE_ENV !== 'mysql') {
-          return {
-            type: 'sqlite',
-            database: 'db.sqlite',
-            autoLoadEntities: true,
-            synchronize: true,
-          };
+        if (nodeEnv == 'mysql') {
+          const databaseProps = config.get<TypeOrmModuleOptions>('database');
+          return databaseProps!;
         }
 
-        return databaseProps!;
+        return {
+          type: 'sqlite',
+          database: 'db.sqlite',
+          // database: ':memory:',
+          autoLoadEntities: true,
+          synchronize: true,
+        };
       },
     }),
   ],
