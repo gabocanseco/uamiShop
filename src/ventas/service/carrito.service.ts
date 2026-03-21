@@ -60,7 +60,7 @@ export class CarritoService implements VentasApi {
   ): Promise<Carrito> {
     const carrito = await this.obtenerCarrito(carritoId);
 
-    const productoInfoDto = this.catalogoApi.obtenerProducto(
+    const productoInfoDto = await this.catalogoApi.obtenerProducto(
       productoRef.getProductoId(),
     );
 
