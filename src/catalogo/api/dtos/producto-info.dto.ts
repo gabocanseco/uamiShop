@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-export class ProductoResponseDto {
+export class ProductoInfoDto {
   @ApiProperty({
     description: 'ID único del producto',
     example: '550e8400-e29b-41d4-a716-446655440020',
@@ -16,11 +16,18 @@ export class ProductoResponseDto {
     example: 'Camiseta de algodón 100% con diseño exclusivo',
   })
   descripcion!: string;
+
   @ApiProperty({
-    description: 'Precio del producto en formato decimal',
-    example: 29.99,
+    description: 'Precio del producto con moneda',
+    example: [
+      {
+        cantidad: 3.99,
+        moneda: 'USD',
+      },
+    ],
   })
-  precio!: number;
+  precio!: object;
+
   @ApiProperty({
     description: 'ID de la categoría a la que pertenece el producto',
     example: '123e4567-e89b-12d3-a456-426614174000',

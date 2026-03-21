@@ -4,7 +4,7 @@ import { NombreProducto } from '@catalogo/domain/value-objects/nombre-producto.v
 import { DescripcionProducto } from '@catalogo/domain/value-objects/descripcion-producto.vo';
 import { Money } from '@shared/domain/value-objects/money.vo';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
-import { ProductoResponseDto } from '../dtos/producto-response.dto';
+import { ProductoInfoDto } from '../../api/dtos/producto-info.dto';
 import { plainToInstance } from 'class-transformer';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 
@@ -29,7 +29,7 @@ export class ProductoMapper {
     );
   }
 
-  static toResponseDto(producto: Producto): ProductoResponseDto {
-    return plainToInstance(ProductoResponseDto, producto.toPrimitives());
+  static toResponseDto(producto: Producto): ProductoInfoDto {
+    return plainToInstance(ProductoInfoDto, producto.toPrimitives());
   }
 }

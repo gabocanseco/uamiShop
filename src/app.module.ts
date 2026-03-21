@@ -31,7 +31,6 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
         return {
           type: 'sqlite',
           database: 'db.sqlite',
-          // database: ':memory:',
           autoLoadEntities: true,
           synchronize: true,
         };

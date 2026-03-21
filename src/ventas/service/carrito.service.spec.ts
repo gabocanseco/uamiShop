@@ -28,6 +28,16 @@ describe('CarritoService', () => {
           provide: EventEmitter2,
           useValue: { emit: vi.fn() }, // Un mock simple con Vitest
         },
+        {
+          provide: 'CatalogoApi',
+          useValue: {
+            obtenerProducto: vi.fn().mockResolvedValue({
+              id: 'fec96173-7df5-4a45-a162-5d1cca312467',
+              nombre: 'Laptop',
+              precio: 1000,
+            }),
+          },
+        },
       ],
     }).compile();
 

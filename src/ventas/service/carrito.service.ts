@@ -12,6 +12,7 @@ import { VentasApiMapper } from '@ventas/api/mappers/ventas-api.mapper';
 import { CarritoResumenDto } from '@ventas/api/dtos/carrito-resumen.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CarritoEventMapper } from './mappers/carrito-event.mapper';
+import type { CatalogoApi } from '@catalogo/api/interfaces/catalogo.api';
 
 /**
  * Servicio de aplicación para gestionar carritos de compra
@@ -22,6 +23,8 @@ export class CarritoService implements VentasApi {
     @Inject('ICarritoRepository')
     private readonly carritoRepository: ICarritoRepository,
     private readonly eventEmitter: EventEmitter2,
+    @Inject('CatalogoApi')
+    private readonly catalogoApi: CatalogoApi,
   ) {}
 
   /**
@@ -56,6 +59,17 @@ export class CarritoService implements VentasApi {
     precioUnitario: Money,
   ): Promise<Carrito> {
     const carrito = await this.obtenerCarrito(carritoId);
+
+    const productoInfoDto = await this.catalogoApi.obtenerProducto(
+      productoRef.getProductoId(),
+    );
+
+    if (!productoInfoDto) {
+      throw new EntityNotFoundException(
+        'Producto',
+        productoRef.getProductoId().getValue(),
+      );
+    }
 
     carrito.agregarProducto(productoRef, cantidad, precioUnitario);
 

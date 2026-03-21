@@ -152,8 +152,10 @@ export class Producto {
       id: this.id.getValue(),
       nombre: this.nombre.getValue(),
       descripcion: this.descripcion.getValue(),
-      precio: this.precio.getCantidad(),
-      moneda: this.precio.getMoneda(),
+      precio: {
+        cantidad: this.precio.getCantidad(),
+        moneda: this.precio.getMoneda(),
+      },
       categoriaId: this.categoriaId.getValue(),
       disponible: this.disponible.estaDisponible(),
       fechaCreacion: this.fechaCreacion.getValue(),
