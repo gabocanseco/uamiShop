@@ -10,6 +10,8 @@ import type { IProductoEstadisticasRepository } from '@catalogo/repository/inter
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
+import { ProductoInfoDto } from '@catalogo/api/dtos/producto-info.dto';
+import { ProductoMapper } from '@catalogo/controller/mappers/producto.mapper';
 
 @Injectable() // Convierte esta clase en un proveedor de servicios que puede ser inyectado en otros componentes de NestJS
 export class ProductoService implements CatalogoApi {
@@ -30,7 +32,13 @@ export class ProductoService implements CatalogoApi {
     return nuevoProducto;
   }
 
-  async buscarPorId(id: ProductoId): Promise<Producto> {
+  async obtenerProducto(productoId: ProductoId): Promise<ProductoInfoDto> {
+    const producto = await this.buscarPorId(productoId);
+
+    return ProductoMapper.toResponseDto(producto);
+  }
+
+  private async buscarPorId(id: ProductoId): Promise<Producto> {
     const producto = await this.productoRepository.findById(id);
     if (!producto) {
       throw new EntityNotFoundException('Producto', id.getValue());

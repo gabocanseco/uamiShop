@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ProductoRequestDto } from '@catalogo/controller/dtos/producto-request.dto';
-import { ProductoResponseDto } from '@catalogo/controller/dtos/producto-response.dto';
+import { ProductoInfoDto } from '@catalogo/api/dtos/producto-info.dto';
 import { CategoriaRequestDto } from '@catalogo/controller/dtos/categoria-request.dto';
 import { CategoriaResponseDto } from '@catalogo/controller/dtos/categoria-response.dto';
 import { CategoriaId } from '@catalogo/domain/value-objects/ids/categoria-id.vo';
@@ -43,12 +43,10 @@ export class ProductoController {
   @ApiResponse({
     status: 201,
     description: 'Producto creado exitosamente',
-    type: ProductoResponseDto,
+    type: ProductoInfoDto,
   })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
-  async crear(
-    @Body() request: ProductoRequestDto,
-  ): Promise<ProductoResponseDto> {
+  async crear(@Body() request: ProductoRequestDto): Promise<ProductoInfoDto> {
     const nuevoProducto = ProductoMapper.toDomain(request);
 
     const producto = await this.productoService.crear(nuevoProducto);
@@ -61,10 +59,10 @@ export class ProductoController {
   @ApiResponse({
     status: 200,
     description: 'Lista de productos',
-    type: [ProductoResponseDto],
+    type: [ProductoInfoDto],
   })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
-  async obtenerTodos(): Promise<ProductoResponseDto[]> {
+  async obtenerTodos(): Promise<ProductoInfoDto[]> {
     const productos = await this.productoService.buscarTodos();
 
     return productos.map((p) => ProductoMapper.toResponseDto(p));
@@ -96,17 +94,15 @@ export class ProductoController {
   @ApiResponse({
     status: 200,
     description: 'Producto obtenido exitosamente',
-    type: ProductoResponseDto,
+    type: ProductoInfoDto,
   })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
-  async obtener(
-    @Param() param: ProductoParamDto,
-  ): Promise<ProductoResponseDto> {
+  async obtener(@Param() param: ProductoParamDto): Promise<ProductoInfoDto> {
     const productoId = ProductoMapper.toDomainId(param.id);
 
-    const producto = await this.productoService.buscarPorId(productoId);
+    const productoDto = await this.productoService.obtenerProducto(productoId);
 
-    return ProductoMapper.toResponseDto(producto);
+    return productoDto;
   }
 
   @Get('productos/:id/estadisticas')
@@ -134,14 +130,14 @@ export class ProductoController {
   @ApiResponse({
     status: 200,
     description: 'Producto actualizado exitosamente',
-    type: ProductoResponseDto,
+    type: ProductoInfoDto,
   })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   async actualizar(
     @Param() param: ProductoParamDto,
     @Body() request: ProductoRequestDto,
-  ): Promise<ProductoResponseDto> {
+  ): Promise<ProductoInfoDto> {
     const productoId = ProductoMapper.toDomainId(param.id);
 
     const nuevoProducto = ProductoMapper.toDomain(request);
