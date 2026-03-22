@@ -66,7 +66,7 @@ services:
 
   uamishop-catalogo:
     build:
-      context: uamishp-catalogo/
+      context: uamishop-catalogo/
       dockerfile: Dockerfile
     image: uamishop-catalogo:latest
     container_name: uamishop-catalogo
