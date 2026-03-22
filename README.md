@@ -153,14 +153,20 @@ docker run -d  -p 8080:3000  -e NODE_ENV=mysql  -e DB_HOST=host.docker.internal 
 ### Ejecutar aplicacion
 
 ```bash
-docker-compose up -d
+docker compose up -d
+```
+
+### Ejecutar y construir imagenes
+
+```bash
+docker compose up -d --build
 ```
 
 ### Destruir aplicación
 
 ```bash
-docker-compose down
+docker compose down
 
 # Destruir volumen
-docker-compose down -v
+docker compose down -v
 ```

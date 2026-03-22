@@ -22,8 +22,34 @@ services:
       start_period: 15s
     restart: unless-stopped
 
+  mysql-catalogo:
+    image: mysql:latest
+    container_name: uamishop-mysql-catalogo
+    environment:
+      MYSQL_DATABASE: uamishop_catalogo
+      MYSQL_USER: uamishop
+      MYSQL_PASSWORD: uamishop
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - '3308:3306' # Mapea el puerto 3306 del contenedor al puerto 3308 en el host para evitar conflictos con MySQL local
+    volumes:
+      - mysql_catalogo_data:/var/lib/mysql
+    healthcheck:
+      test:
+        ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+
+  # Construir desde el Dockerfile local para que TypeORM incluya las entidades actuales (p. ej. carritos).
+  # Una imagen publicada antigua puede no registrar CarritoOrmEntity y por eso no crea esas tablas.
   uamishop:
-    image: diegouvazquezr/uamishop:latest
+    build:
+      context: uamishop/
+      dockerfile: Dockerfile
+    image: uamishop:latest
     container_name: uamishop
     ports:
       - '8080:8080'
@@ -35,10 +61,53 @@ services:
       DB_DATABASE: uamishop
       DB_USERNAME: uamishop
       DB_PASSWORD: uamishop
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      CATALOGO_SERVICE_URL: http://uamishop-catalogo:8081
     depends_on:
       mysql:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  uamishop-catalogo:
+    build:
+      context: uamishp-catalogo/
+      dockerfile: Dockerfile
+    image: uamishop-catalogo:latest
+    container_name: uamishop-catalogo
+    ports:
+      - '8081:8081'
+    environment:
+      PORT: 8081
+      NODE_ENV: mysql
+      DB_HOST: mysql-catalogo
+      DB_PORT: 3306
+      DB_DATABASE: uamishop_catalogo
+      DB_USERNAME: uamishop
+      DB_PASSWORD: uamishop
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      mysql-catalogo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: uamishop-rabbitmq
+    ports:
+      - '5672:5672' # Puerto para la comunicación con RabbitMQ
+      - '15672:15672' # Puerto para la interfaz de administración de RabbitMQ
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
     restart: unless-stopped
 
 volumes:
   mysql_data:
+  mysql_catalogo_data:
