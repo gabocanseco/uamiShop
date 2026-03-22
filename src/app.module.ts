@@ -6,6 +6,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import servicesConfig from './config/services.config';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
     VentaModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig],
+      load: [databaseConfig, servicesConfig],
       envFilePath: `.env.${process.env.NODE_ENV}` || '.env',
     }),
     TypeOrmModule.forRootAsync({
@@ -30,7 +31,8 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
         return {
           type: 'sqlite',
-          database: 'db.sqlite',
+          // database: 'db.sqlite',
+          database: ':memory:',
           autoLoadEntities: true,
           synchronize: true,
         };

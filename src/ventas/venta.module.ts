@@ -38,7 +38,7 @@ import { CatalogoModule } from '@catalogo/catalogo.module';
         productoService: ProductoService,
       ) => {
         const esCatalogoExterno =
-          configService.get<string>('CATALOGO_SERVICE_URL') !== undefined;
+          configService.get<string>('services.catalogoUrl') !== undefined;
 
         // Si se configura la URL del catálogo externo, usar el cliente HTTP; de lo contrario, usar el servicio local de productos
         return esCatalogoExterno

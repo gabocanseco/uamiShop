@@ -18,7 +18,7 @@ export class CatalogoApiHttpClient implements CatalogoApi {
     private readonly configService: ConfigService,
   ) {
     this.catalogoBaseUrl = this.configService.get<string>(
-      'CATALOGO_SERVICE_URL',
+      'services.catalogoUrl',
     );
 
     if (!this.catalogoBaseUrl) {
