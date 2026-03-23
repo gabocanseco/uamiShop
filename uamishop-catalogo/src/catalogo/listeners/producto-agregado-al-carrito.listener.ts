@@ -7,6 +7,7 @@ import { ProductoAgregadoAlCarritoEvent } from '@shared/event/producto-agregado-
 import { EXCHANGES } from '@shared/rabbitmq/constants/exchanges.const';
 import { QUEUE_CATALOGO_PRODUCTO_AGREGADO } from '@shared/rabbitmq/constants/queues.const';
 import { RK_PRODUCTO_AGREGADO } from '@shared/rabbitmq/constants/routing-keys.const';
+import { Propagation, Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class ProductoAgregadoAlCarritoListener {
@@ -20,6 +21,7 @@ export class ProductoAgregadoAlCarritoListener {
     routingKey: RK_PRODUCTO_AGREGADO, // Routing key para filtrar los mensajes
     queue: QUEUE_CATALOGO_PRODUCTO_AGREGADO, // Nombre de la cola donde se recibirán los mensajes
   })
+  @Transactional({ propagation: Propagation.REQUIRES_NEW }) // Asegura que cada evento se maneje en una transacción separada
   async onProductoAgregadoAlCarrito(
     productoAgregadoAlCarritoEvent: ProductoAgregadoAlCarritoEvent,
   ) {

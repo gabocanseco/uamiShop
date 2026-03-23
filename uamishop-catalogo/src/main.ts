@@ -4,8 +4,11 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from '@shared/controller/filters/global-exception.filter';
 import { VersioningType } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { initializeTransactionalContext } from 'typeorm-transactional';
 
 async function bootstrap() {
+  initializeTransactionalContext(); // Debe ser llamado antes de crear la aplicación para habilitar el contexto transaccional en TypeORM
+
   const app = await NestFactory.create(AppModule);
 
   /**
