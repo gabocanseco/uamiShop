@@ -10,7 +10,6 @@ import { Money } from '@shared/domain/value-objects/money.vo';
 import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-found.exception';
 import { EstadoCarrito } from '@ventas/domain/enums/estado-carrito.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 describe('CarritoService', () => {
   let service: CarritoService;
@@ -37,14 +36,6 @@ describe('CarritoService', () => {
               precio: 1000,
             }),
           },
-        },
-        {
-          provide: AmqpConnection,
-          useValue: { publish: vi.fn() },
-        },
-        {
-          provide: 'DataSource',
-          useValue: undefined,
         },
       ],
     }).compile();

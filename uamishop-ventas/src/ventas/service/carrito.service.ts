@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import type { ICarritoRepository } from '@ventas/repository/interfaces/carrito.repository';
 import { ClienteId } from '@shared/domain/value-objects/ids/cliente-id.vo';
 import { Carrito } from '@ventas/domain/agreggates/carrito.agreggate';
@@ -15,33 +15,24 @@ import { RK_PRODUCTO_AGREGADO } from '@shared/rabbitmq/constants/routing-keys.co
 import type { CatalogoApi } from '@ventas/service/external-services/catalogo/interfaces/catalogo.api';
 import { CarritoResponseDto } from '@ventas/controller/dtos/carrito-response.dto';
 import { CarritoMapper } from '@ventas/controller/mappers/carrito.mapper';
-import { Transactional } from '@shared/decorators/transactional.decorator';
-import { DataSource } from 'typeorm';
 
 /**
  * Servicio de aplicación para gestionar carritos de compra
  */
 @Injectable()
 export class CarritoService {
-  dataSource: DataSource;
-
   constructor(
     @Inject('ICarritoRepository')
     private readonly carritoRepository: ICarritoRepository,
     private readonly eventEmitter: EventEmitter2,
     @Inject('CatalogoApi')
     private readonly catalogoApi: CatalogoApi,
-    private readonly amqpConnection: AmqpConnection,
-    @Inject('DataSource')
-    dataSource: DataSource,
-  ) {
-    this.dataSource = dataSource;
-  }
+    private readonly amqpConnection: AmqpConnection, // Conexión a RabbitMQ para publicar eventos (Advanced Message Queuing Protocol)
+  ) {}
 
   /**
    * Crea un carrito vacío asociado a un cliente
    */
-  @Transactional()
   async crear(clienteId: ClienteId): Promise<Carrito> {
     const nuevoCarrito = Carrito.crear(clienteId);
 
@@ -72,7 +63,6 @@ export class CarritoService {
   /**
    * Agrega un producto al carrito
    */
-  @Transactional()
   async agregarProducto(
     carritoId: CarritoId,
     productoRef: ProductoRef,
@@ -117,7 +107,6 @@ export class CarritoService {
   /**
    * Modifica la cantidad de un producto en el carrito
    */
-  @Transactional()
   async modificarCantidad(
     carritoId: CarritoId,
     productoId: ProductoId,
@@ -135,7 +124,6 @@ export class CarritoService {
   /**
    * Elimina un producto del carrito
    */
-  @Transactional()
   async eliminarProducto(
     carritoId: CarritoId,
     productoId: ProductoId,
@@ -152,7 +140,6 @@ export class CarritoService {
   /**
    * Vacía el carrito eliminando todos los productos
    */
-  @Transactional()
   async vaciar(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.buscarCarrito(carritoId);
 
@@ -166,7 +153,6 @@ export class CarritoService {
   /**
    * Inicia el proceso de checkout del carrito
    */
-  @Transactional()
   async iniciarCheckout(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.buscarCarrito(carritoId);
 
@@ -180,7 +166,6 @@ export class CarritoService {
   /**
    * Completa el checkout del carrito
    */
-  @Transactional()
   async completarCheckout(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.buscarCarrito(carritoId);
 
@@ -194,7 +179,6 @@ export class CarritoService {
   /**
    * Marca el carrito como abandonado
    */
-  @Transactional()
   async abandonar(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.buscarCarrito(carritoId);
 

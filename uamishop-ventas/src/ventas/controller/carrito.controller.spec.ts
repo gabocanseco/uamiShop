@@ -18,6 +18,7 @@ describe('CarritoController (unit)', () => {
   let carritoService: any;
 
   beforeEach(() => {
+    carroServiceMock:
     carritoService = {
       crear: vi.fn(),
       obtenerCarrito: vi.fn(),
@@ -40,8 +41,7 @@ describe('CarritoController (unit)', () => {
   it('debería crear un carrito cuando el servicio devuelve un objeto plano', async () => {
     const validUuid = '550e8400-e29b-41d4-a716-446655440000';
     const plain = { id: 'b', clienteId: validUuid };
-    const domain = new DummyCarrito(plain);
-    carritoService.crear.mockResolvedValue(domain);
+    carritoService.crear.mockResolvedValue(plain);
 
     const result = await controller.crear({ id: validUuid } as ClienteParamDto);
     expect(result).toEqual(plain);

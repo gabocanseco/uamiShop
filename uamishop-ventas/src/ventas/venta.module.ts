@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { DataSource } from 'typeorm';
 import { CarritoController } from '@ventas/controller/carrito.controller';
 import { CarritoService } from '@ventas/service/carrito.service';
 import { OrdenCreadaListener } from '@ventas/listeners/orden-creada.listener';
@@ -22,10 +21,6 @@ import { CatalogoApiHttpClient } from '@ventas/infrastructure/api/catalogo-api-h
   ],
   controllers: [CarritoController],
   providers: [
-    {
-      provide: 'DataSource',
-      useValue: undefined,
-    },
     CarritoService,
     {
       provide: 'ICarritoRepository',

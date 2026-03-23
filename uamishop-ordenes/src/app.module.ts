@@ -1,19 +1,21 @@
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { OrdenesModule } from '@ordenes/ordenes.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { RabbitMQConfigModule } from '@shared/rabbitmq/rabbitmq.module';
 import servicesConfig from './config/services.config';
-import { OrdenesModule } from './ordenes/ordenes.module';
 
-@Global()
 @Module({
   imports: [
-    EventEmitterModule.forRoot(),
+    RabbitMQConfigModule, // Importamos el módulo de configuración de RabbitMQ
+    EventEmitterModule.forRoot(), // Habilita el motor de eventos globalmente
+    OrdenesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, servicesConfig],
-      envFilePath: '.env',
+      envFilePath: `.env.${process.env.NODE_ENV}` || '.env',
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -27,13 +29,13 @@ import { OrdenesModule } from './ordenes/ordenes.module';
 
         return {
           type: 'sqlite',
+          // database: 'db.sqlite',
           database: ':memory:',
           autoLoadEntities: true,
           synchronize: true,
         };
       },
     }),
-    OrdenesModule,
   ],
   controllers: [],
   providers: [],

@@ -12,7 +12,6 @@ import { BusinessRuleException } from '@shared/domain/exceptions/business-rule.e
 import { OrdenId } from '@ordenes/domain/value-objects/ids/orden-id.vo';
 import { Orden } from '@ordenes/domain/agreggates/orden.agreggate';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { CarritoId } from '@shared/domain/value-objects/ids/carrito-id.vo';
 import type { IOrdenRepository } from '@ordenes/repository/interfaces/orden.repository';
 import { ORDEN_REPOSITORY } from '@ordenes/domain/constants';
@@ -47,14 +46,6 @@ describe('Pruebas del OrdenService', () => {
         {
           provide: EventEmitter2,
           useValue: { emit: vi.fn() }, // Un mock simple con Vitest
-        },
-        {
-          provide: AmqpConnection,
-          useValue: { publish: vi.fn() },
-        },
-        {
-          provide: 'DataSource',
-          useValue: undefined,
         },
       ],
     }).compile();

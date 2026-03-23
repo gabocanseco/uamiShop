@@ -7,9 +7,6 @@ import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { EXCHANGES } from '@shared/rabbitmq/constants/exchanges.const';
 import { RK_ORDEN_CREADA } from '@shared/rabbitmq/constants/routing-keys.const';
 import { QUEUE_VENTA_ORDEN_CREADA } from '@shared/rabbitmq/constants/queues.const';
-import { Transactional } from '@shared/decorators/transactional.decorator';
-import { Inject } from '@nestjs/common';
-import { DataSource } from 'typeorm';
 
 /**
  * Listener que marca el carrito como COMPLETADO
@@ -17,15 +14,7 @@ import { DataSource } from 'typeorm';
  */
 @Injectable()
 export class OrdenCreadaListener {
-    dataSource: DataSource;
-
-    constructor(
-        private readonly carritoService: CarritoService,
-        @Inject('DataSource')
-        dataSource: DataSource,
-    ) {
-        this.dataSource = dataSource;
-    }
+    constructor(private readonly carritoService: CarritoService) { }
 
     @OnEvent('orden.creada', { async: true })
     @RabbitSubscribe({
@@ -33,7 +22,6 @@ export class OrdenCreadaListener {
         routingKey: RK_ORDEN_CREADA, // Routing key para filtrar los mensajes
         queue: QUEUE_VENTA_ORDEN_CREADA, // Nombre de la cola donde se recibirán los mensajes
     })
-    @Transactional()
     async onOrdenCreada(event: OrdenCreadaEvent) {
         if (event.carritoId) {
             const carritoId = CarritoId.of(event.carritoId);

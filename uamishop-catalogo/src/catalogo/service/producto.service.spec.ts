@@ -34,10 +34,6 @@ describe('ProductoService', () => {
           provide: 'IProductoEstadisticasRepository',
           useClass: ProductoEstadisticasInMemoryRepository,
         },
-        {
-          provide: 'DataSource',
-          useValue: undefined,
-        },
       ],
     }).compile();
 

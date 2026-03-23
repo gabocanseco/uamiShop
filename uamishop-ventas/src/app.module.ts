@@ -15,7 +15,7 @@ import { RabbitMQConfigModule } from '@shared/rabbitmq/rabbitmq.module';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, servicesConfig],
-      envFilePath: '.env',
+      envFilePath: `.env.${process.env.NODE_ENV}` || '.env',
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

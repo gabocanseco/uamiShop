@@ -1,14 +1,15 @@
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { CatalogoModule } from '@catalogo/catalogo.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { RabbitMQConfigModule } from '@shared/rabbitmq/rabbitmq.module';
 
-@Global()
 @Module({
   imports: [
-    EventEmitterModule.forRoot(),
+    RabbitMQConfigModule, // Importamos el módulo de configuración de RabbitMQ
+    EventEmitterModule.forRoot(), // Habilita el motor de eventos globalmente
     CatalogoModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -27,6 +28,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
         return {
           type: 'sqlite',
+          // database: 'db.sqlite',
           database: ':memory:',
           autoLoadEntities: true,
           synchronize: true,

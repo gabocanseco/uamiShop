@@ -11,13 +11,9 @@ import { EntityNotFoundException } from '@shared/domain/exceptions/entity-not-fo
 import { ProductoId } from '@shared/domain/value-objects/ids/producto-id.vo';
 import { ProductoMapper } from '@catalogo/controller/mappers/producto.mapper';
 import { ProductoResponseDto } from '@catalogo/controller/dtos/producto-response.dto';
-import { Transactional } from '@shared/decorators/transactional.decorator';
-import { DataSource } from 'typeorm';
 
 @Injectable() // Convierte esta clase en un proveedor de servicios que puede ser inyectado en otros componentes de NestJS
 export class ProductoService {
-  dataSource: DataSource;
-
   constructor(
     @Inject('IProductoRepository')
     private readonly productoRepository: IProductoRepository,
@@ -25,13 +21,8 @@ export class ProductoService {
     private readonly categoriaRepository: ICategoriaRepository,
     @Inject('IProductoEstadisticasRepository')
     private readonly productoEstadisticasRepository: IProductoEstadisticasRepository,
-    @Inject('DataSource')
-    dataSource: DataSource,
-  ) {
-    this.dataSource = dataSource;
-  }
+  ) {}
 
-  @Transactional()
   async crear(nuevoProducto: Producto): Promise<Producto> {
     // Verificar que la categoria exista antes de crear el producto
     const _ = await this.buscarCategoriaPorId(nuevoProducto.getCategoriaId());
@@ -60,7 +51,6 @@ export class ProductoService {
     return productos;
   }
 
-  @Transactional()
   async actualizar(id: ProductoId, nuevoProducto: Producto): Promise<Producto> {
     // Cargar el producto
     const producto = await this.buscarPorId(id);
@@ -80,21 +70,18 @@ export class ProductoService {
     return producto;
   }
 
-  @Transactional()
   async activar(id: ProductoId): Promise<void> {
     const producto = await this.buscarPorId(id);
     producto.activar();
     await this.productoRepository.update(producto);
   }
 
-  @Transactional()
   async desactivar(id: ProductoId): Promise<void> {
     const producto = await this.buscarPorId(id);
     producto.desactivar();
     await this.productoRepository.update(producto);
   }
 
-  @Transactional()
   async agregarImagen(id: ProductoId, imagen: Imagen): Promise<void> {
     const producto = await this.buscarPorId(id);
     producto.agregarImagen(imagen);
@@ -114,7 +101,6 @@ export class ProductoService {
     return estadisticas;
   }
 
-  @Transactional()
   async crearCategoria(nuevaCategoria: Categoria): Promise<Categoria> {
     await this.categoriaRepository.save(nuevaCategoria);
 
@@ -134,7 +120,6 @@ export class ProductoService {
     return categorias;
   }
 
-  @Transactional()
   async actualizarCategoria(
     id: CategoriaId,
     nuevaCategoria: Categoria,
