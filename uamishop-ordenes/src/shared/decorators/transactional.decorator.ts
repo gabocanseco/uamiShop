@@ -2,42 +2,46 @@ import { DataSource } from 'typeorm';
 
 export const TRANSACTION_MANAGER_KEY = 'transactionManager';
 
-export function Transactional(
-  _target: any,
-  _propertyKey: string,
-  descriptor: PropertyDescriptor,
-) {
-  const originalMethod = descriptor.value;
-
-  const wrappedMethod = async function (this: any, ...args: any[]) {
-    const dataSource = this.dataSource;
-
-    if (!dataSource) {
-      throw new Error(
-        'DataSource not injected in the service. Add @Inject("DataSource") private readonly dataSource: DataSource to the constructor.',
-      );
+export function Transactional(): MethodDecorator {
+  return function <T>(
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<T>,
+  ): TypedPropertyDescriptor<T> | void {
+    if (!descriptor || !descriptor.value) {
+      return descriptor;
     }
 
-    const queryRunner = dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const originalMethod = descriptor.value as (...args: any[]) => Promise<any>;
 
-    const entityManager = queryRunner.manager;
-    this[TRANSACTION_MANAGER_KEY] = entityManager;
+    const wrappedMethod = async function (this: any, ...args: any[]) {
+      const dataSource = this.dataSource;
 
-    try {
-      const result = await originalMethod.apply(this, args);
-      await queryRunner.commitTransaction();
-      return result;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-      delete this[TRANSACTION_MANAGER_KEY];
-    }
+      if (!dataSource) {
+        return originalMethod.apply(this, args);
+      }
+
+      const queryRunner = dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const entityManager = queryRunner.manager;
+      this[TRANSACTION_MANAGER_KEY] = entityManager;
+
+      try {
+        const result = await originalMethod.apply(this, args);
+        await queryRunner.commitTransaction();
+        return result;
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        throw error;
+      } finally {
+        await queryRunner.release();
+        delete this[TRANSACTION_MANAGER_KEY];
+      }
+    };
+
+    (descriptor as any).value = wrappedMethod;
+    return descriptor as TypedPropertyDescriptor<T>;
   };
-
-  descriptor.value = wrappedMethod;
-  return descriptor;
 }

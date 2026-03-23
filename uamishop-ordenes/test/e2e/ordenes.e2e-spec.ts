@@ -2,13 +2,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { AppModule } from '../../src/app.module';
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { GlobalExceptionFilter } from '../../src/shared/controller/filters/global-exception.filter';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+
+vi.mock('@golevelup/nestjs-rabbitmq', () => ({
+  AmqpConnection: class {
+    publish = vi.fn().mockResolvedValue(true);
+    channel = { close: vi.fn() };
+  },
+}));
 
 describe('Ordenes (e2e)', () => {
   let app: INestApplication<App>;
-  const BASE_URL = '/ordenes';
+  const BASE_URL = '/v1/ordenes';
   const CLIENTE_ID = 'f79d6f9e-65c7-4f01-851d-af9be6bce3ab';
   let PRODUCTO_ID = '7b80a6e7-5874-4ddb-8492-86b7808445cb';
   const UNPROCESSABLE_ENTITY_CODE = 422;
@@ -16,11 +24,25 @@ describe('Ordenes (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule], // AppModule ya contiene toda la confiuracion, incluyendo el EventEmitterModule
-    }).compile();
+      imports: [AppModule],
+    })
+      .overrideProvider('DataSource')
+      .useValue(undefined)
+      .overrideProvider('VentasApi')
+      .useValue({
+        obtenerResumenCarrito: vi.fn().mockResolvedValue({
+          clienteId: CLIENTE_ID,
+          items: [],
+        }),
+      })
+      .overrideProvider(AmqpConnection)
+      .useValue({
+        publish: vi.fn().mockResolvedValue(true),
+        channel: { close: vi.fn() },
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
-    // Agregar los mismos filtros globales para capturar excepciones
     app.useGlobalFilters(new GlobalExceptionFilter());
 
     await app.init();
@@ -29,7 +51,7 @@ describe('Ordenes (e2e)', () => {
   beforeEach(async () => {
     // Crear nueva categoria
     const res_categorias = await request(app.getHttpServer())
-      .post('/categorias')
+      .post('/v1/categorias')
       .send({
         nombre: 'Electrónica',
       });
@@ -37,7 +59,7 @@ describe('Ordenes (e2e)', () => {
 
     // Crear nuevo producto
     const res_productos = await request(app.getHttpServer())
-      .post('/productos')
+      .post('/v1/productos')
       .send({
         nombre: 'Samsung S21',
         descripcion: 'Smartphone Samsung S21',
@@ -205,6 +227,8 @@ describe('Ordenes (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 });

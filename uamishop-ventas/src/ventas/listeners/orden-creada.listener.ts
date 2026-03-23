@@ -8,7 +8,8 @@ import { EXCHANGES } from '@shared/rabbitmq/constants/exchanges.const';
 import { RK_ORDEN_CREADA } from '@shared/rabbitmq/constants/routing-keys.const';
 import { QUEUE_VENTA_ORDEN_CREADA } from '@shared/rabbitmq/constants/queues.const';
 import { Transactional } from '@shared/decorators/transactional.decorator';
-import { DataSource, Inject } from 'typeorm';
+import { Inject } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 /**
  * Listener que marca el carrito como COMPLETADO

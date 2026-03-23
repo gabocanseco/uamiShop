@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductoService } from '@catalogo/service/producto.service';
 import { ProductoController } from '@catalogo/controller/producto.controller';
 import { ProductoEstadisticasService } from '@catalogo/service/producto-estadisticas.service';
 import { ProductoAgregadoAlCarritoListener } from '@catalogo/listeners/producto-agregado-al-carrito.listener';
 import { ProductoCompradoListener } from '@catalogo/listeners/producto-comprado.listener';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 import { ProductoOrmEntity } from '@catalogo/infrastructure/persistence/entities/producto-orm.entity';
 import { CategoriaOrmEntity } from '@catalogo/infrastructure/persistence/entities/categoria-orm.entity';
@@ -23,6 +25,17 @@ import { ProductoEstadisticasOrmRepository } from '@catalogo/infrastructure/pers
     ]),
   ],
   providers: [
+    {
+      provide: 'DataSource',
+      useValue: undefined,
+    },
+    {
+      provide: 'AmqpConnection',
+      useValue: {
+        publish: async () => true,
+        channel: { close: async () => {} },
+      },
+    },
     ProductoService,
     ProductoEstadisticasService,
     ProductoAgregadoAlCarritoListener,

@@ -2,8 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { AppModule } from '../../src/app.module';
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+
+vi.mock('@golevelup/nestjs-rabbitmq', () => ({
+  AmqpConnection: class {
+    publish = vi.fn().mockResolvedValue(true);
+    channel = { close: vi.fn() };
+  },
+}));
 
 describe('Catalogo (e2e)', () => {
   let app: INestApplication<App>;
@@ -13,7 +20,10 @@ describe('Catalogo (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider('DataSource')
+      .useValue(undefined)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -21,13 +31,13 @@ describe('Catalogo (e2e)', () => {
 
   beforeEach(async () => {
     // Creamos un producto antes de cada test para que la base de datos no esté vacía
-    const catRes = await request(app.getHttpServer()).post('/categorias').send({
+    const catRes = await request(app.getHttpServer()).post('/v1/categorias').send({
       nombre: 'Base',
       descripcion: 'Base',
     });
     categoriaId = catRes.body.id;
 
-    const prodRes = await request(app.getHttpServer()).post('/productos').send({
+    const prodRes = await request(app.getHttpServer()).post('/v1/productos').send({
       nombre: 'Producto Base',
       descripcion: 'Descripcion Producto Base',
       precio: 10,
@@ -38,7 +48,7 @@ describe('Catalogo (e2e)', () => {
 
   it('/productos (GET)', async () => {
     const response = await request(app.getHttpServer())
-      .get('/productos')
+      .get('/v1/productos')
       .expect(200);
 
     // Verifica que devuelva un arreglo
@@ -56,7 +66,7 @@ describe('Catalogo (e2e)', () => {
 
   it('POST /categorias - deberia crear una categoria', async () => {
     const response = await request(app.getHttpServer())
-      .post('/categorias')
+      .post('/v1/categorias')
       .send({
         nombre: 'Electronica',
         descripcion: 'Categoria de dispositivos',
@@ -86,14 +96,14 @@ describe('Catalogo (e2e)', () => {
   it('POST /productos - deberia crear un producto', async () => {
     // Primero creamos categoría necesaria
     const categoriaRes = await request(app.getHttpServer())
-      .post('/categorias')
+      .post('/v1/categorias')
       .send({
         nombre: 'Ropa',
         descripcion: 'Categoria de ropa',
       });
 
     const response = await request(app.getHttpServer())
-      .post('/productos')
+      .post('/v1/productos')
       .send({
         nombre: 'Camisa',
         descripcion: 'Camisa blanca',
@@ -111,7 +121,7 @@ describe('Catalogo (e2e)', () => {
 
   it('GET /productos - deberia obtener todos los productos', async () => {
     const response = await request(app.getHttpServer())
-      .get('/productos')
+      .get('/v1/productos')
       .expect(200);
 
     expect(Array.isArray(response.body)).toBe(true);
@@ -120,7 +130,7 @@ describe('Catalogo (e2e)', () => {
   it('GET /productos/:id - deberia obtener un producto por id', async () => {
     // Crear categoría
     const categoriaRes = await request(app.getHttpServer())
-      .post('/categorias')
+      .post('/v1/categorias')
       .send({
         nombre: 'Libros',
         descripcion: 'Categoria libros',
@@ -128,7 +138,7 @@ describe('Catalogo (e2e)', () => {
 
     // Crear producto
     const productoRes = await request(app.getHttpServer())
-      .post('/productos')
+      .post('/v1/productos')
       .send({
         nombre: 'Libro JS',
         descripcion: 'Aprende JS',
@@ -139,7 +149,7 @@ describe('Catalogo (e2e)', () => {
     const id = productoRes.body.id;
 
     const response = await request(app.getHttpServer())
-      .get(`/productos/${id}`)
+      .get(`/v1/productos/${id}`)
       .expect(200);
 
     expect(response.body.id).toBe(id);
@@ -148,7 +158,7 @@ describe('Catalogo (e2e)', () => {
 
   it('PUT /productos/:id - deberia actualizar un producto', async () => {
     // Crear categoría
-    const catRes = await request(app.getHttpServer()).post('/categorias').send({
+    const catRes = await request(app.getHttpServer()).post('/v1/categorias').send({
       nombre: 'Deportes',
       descripcion: 'Categoria deportes',
     });
@@ -156,7 +166,7 @@ describe('Catalogo (e2e)', () => {
 
     // Crear producto
     const productoRes = await request(app.getHttpServer())
-      .post('/productos')
+      .post('/v1/productos')
       .send({
         nombre: 'Balon',
         descripcion: 'Balon futbol',
@@ -167,7 +177,7 @@ describe('Catalogo (e2e)', () => {
     const id = productoRes.body.id;
 
     const response = await request(app.getHttpServer())
-      .put(`/productos/${id}`)
+      .put(`/v1/productos/${id}`)
       .send({
         nombre: 'Balon Pro',
         descripcion: 'Balon profesional',
@@ -182,7 +192,7 @@ describe('Catalogo (e2e)', () => {
 
   it('POST /productos/:id/activar - deberia activar un producto', async () => {
     // Crear categoría
-    const catRes = await request(app.getHttpServer()).post('/categorias').send({
+    const catRes = await request(app.getHttpServer()).post('/v1/categorias').send({
       nombre: 'Tecnologia',
       descripcion: 'Categoria tecnologia',
     });
@@ -190,7 +200,7 @@ describe('Catalogo (e2e)', () => {
 
     // Crear producto
     const productoRes = await request(app.getHttpServer())
-      .post('/productos')
+      .post('/v1/productos')
       .send({
         nombre: 'Laptop',
         descripcion: 'Laptop gamer',
@@ -202,7 +212,7 @@ describe('Catalogo (e2e)', () => {
 
     // Agregar imagen
     await request(app.getHttpServer())
-      .post(`/productos/${id}/imagenes`)
+      .post(`/v1/productos/${id}/imagenes`)
       .send({
         url: 'https://example.com/image.png',
         alt: 'alt',
@@ -211,13 +221,13 @@ describe('Catalogo (e2e)', () => {
       .expect(201);
 
     await request(app.getHttpServer())
-      .post(`/productos/${id}/activar`)
+      .post(`/v1/productos/${id}/activar`)
       .expect(201);
   });
 
   it('POST /productos/:id/desactivar - deberia desactivar un producto', async () => {
     // Crear categoría
-    const catRes = await request(app.getHttpServer()).post('/categorias').send({
+    const catRes = await request(app.getHttpServer()).post('/v1/categorias').send({
       nombre: 'Accesorios',
       descripcion: 'Categoria accesorios',
     });
@@ -225,7 +235,7 @@ describe('Catalogo (e2e)', () => {
 
     // Crear producto
     const productoRes = await request(app.getHttpServer())
-      .post('/productos')
+      .post('/v1/productos')
       .send({
         nombre: 'Reloj',
         descripcion: 'Reloj inteligente',
@@ -237,7 +247,7 @@ describe('Catalogo (e2e)', () => {
 
     // Agregar imagen
     await request(app.getHttpServer())
-      .post(`/productos/${id}/imagenes`)
+      .post(`/v1/productos/${id}/imagenes`)
       .send({
         url: 'https://example.com/image.png',
         alt: 'alt',
@@ -247,12 +257,12 @@ describe('Catalogo (e2e)', () => {
 
     // Activar
     await request(app.getHttpServer())
-      .post(`/productos/${id}/activar`)
+      .post(`/v1/productos/${id}/activar`)
       .expect(201);
 
     // Desactivar
     await request(app.getHttpServer())
-      .post(`/productos/${id}/desactivar`)
+      .post(`/v1/productos/${id}/desactivar`)
       .expect(201);
   });
 
@@ -267,7 +277,7 @@ describe('Catalogo (e2e)', () => {
 
   it('GET /productos/:id/estadisticas - deberia obtener las estadisticas de un producto', async () => {
     // Crear categoría
-    const catRes = await request(app.getHttpServer()).post('/categorias').send({
+    const catRes = await request(app.getHttpServer()).post('/v1/categorias').send({
       nombre: 'Estadisticas',
       descripcion: 'Categoria estadisticas',
     });
@@ -275,7 +285,7 @@ describe('Catalogo (e2e)', () => {
 
     // Crear producto
     const productoRes = await request(app.getHttpServer())
-      .post('/productos')
+      .post('/v1/productos')
       .send({
         nombre: 'Producto Estadisticas',
         descripcion: 'Descripcion Estadisticas',
@@ -327,6 +337,8 @@ describe('Catalogo (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 });

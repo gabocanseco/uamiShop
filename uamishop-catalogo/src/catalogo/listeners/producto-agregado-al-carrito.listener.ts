@@ -8,7 +8,8 @@ import { EXCHANGES } from '@shared/rabbitmq/constants/exchanges.const';
 import { QUEUE_CATALOGO_PRODUCTO_AGREGADO } from '@shared/rabbitmq/constants/queues.const';
 import { RK_PRODUCTO_AGREGADO } from '@shared/rabbitmq/constants/routing-keys.const';
 import { Transactional } from '@shared/decorators/transactional.decorator';
-import { DataSource, Inject } from 'typeorm';
+import { Inject } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class ProductoAgregadoAlCarritoListener {
