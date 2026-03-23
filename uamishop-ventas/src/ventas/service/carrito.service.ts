@@ -15,6 +15,7 @@ import { RK_PRODUCTO_AGREGADO } from '@shared/rabbitmq/constants/routing-keys.co
 import type { CatalogoApi } from '@ventas/service/external-services/catalogo/interfaces/catalogo.api';
 import { CarritoResponseDto } from '@ventas/controller/dtos/carrito-response.dto';
 import { CarritoMapper } from '@ventas/controller/mappers/carrito.mapper';
+import { Transactional } from 'typeorm-transactional';
 
 /**
  * Servicio de aplicación para gestionar carritos de compra
@@ -33,6 +34,7 @@ export class CarritoService {
   /**
    * Crea un carrito vacío asociado a un cliente
    */
+  @Transactional()
   async crear(clienteId: ClienteId): Promise<Carrito> {
     const nuevoCarrito = Carrito.crear(clienteId);
 
@@ -58,11 +60,10 @@ export class CarritoService {
     return carrito;
   }
 
-
-
   /**
    * Agrega un producto al carrito
    */
+  @Transactional()
   async agregarProducto(
     carritoId: CarritoId,
     productoRef: ProductoRef,
@@ -107,6 +108,7 @@ export class CarritoService {
   /**
    * Modifica la cantidad de un producto en el carrito
    */
+  @Transactional()
   async modificarCantidad(
     carritoId: CarritoId,
     productoId: ProductoId,
@@ -124,6 +126,7 @@ export class CarritoService {
   /**
    * Elimina un producto del carrito
    */
+  @Transactional()
   async eliminarProducto(
     carritoId: CarritoId,
     productoId: ProductoId,
@@ -140,6 +143,7 @@ export class CarritoService {
   /**
    * Vacía el carrito eliminando todos los productos
    */
+  @Transactional()
   async vaciar(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.buscarCarrito(carritoId);
 
@@ -153,6 +157,7 @@ export class CarritoService {
   /**
    * Inicia el proceso de checkout del carrito
    */
+  @Transactional()
   async iniciarCheckout(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.buscarCarrito(carritoId);
 
@@ -166,6 +171,7 @@ export class CarritoService {
   /**
    * Completa el checkout del carrito
    */
+  @Transactional()
   async completarCheckout(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.buscarCarrito(carritoId);
 
@@ -179,6 +185,7 @@ export class CarritoService {
   /**
    * Marca el carrito como abandonado
    */
+  @Transactional()
   async abandonar(carritoId: CarritoId): Promise<Carrito> {
     const carrito = await this.buscarCarrito(carritoId);
 
@@ -188,5 +195,4 @@ export class CarritoService {
 
     return carrito;
   }
-
 }

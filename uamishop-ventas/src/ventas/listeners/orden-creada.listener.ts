@@ -7,6 +7,7 @@ import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { EXCHANGES } from '@shared/rabbitmq/constants/exchanges.const';
 import { RK_ORDEN_CREADA } from '@shared/rabbitmq/constants/routing-keys.const';
 import { QUEUE_VENTA_ORDEN_CREADA } from '@shared/rabbitmq/constants/queues.const';
+import { Propagation, Transactional } from 'typeorm-transactional';
 
 /**
  * Listener que marca el carrito como COMPLETADO
@@ -14,18 +15,19 @@ import { QUEUE_VENTA_ORDEN_CREADA } from '@shared/rabbitmq/constants/queues.cons
  */
 @Injectable()
 export class OrdenCreadaListener {
-    constructor(private readonly carritoService: CarritoService) { }
+  constructor(private readonly carritoService: CarritoService) {}
 
-    @OnEvent('orden.creada', { async: true })
-    @RabbitSubscribe({
-        exchange: EXCHANGES.UAMISHOP_EVENTS, // Nombre del exchange
-        routingKey: RK_ORDEN_CREADA, // Routing key para filtrar los mensajes
-        queue: QUEUE_VENTA_ORDEN_CREADA, // Nombre de la cola donde se recibirán los mensajes
-    })
-    async onOrdenCreada(event: OrdenCreadaEvent) {
-        if (event.carritoId) {
-            const carritoId = CarritoId.of(event.carritoId);
-            await this.carritoService.completarCheckout(carritoId);
-        }
+  @OnEvent('orden.creada', { async: true })
+  @RabbitSubscribe({
+    exchange: EXCHANGES.UAMISHOP_EVENTS, // Nombre del exchange
+    routingKey: RK_ORDEN_CREADA, // Routing key para filtrar los mensajes
+    queue: QUEUE_VENTA_ORDEN_CREADA, // Nombre de la cola donde se recibirán los mensajes
+  })
+  @Transactional({ propagation: Propagation.REQUIRES_NEW }) // Asegura que cada evento se maneje en una transacción separada
+  async onOrdenCreada(event: OrdenCreadaEvent) {
+    if (event.carritoId) {
+      const carritoId = CarritoId.of(event.carritoId);
+      await this.carritoService.completarCheckout(carritoId);
     }
+  }
 }
