@@ -7,12 +7,20 @@ import { ProductoCompradoEvent } from '@shared/event/producto-comprado.event';
 import { EXCHANGES } from '@shared/rabbitmq/constants/exchanges.const';
 import { QUEUE_CATALOGO_PRODUCTO_COMPRADO } from '@shared/rabbitmq/constants/queues.const';
 import { RK_PRODUCTO_COMPRADO } from '@shared/rabbitmq/constants/routing-keys.const';
+import { Transactional } from '@shared/decorators/transactional.decorator';
+import { DataSource, Inject } from 'typeorm';
 
 @Injectable()
 export class ProductoCompradoListener {
+  dataSource: DataSource;
+
   constructor(
     private readonly productoEstadisticasService: ProductoEstadisticasService,
-  ) {}
+    @Inject('DataSource')
+    dataSource: DataSource,
+  ) {
+    this.dataSource = dataSource;
+  }
 
   @OnEvent('producto.comprado', { async: true }) // Escuchar el evento 'orden.producto.comprado' de forma asíncrona
   @RabbitSubscribe({
@@ -20,6 +28,7 @@ export class ProductoCompradoListener {
     routingKey: RK_PRODUCTO_COMPRADO, // Routing key para filtrar los mensajes
     queue: QUEUE_CATALOGO_PRODUCTO_COMPRADO, // Nombre de la cola donde se recibirán los mensajes
   })
+  @Transactional()
   async onProductoComprado(productoCompradoEvent: ProductoCompradoEvent) {
     productoCompradoEvent.items.forEach((item) => {
       this.productoEstadisticasService.registrarVenta(
