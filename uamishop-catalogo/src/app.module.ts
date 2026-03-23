@@ -5,6 +5,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { RabbitMQConfigModule } from '@shared/rabbitmq/rabbitmq.module';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import { DomainException } from '@shared/domain/exceptions/domain.exception';
+import { addTransactionalDataSource } from 'typeorm-transactional';
 
 @Module({
   imports: [
@@ -33,6 +36,13 @@ import { RabbitMQConfigModule } from '@shared/rabbitmq/rabbitmq.module';
           autoLoadEntities: true,
           synchronize: true,
         };
+      },
+      dataSourceFactory: async (options?: DataSourceOptions) => {
+        if (!options)
+          throw new DomainException(
+            'DataSourceOptions no es compatible con SQLite en este contexto',
+          );
+        return addTransactionalDataSource(new DataSource(options));
       },
     }),
   ],

@@ -7,6 +7,7 @@ import { ProductoCompradoEvent } from '@shared/event/producto-comprado.event';
 import { EXCHANGES } from '@shared/rabbitmq/constants/exchanges.const';
 import { QUEUE_CATALOGO_PRODUCTO_COMPRADO } from '@shared/rabbitmq/constants/queues.const';
 import { RK_PRODUCTO_COMPRADO } from '@shared/rabbitmq/constants/routing-keys.const';
+import { Propagation, Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class ProductoCompradoListener {
@@ -20,6 +21,7 @@ export class ProductoCompradoListener {
     routingKey: RK_PRODUCTO_COMPRADO, // Routing key para filtrar los mensajes
     queue: QUEUE_CATALOGO_PRODUCTO_COMPRADO, // Nombre de la cola donde se recibirán los mensajes
   })
+  @Transactional({ propagation: Propagation.REQUIRES_NEW }) // Asegura que cada evento se maneje en una transacción separada
   async onProductoComprado(productoCompradoEvent: ProductoCompradoEvent) {
     productoCompradoEvent.items.forEach((item) => {
       this.productoEstadisticasService.registrarVenta(
