@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/uamiShop/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/uamiShop/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/uamiShop",
+  "projects": {
+    "catalogo": {
+      "type": "application",
+      "root": "apps/catalogo",
+      "entryFile": "main",
+      "sourceRoot": "apps/catalogo/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/catalogo/tsconfig.app.json"
+      }
+    },
+    "gateway": {
+      "type": "application",
+      "root": "apps/gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/gateway/tsconfig.app.json"
+      }
+    },
+    "ordenes": {
+      "type": "application",
+      "root": "apps/ordenes",
+      "entryFile": "main",
+      "sourceRoot": "apps/ordenes/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ordenes/tsconfig.app.json"
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    },
+    "uamiShop": {
+      "type": "application",
+      "root": "apps/uamiShop",
+      "entryFile": "main",
+      "sourceRoot": "apps/uamiShop/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/uamiShop/tsconfig.app.json"
+      }
+    },
+    "ventas": {
+      "type": "application",
+      "root": "apps/ventas",
+      "entryFile": "main",
+      "sourceRoot": "apps/ventas/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ventas/tsconfig.app.json"
+      }
+    }
+  }
+}
