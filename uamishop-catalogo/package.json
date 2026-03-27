@@ -18,7 +18,8 @@
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "test:e2e": "vitest run test"
+    "test:e2e": "vitest run test",
+    "seed": "ts-node -r tsconfig-paths/register src/seed/seed.ts"
   },
   "dependencies": {
     "@golevelup/nestjs-rabbitmq": "^9.0.0",
