@@ -1,60 +1,21 @@
 name: uamishop-app
 
 services:
-  mysql-catalogo:
+  mysql-uamishop:
     image: mysql:latest
-    container_name: uamishop-mysql-catalogo
+    container_name: uamishop-mysql
     environment:
-      MYSQL_DATABASE: uamishop_catalogo
       MYSQL_USER: uamishop
       MYSQL_PASSWORD: uamishop
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - '3308:3306' # Mapea el puerto 3306 del contenedor al puerto 3308 en el host para evitar conflictos con MySQL local
+      - '3307:3306' # Mapea el puerto 3306 del contenedor al puerto 3308 en el host para evitar conflictos con MySQL local
     volumes:
-      - mysql_catalogo_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: [ 'CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot' ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 15s
-    restart: unless-stopped
-
-  mysql-ordenes:
-    image: mysql:latest
-    container_name: uamishop-mysql-ordenes
-    environment:
-      MYSQL_DATABASE: uamishop_ordenes
-      MYSQL_USER: uamishop
-      MYSQL_PASSWORD: uamishop
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - '3309:3306' # Mapea el puerto 3306 del contenedor al puerto 3309 en el host para evitar conflictos con MySQL local
-    volumes:
-      - mysql_ordenes_data:/var/lib/mysql
-    healthcheck:
-      test: [ 'CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot' ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 15s
-    restart: unless-stopped
-
-  mysql-ventas:
-    image: mysql:latest
-    container_name: uamishop-mysql-ventas
-    environment:
-      MYSQL_DATABASE: uamishop_ventas
-      MYSQL_USER: uamishop
-      MYSQL_PASSWORD: uamishop
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - '3310:3306' # Mapea el puerto 3306 del contenedor al puerto 3310 en el host para evitar conflictos con MySQL local
-    volumes:
-      - mysql_ventas_data:/var/lib/mysql
-    healthcheck:
-      test: [ 'CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot' ]
+      test:
+        ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -63,23 +24,23 @@ services:
 
   uamishop-catalogo:
     build:
-      context: uamishop-catalogo/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/catalogo/Dockerfile
     image: uamishop-catalogo:latest
     container_name: uamishop-catalogo
     ports:
-      - '3001:8081'
+      - '8081:8080'
     environment:
-      PORT: 8081
+      PORT: 8080
       NODE_ENV: mysql
-      DB_HOST: mysql-catalogo
+      DB_HOST: mysql-uamishop
       DB_PORT: 3306
       DB_DATABASE: uamishop_catalogo
       DB_USERNAME: uamishop
       DB_PASSWORD: uamishop
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
-      mysql-catalogo:
+      mysql-uamishop:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -87,24 +48,24 @@ services:
 
   uamishop-ventas:
     build:
-      context: uamishop-ventas/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/ventas/Dockerfile
     image: uamishop-ventas:latest
     container_name: uamishop-ventas
     ports:
-      - '3002:8082'
+      - '8082:8080'
     environment:
-      PORT: 8082
+      PORT: 8080
       NODE_ENV: mysql
-      DB_HOST: mysql-ventas
+      DB_HOST: mysql-uamishop
       DB_PORT: 3306
       DB_DATABASE: uamishop_ventas
       DB_USERNAME: uamishop
       DB_PASSWORD: uamishop
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
-      CATALOGO_SERVICE_URL: http://uamishop-catalogo:8081
+      CATALOGO_SERVICE_URL: http://uamishop-catalogo:8080
     depends_on:
-      mysql-ventas:
+      mysql-uamishop:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -112,24 +73,24 @@ services:
 
   uamishop-ordenes:
     build:
-      context: uamishop-ordenes/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/ordenes/Dockerfile
     image: uamishop-ordenes:latest
     container_name: uamishop-ordenes
     ports:
-      - '3003:8083'
+      - '8083:8080'
     environment:
-      PORT: 8083
+      PORT: 8080
       NODE_ENV: mysql
-      DB_HOST: mysql-ordenes
+      DB_HOST: mysql-uamishop
       DB_PORT: 3306
       DB_DATABASE: uamishop_ordenes
       DB_USERNAME: uamishop
       DB_PASSWORD: uamishop
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
-      VENTAS_SERVICE_URL: http://uamishop-ventas:8082
+      VENTAS_SERVICE_URL: http://uamishop-ventas:8080
     depends_on:
-      mysql-ordenes:
+      mysql-uamishop:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -142,7 +103,7 @@ services:
       - '5672:5672' # Puerto para la comunicación con RabbitMQ
       - '15672:15672' # Puerto para la interfaz de administración de RabbitMQ
     healthcheck:
-      test: [ 'CMD', 'rabbitmq-diagnostics', 'ping' ]
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -155,7 +116,7 @@ services:
     ports:
       - '8080:8080'
     volumes:
-      - ./uamishop-gateway/nginx.conf:/etc/nginx/nginx.conf:z
+      - ./apps/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       uamishop-catalogo:
         condition: service_started
@@ -166,6 +127,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  mysql_catalogo_data:
-  mysql_ordenes_data:
-  mysql_ventas_data:
+  mysql_data:
