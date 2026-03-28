@@ -1,14 +1,15 @@
 // import { Test, TestingModule } from '@nestjs/testing';
 // import { INestApplication } from '@nestjs/common';
-// import * as request from 'supertest';
-// import { VentasModule } from './../src/ventas.module';
+// import request from 'supertest';
+// import { CatalogoModule } from '../../src/catalogo.module';
+// import { beforeEach, describe, it } from 'vitest';
 
-// describe('VentasController (e2e)', () => {
+// describe('CatalogoController (e2e)', () => {
 //   let app: INestApplication;
 
 //   beforeEach(async () => {
 //     const moduleFixture: TestingModule = await Test.createTestingModule({
-//       imports: [VentasModule],
+//       imports: [CatalogoModule],
 //     }).compile();
 
 //     app = moduleFixture.createNestApplication();

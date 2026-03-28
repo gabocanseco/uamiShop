@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductoService } from './producto.service';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { DataSource } from 'typeorm';
+import {
+  addTransactionalDataSource,
+  initializeTransactionalContext,
+} from 'typeorm-transactional';
 import { ProductoInMemoryRepository } from '@catalogo/repository/producto-in-memory.repository';
 import { CategoriaInMemoryRepository } from '@catalogo/repository/categoria-in-memory.repository';
 import { ProductoEstadisticasInMemoryRepository } from '@catalogo/repository/producto-estadisticas-in-memory-repository';
@@ -17,6 +22,24 @@ describe('ProductoService', () => {
   let service: ProductoService;
   let productoRepo: ProductoInMemoryRepository;
   let categoriaRepo: CategoriaInMemoryRepository;
+  let dataSource: DataSource;
+
+  beforeAll(async () => {
+    initializeTransactionalContext();
+    dataSource = new DataSource({
+      type: 'sqlite',
+      database: ':memory:',
+      entities: [],
+    });
+    await dataSource.initialize();
+    addTransactionalDataSource(dataSource);
+  });
+
+  afterAll(async () => {
+    if (dataSource?.isInitialized) {
+      await dataSource.destroy();
+    }
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

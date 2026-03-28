@@ -8,8 +8,11 @@ export default defineConfig({
     globals: true, // Para usar 'describe' e 'it' sin importarlos
     environment: 'node',
     include: [
-      'src/**/*.spec.ts',
-      'test/**/*.e2e-spec.ts', // Para pruebas e2e en la carpeta test
+      'apps/catalogo/**/*.spec.ts',
+      'apps/catalogo/test/**/*.integration-spec.ts',
+      'libs/**/*.spec.ts',
+      'test/**/*.spec.ts',
+      'test/**/*.e2e-spec.ts',
     ],
     // Esto evita que vitest intente ejecutar archivos compilados en dist/
     exclude: ['**/node_modules/**', '**/dist/**', '**/*.js'],
