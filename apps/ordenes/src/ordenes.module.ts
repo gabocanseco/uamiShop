@@ -16,6 +16,7 @@ import databaseConfig from '@catalogo/config/database.config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import servicesConfig from './config/services.config';
+import { OutboxModule } from '@app/shared/outbox/outbox.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import servicesConfig from './config/services.config';
     ]),
     SharedRabbitModule.register(EXCHANGES.UAMISHOP_EVENTS),
     EventEmitterModule.forRoot(),
+    OutboxModule,
   ],
   providers: [
     OrdenService,
