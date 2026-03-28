@@ -15,6 +15,7 @@ import databaseConfig from '@catalogo/config/database.config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import servicesConfig from './config/services.config';
+import { OutboxModule } from '@app/shared/outbox/outbox.module';
 
 /**
  * Módulo de Ventas
@@ -59,6 +60,7 @@ import servicesConfig from './config/services.config';
     TypeOrmModule.forFeature([CarritoOrmEntity, ItemCarritoOrmEntity]),
     SharedRabbitModule.register(EXCHANGES.UAMISHOP_EVENTS),
     EventEmitterModule.forRoot(),
+    OutboxModule,
   ],
   controllers: [CarritoController],
   providers: [

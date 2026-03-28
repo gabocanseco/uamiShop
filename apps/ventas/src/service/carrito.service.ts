@@ -16,6 +16,7 @@ import type { CatalogoApi } from '@ventas/service/external-services/catalogo/int
 import { CarritoResponseDto } from '@ventas/controller/dtos/carrito-response.dto';
 import { CarritoMapper } from '@ventas/controller/mappers/carrito.mapper';
 import { Transactional } from 'typeorm-transactional';
+import { OutboxService } from '@app/shared/outbox/service/outbox.service';
 
 /**
  * Servicio de aplicación para gestionar carritos de compra
@@ -29,6 +30,7 @@ export class CarritoService {
     @Inject('CatalogoApi')
     private readonly catalogoApi: CatalogoApi,
     private readonly amqpConnection: AmqpConnection, // Conexión a RabbitMQ para publicar eventos (Advanced Message Queuing Protocol)
+    private readonly outboxService: OutboxService,
   ) {}
 
   /**
@@ -96,10 +98,13 @@ export class CarritoService {
         precioUnitario,
       );
     this.eventEmitter.emit('carrito.producto.agregado', productoAgregadoEvent);
-    await this.amqpConnection.publish(
+    await this.outboxService.append(
+      'Carrito',
+      carrito.getId().getValue(),
+      'ProductoAgregadoAlCarritoEvent',
       EXCHANGES.UAMISHOP_EVENTS,
       RK_PRODUCTO_AGREGADO,
-      productoAgregadoEvent,
+      JSON.stringify(productoAgregadoEvent),
     );
 
     return carrito;

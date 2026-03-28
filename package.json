@@ -19,7 +19,7 @@
     "test:cov": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "test:e2e": "vitest run test",
-    "seed": "ts-node -r tsconfig-paths/register src/seed/seed.ts"
+    "seed": "ts-node -r tsconfig-paths/register apps/catalogo/src/seed/seed.ts"
   },
   "dependencies": {
     "@golevelup/nestjs-rabbitmq": "^9.0.0",
@@ -29,6 +29,7 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/event-emitter": "^3.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^6.1.1",
     "@nestjs/swagger": "^11.2.6",
     "@nestjs/typeorm": "^11.0.0",
     "amqplib": "^0.10.9",

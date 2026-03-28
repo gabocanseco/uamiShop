@@ -8,11 +8,11 @@ import { MoneyOrmEmbeddable } from '@app/shared/infrastructure/persistance/embed
 
 const AppDataSource = new DataSource({
   type: 'mysql',
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || '3306', 10),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '3307', 10),
+  username: process.env.DB_USERNAME || 'uamishop',
+  password: process.env.DB_PASSWORD || 'uamishop',
+  database: process.env.DB_DATABASE || 'uamishop_catalogo',
   synchronize: false,
   logging: false,
   entities: [ProductoOrmEntity, CategoriaOrmEntity],

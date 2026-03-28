@@ -21,6 +21,7 @@ import {
 } from '@app/shared/rabbitmq/constants/routing-keys.const';
 import type { VentasApi } from './external_services/ventas/interfaces/ventas.api';
 import { Transactional } from 'typeorm-transactional';
+import { OutboxService } from '@app/shared/outbox/service/outbox.service';
 
 @Injectable()
 export class OrdenService {
@@ -31,6 +32,7 @@ export class OrdenService {
     private readonly ventasApi: VentasApi,
     private readonly eventEmitter: EventEmitter2,
     private readonly amqpConnection: AmqpConnection, // Conexión a RabbitMQ para publicar eventos (Advanced Message Queuing Protocol)
+    private readonly outboxService: OutboxService,
   ) {}
 
   @Transactional()
@@ -42,10 +44,13 @@ export class OrdenService {
       OrdenEventMapper.toProductoCompradoEvent(nuevaOrden);
 
     this.eventEmitter.emit('orden.producto.comprado', productoCompradoEvent);
-    await this.amqpConnection.publish(
+    await this.outboxService.append(
+      'Orden',
+      nuevaOrden.getId().getValue(),
+      'ProductoCompradoEvent',
       EXCHANGES.UAMISHOP_EVENTS,
       RK_PRODUCTO_COMPRADO,
-      productoCompradoEvent,
+      JSON.stringify(productoCompradoEvent),
     );
 
     const ordenCreadaEvent = new OrdenCreadaEvent(
@@ -56,10 +61,13 @@ export class OrdenService {
     );
 
     this.eventEmitter.emit('orden.creada', ordenCreadaEvent);
-    await this.amqpConnection.publish(
+    await this.outboxService.append(
+      'Orden',
+      nuevaOrden.getId().getValue(),
+      'OrdenCreadaEvent',
       EXCHANGES.UAMISHOP_EVENTS,
       RK_ORDEN_CREADA,
-      ordenCreadaEvent,
+      JSON.stringify(ordenCreadaEvent),
     );
 
     return nuevaOrden;
@@ -87,10 +95,13 @@ export class OrdenService {
     const productoCompradoEvent =
       OrdenEventMapper.toProductoCompradoEvent(nuevaOrden);
     this.eventEmitter.emit('orden.producto.comprado', productoCompradoEvent);
-    await this.amqpConnection.publish(
+    await this.outboxService.append(
+      'Orden',
+      nuevaOrden.getId().getValue(),
+      'ProductoCompradoEvent',
       EXCHANGES.UAMISHOP_EVENTS,
       RK_PRODUCTO_COMPRADO,
-      productoCompradoEvent,
+      JSON.stringify(productoCompradoEvent),
     );
 
     //evento  OrdenCreadaEvent
@@ -102,7 +113,10 @@ export class OrdenService {
       carritoId.getValue(),
     );
     this.eventEmitter.emit('orden.creada', ordenCreadaEvent);
-    await this.amqpConnection.publish(
+    await this.outboxService.append(
+      'Orden',
+      nuevaOrden.getId().getValue(),
+      'OrdenCreadaEvent',
       EXCHANGES.UAMISHOP_EVENTS,
       RK_ORDEN_CREADA,
       ordenCreadaEvent,
