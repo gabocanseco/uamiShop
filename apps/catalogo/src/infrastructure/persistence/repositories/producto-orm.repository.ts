@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { IProductoRepository } from '@catalogo/repository/interfaces/producto.repository';
 import { ProductoOrmEntity } from '@catalogo/infrastructure/persistence/entities/producto-orm.entity';
 import { Producto } from '@catalogo/domain/agreggates/producto.agreggate';
@@ -28,6 +28,14 @@ export class ProductoOrmRepository implements IProductoRepository {
 
   async findAll(): Promise<Producto[]> {
     const ormEntities = await this.repository.find();
+    return ormEntities.map((entity) => ProductoOrmMapper.toDomain(entity));
+  }
+
+  async findByIds(ids: ProductoId[]): Promise<Producto[]> {
+    const idsValues = ids.map((id) => id.getValue());
+    const ormEntities = await this.repository.find({
+      where: { id: In(idsValues) },
+    });
     return ormEntities.map((entity) => ProductoOrmMapper.toDomain(entity));
   }
 

@@ -98,6 +98,18 @@ export class ProductoService {
     return this.productoEstadisticasRepository.findMasVendidos(limit);
   }
 
+  async buscarMasVendidosProductos(limit: number): Promise<Producto[]> {
+    const estadisticas =
+      await this.productoEstadisticasRepository.findMasVendidos(limit);
+    const productoIds = estadisticas.map((e) => e.getProductoId());
+
+    if (productoIds.length === 0) {
+      return [];
+    }
+
+    return this.productoRepository.findByIds(productoIds);
+  }
+
   async buscarEstadisticas(id: ProductoId): Promise<ProductoEstadisticas> {
     const estadisticas =
       await this.productoEstadisticasRepository.findByProductoId(id);

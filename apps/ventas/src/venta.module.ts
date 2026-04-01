@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common';
 import { CarritoController } from '@ventas/controller/carrito.controller';
+import { ClienteController } from '@ventas/controller/cliente.controller';
 import { CarritoService } from '@ventas/service/carrito.service';
+import { ClienteService } from '@ventas/service/cliente.service';
 import { OrdenCreadaListener } from '@ventas/listeners/orden-creada.listener';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { CarritoOrmEntity } from '@ventas/infrastructure/entities/carrito-orm.entity';
 import { ItemCarritoOrmEntity } from '@ventas/infrastructure/entities/item-carrito-orm.entity';
+import { ClienteOrmEntity } from '@ventas/infrastructure/entities/cliente-orm.entity';
 import { CarritoOrmRepository } from '@ventas/infrastructure/repositories/carrito-orm.repository';
+import { ClienteOrmRepository } from '@ventas/infrastructure/repositories/cliente-orm.repository';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CatalogoApiHttpClient } from '@ventas/infrastructure/api/catalogo-api-http-client';
@@ -57,18 +61,24 @@ import { OutboxModule } from '@app/shared/outbox/outbox.module';
       },
     }),
     HttpModule,
-    TypeOrmModule.forFeature([CarritoOrmEntity, ItemCarritoOrmEntity]),
+    TypeOrmModule.forFeature([
+      CarritoOrmEntity,
+      ItemCarritoOrmEntity,
+      ClienteOrmEntity,
+    ]),
     SharedRabbitModule.register(EXCHANGES.UAMISHOP_EVENTS),
     EventEmitterModule.forRoot(),
     OutboxModule,
   ],
-  controllers: [CarritoController],
+  controllers: [CarritoController, ClienteController],
   providers: [
+    ClienteService,
     CarritoService,
     {
       provide: 'ICarritoRepository',
       useClass: CarritoOrmRepository,
     },
+    ClienteOrmRepository,
     OrdenCreadaListener,
     {
       provide: 'CatalogoApi',

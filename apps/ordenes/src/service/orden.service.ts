@@ -50,7 +50,7 @@ export class OrdenService {
       'ProductoCompradoEvent',
       EXCHANGES.UAMISHOP_EVENTS,
       RK_PRODUCTO_COMPRADO,
-      JSON.stringify(productoCompradoEvent),
+      productoCompradoEvent,
     );
 
     const ordenCreadaEvent = new OrdenCreadaEvent(
@@ -67,7 +67,7 @@ export class OrdenService {
       'OrdenCreadaEvent',
       EXCHANGES.UAMISHOP_EVENTS,
       RK_ORDEN_CREADA,
-      JSON.stringify(ordenCreadaEvent),
+      ordenCreadaEvent,
     );
 
     return nuevaOrden;
@@ -101,7 +101,7 @@ export class OrdenService {
       'ProductoCompradoEvent',
       EXCHANGES.UAMISHOP_EVENTS,
       RK_PRODUCTO_COMPRADO,
-      JSON.stringify(productoCompradoEvent),
+      productoCompradoEvent,
     );
 
     //evento  OrdenCreadaEvent

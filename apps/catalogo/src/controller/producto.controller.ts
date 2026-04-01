@@ -81,13 +81,14 @@ export class ProductoController {
   @ApiResponse({
     status: 200,
     description: 'Lista de productos más vendidos',
-    type: [ProductoEstadisticasResponseDto],
+    type: [ProductoResponseDto],
   })
   async masVendidos(
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  ): Promise<ProductoEstadisticasResponseDto[]> {
-    const estadisticas = await this.productoService.buscarMasVendidos(limit);
-    return estadisticas.map((e) => ProductoEstadisticasMapper.toResponseDto(e));
+  ): Promise<ProductoResponseDto[]> {
+    const productos =
+      await this.productoService.buscarMasVendidosProductos(limit);
+    return productos.map((p) => ProductoMapper.toResponseDto(p));
   }
 
   @Get('productos/:id')

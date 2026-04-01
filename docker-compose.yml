@@ -111,12 +111,13 @@ services:
     restart: unless-stopped
 
   uamishop-gateway:
-    image: nginx:latest
+    build:
+      context: ./apps/gateway
+      dockerfile: Dockerfile
+    image: uamishop-gateway:latest
     container_name: uamishop-gateway
     ports:
       - '8080:8080'
-    volumes:
-      - ./apps/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       uamishop-catalogo:
         condition: service_started
