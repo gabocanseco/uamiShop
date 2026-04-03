@@ -23,6 +23,13 @@ export class ProductoInMemoryRepository implements IProductoRepository {
     return this.productos;
   }
 
+  async findByIds(ids: ProductoId[]): Promise<Producto[]> {
+    const idValues = ids.map((id) => id.getValue());
+    return this.productos.filter((p) =>
+      idValues.includes(p.getId().getValue()),
+    );
+  }
+
   async update(producto: Producto): Promise<void> {
     const index = this.productos.findIndex(
       (p) => p.getId().getValue() === producto.getId().getValue(),

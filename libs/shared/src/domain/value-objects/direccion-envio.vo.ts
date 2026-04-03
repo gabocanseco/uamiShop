@@ -1,4 +1,4 @@
-import { DomainException } from '@app/shared/domain/exceptions/domain.exception';
+import { BusinessRuleException } from '../exceptions/business-rule.exception';
 
 export class DireccionEnvio {
   private constructor(
@@ -33,14 +33,14 @@ export class DireccionEnvio {
   ): DireccionEnvio {
     const codigoPostalRegex = /^\d{5}$/;
     if (!codigoPostalRegex.test(codigoPostal)) {
-      throw new DomainException(
+      throw new BusinessRuleException(
         'La dirección de envio debe tener código postal válido (5 digitos)',
       );
     }
 
     const telefonoContactoRegex = /^\d{10}$/;
     if (!telefonoContactoRegex.test(telefono)) {
-      throw new DomainException(
+      throw new BusinessRuleException(
         'El teléfono de contacto debe tener 10 digitos)',
       );
     }
