@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { BusinessRuleException } from '@app/shared/domain/exceptions/business-rule.exception';
 import { EntityNotFoundException } from '@app/shared/domain/exceptions/entity-not-found.exception';
+import { ExternalServiceUnavailableException } from '@app/shared/domain/exceptions/service-unaviable.exception';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -38,6 +39,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       status = HttpStatus.UNPROCESSABLE_ENTITY; // 422
       message = exception.message;
       code = exception.code || 'UNPROCESSABLE_ENTITY';
+    }
+
+    // Manejo de excepcion de servicios externos no disponibles
+    if (exception instanceof ExternalServiceUnavailableException) {
+      status = HttpStatus.SERVICE_UNAVAILABLE;
+      message = exception.message;
+      code = 'EXTERNAL_SERVICE_UNAVAILABLE';
     }
 
     this.logger.error(

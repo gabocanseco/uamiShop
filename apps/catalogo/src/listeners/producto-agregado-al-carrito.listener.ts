@@ -1,6 +1,6 @@
 import { ProductoEstadisticasService } from '@catalogo/service/producto-estadisticas.service';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { ProductoId } from '@app/shared/domain/value-objects/ids/producto-id.vo';
 import { ProductoAgregadoAlCarritoEvent } from '@app/shared/event/producto-agregado-al-carrito.event';
@@ -11,6 +11,8 @@ import { Propagation, Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class ProductoAgregadoAlCarritoListener {
+  private readonly logger = new Logger(ProductoAgregadoAlCarritoListener.name);
+
   constructor(
     private readonly productoEstadisticasService: ProductoEstadisticasService,
   ) {}
@@ -20,13 +22,23 @@ export class ProductoAgregadoAlCarritoListener {
     exchange: EXCHANGES.UAMISHOP_EVENTS, // Nombre del exchange
     routingKey: RK_PRODUCTO_AGREGADO, // Routing key para filtrar los mensajes
     queue: QUEUE_CATALOGO_PRODUCTO_AGREGADO, // Nombre de la cola donde se recibirán los mensajes
+    errorHandler: (channel, msg, error) => {
+      channel.ack(msg);
+    },
   })
   @Transactional({ propagation: Propagation.REQUIRES_NEW }) // Asegura que cada evento se maneje en una transacción separada
   async onProductoAgregadoAlCarrito(
     productoAgregadoAlCarritoEvent: ProductoAgregadoAlCarritoEvent,
   ) {
-    await this.productoEstadisticasService.registrarAgregadoAlCarrito(
-      ProductoId.of(productoAgregadoAlCarritoEvent.productoId),
-    );
+    try {
+      await this.productoEstadisticasService.registrarAgregadoAlCarrito(
+        ProductoId.of(productoAgregadoAlCarritoEvent.productoId),
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Error al procesar ProductoAgregadoAlCarritoEvent (productoId: ${productoAgregadoAlCarritoEvent.productoId}): ${error.message}`,
+      );
+    }
   }
 }
+

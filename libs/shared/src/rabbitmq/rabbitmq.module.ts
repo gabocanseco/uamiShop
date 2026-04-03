@@ -15,9 +15,14 @@ export class SharedRabbitModule {
             },
           ],
           uri: process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672', // URL de conexión a RabbitMQ, configurable por variable de entorno
-          connectionInitOptions: { wait: true },
+          connectionInitOptions: { wait: false }, // No bloquear el inicio si RabbitMQ no está listo
           // Habilita el guardado de mensajes si RabbitMQ se cae momentáneamente
-          enableDirectReplyTo: true,
+          enableDirectReplyTo: false, // Deshabilitado para evitar errores al reconectar
+          connectionManagerOptions: {
+            // Reintentar la conexión automáticamente si RabbitMQ no está disponible al inicio
+            heartbeatIntervalInSeconds: 15,
+            reconnectTimeInSeconds: 5,
+          },
         }),
       ],
       exports: [RabbitMQModule],
