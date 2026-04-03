@@ -20,6 +20,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import servicesConfig from './config/services.config';
 import { OutboxModule } from '@app/shared/outbox/outbox.module';
+import { ResilienceModule } from '@app/shared/infrastructure/resilience/circuit-breaker/circuit-breaker.module';
 
 /**
  * Módulo de Ventas
@@ -69,6 +70,7 @@ import { OutboxModule } from '@app/shared/outbox/outbox.module';
     SharedRabbitModule.register(EXCHANGES.UAMISHOP_EVENTS),
     EventEmitterModule.forRoot(),
     OutboxModule,
+    ResilienceModule.register('CATALOGO'),
   ],
   controllers: [CarritoController, ClienteController],
   providers: [
@@ -82,13 +84,14 @@ import { OutboxModule } from '@app/shared/outbox/outbox.module';
     OrdenCreadaListener,
     {
       provide: 'CatalogoApi',
-      useFactory: (httpService: HttpService, configService: ConfigService) => {
-        configService.get<string>('services.catalogoUrl');
+      useClass: CatalogoApiHttpClient,
+      // useFactory: (httpService: HttpService, configService: ConfigService) => {
+      //   configService.get<string>('services.catalogoUrl');
 
-        // Si se configura la URL del catálogo externo, usar el cliente HTTP; de lo contrario, usar el servicio local de productos
-        return new CatalogoApiHttpClient(httpService, configService);
-      },
-      inject: [HttpService, ConfigService],
+      //   // Si se configura la URL del catálogo externo, usar el cliente HTTP; de lo contrario, usar el servicio local de productos
+      //   return new CatalogoApiHttpClient(httpService, configService);
+      // },
+      // inject: [HttpService, ConfigService],
     },
   ],
   exports: [CarritoService, 'ICarritoRepository', 'CatalogoApi'],

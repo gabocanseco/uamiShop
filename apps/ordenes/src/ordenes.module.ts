@@ -17,6 +17,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import servicesConfig from './config/services.config';
 import { OutboxModule } from '@app/shared/outbox/outbox.module';
+import { ResilienceModule } from '@app/shared/infrastructure/resilience/circuit-breaker/circuit-breaker.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { OutboxModule } from '@app/shared/outbox/outbox.module';
     SharedRabbitModule.register(EXCHANGES.UAMISHOP_EVENTS),
     EventEmitterModule.forRoot(),
     OutboxModule,
+    ResilienceModule.register('VENTAS'),
   ],
   providers: [
     OrdenService,
@@ -71,13 +73,14 @@ import { OutboxModule } from '@app/shared/outbox/outbox.module';
     },
     {
       provide: 'VentasApi',
-      useFactory: (httpService: HttpService, configService: ConfigService) => {
-        configService.get<string>('services.ventasUrl');
+      useClass: VentasApiHttpClient,
+      // useFactory: (httpService: HttpService, configService: ConfigService) => {
+      //   configService.get<string>('services.ventasUrl');
 
-        // Si se configura la URL del catálogo externo, usar el cliente HTTP; de lo contrario, usar el servicio local de productos
-        return new VentasApiHttpClient(httpService, configService);
-      },
-      inject: [HttpService, ConfigService],
+      //   // Si se configura la URL del catálogo externo, usar el cliente HTTP; de lo contrario, usar el servicio local de productos
+      //   return new VentasApiHttpClient(httpService, configService);
+      // },
+      // inject: [HttpService, ConfigService],
     },
   ],
   controllers: [OrdenController],

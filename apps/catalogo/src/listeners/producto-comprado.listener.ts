@@ -1,6 +1,6 @@
 import { ProductoEstadisticasService } from '@catalogo/service/producto-estadisticas.service';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { ProductoId } from '@app/shared/domain/value-objects/ids/producto-id.vo';
 import { ProductoCompradoEvent } from '@app/shared/event/producto-comprado.event';
@@ -11,6 +11,8 @@ import { Propagation, Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class ProductoCompradoListener {
+  private readonly logger = new Logger(ProductoCompradoListener.name);
+
   constructor(
     private readonly productoEstadisticasService: ProductoEstadisticasService,
   ) {}
@@ -20,16 +22,26 @@ export class ProductoCompradoListener {
     exchange: EXCHANGES.UAMISHOP_EVENTS, // Nombre del exchange
     routingKey: RK_PRODUCTO_COMPRADO, // Routing key para filtrar los mensajes
     queue: QUEUE_CATALOGO_PRODUCTO_COMPRADO, // Nombre de la cola donde se recibirán los mensajes
+    errorHandler: (channel, msg, error) => {
+      channel.ack(msg);
+    },
   })
   @Transactional({ propagation: Propagation.REQUIRES_NEW }) // Asegura que cada evento se maneje en una transacción separada
   async onProductoComprado(productoCompradoEvent: ProductoCompradoEvent) {
-    await Promise.all(
-      productoCompradoEvent.items.map(async (item) => {
-        await this.productoEstadisticasService.registrarVenta(
-          ProductoId.of(item.productoId),
-          item.cantidad,
-        );
-      }),
-    );
+    try {
+      await Promise.all(
+        productoCompradoEvent.items.map(async (item) => {
+          await this.productoEstadisticasService.registrarVenta(
+            ProductoId.of(item.productoId),
+            item.cantidad,
+          );
+        }),
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Error al procesar ProductoCompradoEvent: ${error.message}`,
+      );
+    }
   }
 }
+
