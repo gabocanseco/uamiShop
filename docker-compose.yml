@@ -127,5 +127,16 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  karate-tests:
+    build: ./tests-karate
+    container_name: uamishop-karate
+    environment:
+      - KARATE_ENV=docker
+    depends_on:
+      - uamishop-gateway
+    volumes:
+      - ./tests-karate/target:/app/target
+    profiles: ['test']
+
 volumes:
   mysql_data:

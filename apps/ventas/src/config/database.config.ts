@@ -12,6 +12,6 @@ export default registerAs('database', (): TypeOrmModuleOptions => {
     database: process.env.DB_DATABASE,
     synchronize: true,
     autoLoadEntities: true,
-    logging: true, // como showSql: true
+    logging: false, // como showSql: true
   };
 });
