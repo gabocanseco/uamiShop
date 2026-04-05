@@ -172,7 +172,7 @@ export class CarritoController {
     @Param() params: CarritoProductoParamsDto,
   ): Promise<CarritoResponseDto> {
     const carritoId = CarritoMapper.toDomainId(params.id);
-    const productoId = CarritoMapper.toDomainId(params.productoId);
+    const productoId = ProductoId.of(params.productoId);
 
     const carrito = await this.carritoService.eliminarProducto(
       carritoId,
