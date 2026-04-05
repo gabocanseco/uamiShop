@@ -1,15 +1,20 @@
 function fn() {
-  var env = karate.env; // obtener variable de entorno
+  var env = java.lang.System.getenv('KARATE_ENV') || 'dev';
+
+  karate.log('Entorno detectado por el Sistema:', env);
+
   var config = {
-    baseUrlCatalogo: 'http://localhost:8081',
-    baseUrlVentas: 'http://localhost:8082',
-    baseUrlOrdenes: 'http://localhost:8083',
+    baseUrl: 'http://localhost:8080',
+    catalogoUrl: 'http://localhost:8081',
+    ventasUrl: 'http://localhost:8082',
+    ordenesUrl: 'http://localhost:8083',
   };
 
-  if (env == 'docker') {
-    config.baseUrlCatalogo = 'http://catalogo:8081';
-    config.baseUrlVentas = 'http://ventas:8082';
-    config.baseUrlOrdenes = 'http://ordenes:8083';
+  if (env === 'docker') {
+    config.baseUrl = 'http://uamishop-gateway:8080';
+    config.catalogoUrl = 'http://uamishop-catalogo:8080';
+    config.ventasUrl = 'http://uamishop-ventas:8080';
+    config.ordenesUrl = 'http://uamishop-ordenes:8080';
   }
 
   return config;
